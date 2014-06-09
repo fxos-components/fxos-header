@@ -7,7 +7,7 @@ module.exports = function(config) {
       'test/setup.js',
       'bower_components/gaia-component-utils/index.js',
       'script.js',
-      'test/*_test.js',
+      'test/test.js',
       { pattern: 'style.css', included: false },
       { pattern: 'bower_components/gaia-icons/style.css', included: false }
     ],
