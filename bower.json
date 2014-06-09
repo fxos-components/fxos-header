@@ -17,9 +17,5 @@
   "dependencies": {
     "gaia-icons": "wilsonpage/gaia-icons",
     "gaia-component-utils": "wilsonpage/gaia-component-utils"
-  },
-  "devDependencies": {
-    "chai": "~1.9.1",
-    "sinonjs": "~1.10.2"
   }
 }
