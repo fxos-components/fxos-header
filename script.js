@@ -11,12 +11,11 @@ var componentUtils = require('gaia-component-utils');
  * Locals
  */
 
+// Allow baseurl to be overridden (used for demo page)
+var baseUrl = window.GaiaHeaderBaseUrl || '/bower_components/gaia_header/';
+
 // Extend from the HTMLElement prototype
 var proto = Object.create(HTMLElement.prototype);
-
-// Allow baseurl to be overridden (used for demo page)
-var baseurl = window.GaiaHeaderBaseurl ||
-  'bower_components/gaia_header/';
 
 /**
  * Supported action types
@@ -31,7 +30,7 @@ var actionTypes = {
 
 var stylesheets = [
   { url: '/bower_components/gaia-icons/style.css' },
-  { url: '/style.css', scoped: true }
+  { url: baseUrl + 'style.css', scoped: true }
 ];
 
 /**
@@ -54,7 +53,7 @@ proto.createdCallback = function() {
   );
 
   shadow.appendChild(this._template);
-  componentUtils.style.call(this, stylesheets, baseurl);
+  componentUtils.style.call(this, stylesheets);
 };
 
 /**

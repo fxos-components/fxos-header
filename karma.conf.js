@@ -4,9 +4,10 @@ module.exports = function(config) {
     frameworks: ['mocha', 'sinon-chai'],
     browsers: ['firefox_web_components'],
     files: [
+      'test/setup.js',
       'bower_components/gaia-component-utils/index.js',
       'script.js',
-      'test/*.js',
+      'test/*_test.js',
       { pattern: 'style.css', included: false },
       { pattern: 'bower_components/gaia-icons/style.css', included: false }
     ],
