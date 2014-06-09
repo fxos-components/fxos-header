@@ -1,0 +1,21 @@
+{
+  "name": "gaia-header",
+  "version": "0.0.0",
+  "homepage": "https://github.com/wilsonpage/gaia-header",
+  "authors": [
+    "Wilson Page <wilsonpage@me.com>"
+  ],
+  "main": "script.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "gaia-icons": "wilsonpage/gaia-icons",
+    "gaia-component-utils": "wilsonpage/gaia-component-utils"
+  }
+}
