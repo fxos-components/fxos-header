@@ -1,0 +1,25 @@
+{
+  "name": "gaia-component-utils",
+  "main": "index.js",
+  "homepage": "https://github.com/wilsonpage/gaia-component-utils",
+  "authors": [
+    "Wilson Page <wilsonpage@me.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "c5a020df1a",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "c5a020df1aa06429dd8a6315df93988c32f71ed6"
+  },
+  "_source": "git://github.com/wilsonpage/gaia-component-utils.git",
+  "_target": "*",
+  "_originalSource": "wilsonpage/gaia-component-utils"
+}
