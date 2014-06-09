@@ -3,8 +3,6 @@ module.exports = function(config) {
   config.set({
     frameworks: ['mocha', 'sinon-chai'],
     browsers: ['firefox_web_components'],
-    // basePath: '../..',
-
     files: [
       'bower_components/gaia-component-utils/index.js',
       'script.js',
@@ -16,8 +14,9 @@ module.exports = function(config) {
 
     proxies: {
       '/': 'http://localhost:9876/base/'
-      // '/bower_components/': 'http://localhost:9876/base/bower_components/'
     },
+
+    urlRoot: '/karma/',
 
     client: {
       mocha: { ui: 'tdd' }
