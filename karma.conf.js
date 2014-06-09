@@ -8,20 +8,14 @@ module.exports = function(config) {
       'script.js',
       'test/*.js',
       { pattern: 'style.css', included: false },
-      { pattern: 'examples/*', included: false },
       { pattern: 'bower_components/gaia-icons/style.css', included: false }
     ],
-
-    proxies: {
-      '/': 'http://localhost:9876/base/'
-    },
-
+    proxies: { '/': 'http://localhost:9876/base/' },
+    reporters: ['dots'],
     urlRoot: '/karma/',
-
     client: {
       mocha: { ui: 'tdd' }
     },
-
     customLaunchers: {
       firefox_web_components: {
         base: 'FirefoxNightly',
