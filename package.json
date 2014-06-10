@@ -19,12 +19,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/wilsonpage/gaia-header.git"
+    "url": "git://github.com/gaia-components/gaia-header.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/wilsonpage/gaia-header/issues"
+    "url": "https://github.com/gaia-components/gaia-header/issues"
   },
-  "homepage": "https://github.com/wilsonpage/gaia-header"
+  "homepage": "https://github.com/gaia-components/gaia-header"
 }
