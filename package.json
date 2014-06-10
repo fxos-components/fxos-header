@@ -1,8 +1,6 @@
 {
   "name": "gaia-header",
-  "version": "0.0.0",
-  "description": "",
-  "main": "Gruntfile.js",
+  "main": "script.js",
   "directories": {
     "example": "examples",
     "test": "test"

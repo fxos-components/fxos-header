@@ -12,7 +12,11 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "karma.conf.js",
+    "package.json",
+    "README.md",
+    "examples"
   ],
   "dependencies": {
     "gaia-icons": "wilsonpage/gaia-icons",
