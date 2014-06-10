@@ -13,7 +13,7 @@ var componentUtils = require('gaia-component-utils');
 
 // Allow baseurl to be overridden (used for demo page)
 var baseUrl = window.GaiaHeaderBaseUrl;
-var packageBase = baseUrl || '/bower_components/gaia_header/';
+var packageBase = baseUrl || '/bower_components/gaia-header/';
 var depsBase = (baseUrl || '/') + 'bower_components/';
 
 // Extend from the HTMLElement prototype
