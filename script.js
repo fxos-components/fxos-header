@@ -11,10 +11,8 @@ var componentUtils = require('gaia-component-utils');
  * Locals
  */
 
-// Allow baseurl to be overridden (used for demo page)
-var baseUrl = window.GaiaHeaderBaseUrl;
-var packageBase = baseUrl || '/bower_components/gaia-header/';
-var depsBase = (baseUrl || '/') + 'bower_components/';
+var packagesBaseUrl = window.packagesBaseUrl || '/bower_components/';
+var baseUrl = window.GaiaHeaderBaseUrl || packagesBase + 'gaia-header/';
 
 // Extend from the HTMLElement prototype
 var proto = Object.create(HTMLElement.prototype);
@@ -31,8 +29,8 @@ var actionTypes = {
 };
 
 var stylesheets = [
-  { url: depsBase + 'gaia-icons/style.css' },
-  { url: packageBase + 'style.css', scoped: true }
+  { url: packagesBaseUrl + 'gaia-icons/style.css' },
+  { url: baseUrl + 'style.css', scoped: true }
 ];
 
 /**
