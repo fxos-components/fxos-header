@@ -12,7 +12,7 @@ var componentUtils = require('gaia-component-utils');
  */
 
 var packagesBaseUrl = window.packagesBaseUrl || '/bower_components/';
-var baseUrl = window.GaiaHeaderBaseUrl || packagesBase + 'gaia-header/';
+var baseUrl = window.GaiaHeaderBaseUrl || packagesBaseUrl + 'gaia-header/';
 
 // Extend from the HTMLElement prototype
 var proto = Object.create(HTMLElement.prototype);
