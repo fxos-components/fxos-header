@@ -1,111 +1,108 @@
-/* -------------------------------------------------------------------
-  HEADERS: layout
-  Form factor or Skin dependent styles should NOT be defined here.
-------------------------------------------------------------------- */
+/* 
+HEADER STYLES
+===================
+*/
 
 gaia-header {
-  display: block;
-  height: 5rem;
-  z-index: 10;
-  color: var(--text-color-brand, #858585);
-  background: var(--brand-color, #f4f4f4);
-  border-bottom-right-radius: var(--border-radius, 0);
-  border-bottom-left-radius: var(--border-radius, 0);
-  box-shadow: var(--box-shadow, none);
+  /* custom element in light DOM */
+  /* vars imported from theme */
+  /*color: var(--text-color-brand, #858585);  
+  background: var(--brand-color, #f4f4f4);*/
 }
 
+/* shadowdom content */
+header { 
+  min-height: 50px;
+  display: flex;
+  justify-content: center;
+  background: var(--header-background, #fff);
+}
+
+#header-nav {
+  /* left navigation button */
+  min-width: 50px;
+  border: none;
+  font-size: 40px;
+  color: var(--header-nav-button-color, #000);
+}
+#header-nav:active {
+  color: var(--header-nav-button-color-active, #fff);
+}
+
+/* projected content */
+/* header title */
 h1 {
-  font-size: 2.3rem;
-  line-height: 5rem;
+  margin: 14px 16px;
   white-space: nowrap;
   text-overflow: ellipsis;
-  display: block;
   overflow: hidden;
-  margin: 0;
-  padding: 0 1rem;
-  height: 100%;
-  font-weight: lighter;
-  font-style: italic;
   text-align: center;
+  font-weight: lighter;
+  font-style: italic;  
+  flex: 1;
+  color: var(--header-title-color, #000);
 }
 
-h1 em {
-  font-weight: 400;
-  font-size: 1.5rem;
-  line-height: 1em;
-  font-style: normal;
-}
-
-menu {
-  height: 100%;
-  float: right;
-  padding: 0;
-  margin: 0;
-}
-
-/* Buttons */
-a,
-button {
-  box-sizing: border-box;
-  position: relative;
+/* header action items */
+a, button {
   display: block;
+  border: none;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 0;
+  line-height: 50px;
+  min-width: 50px;
+  background: none;
+  text-align: center;
+  color: var(--header-button-color, #000);
+  font-style: italic;
+  transition: var(--button-transition);
+  transition-delay: var(--button-transition-delay);
+}
+
+a:active, button:active {
+  background: var(--header-button-background, #000);
+  color: var(--header-button-color-active, #fff);
+  transition: none;
+}
+
+/* all buttons */
+/*a,
+button {
   overflow: hidden;
   float: left;
-  min-width: 5rem;
-  width: auto;
-  height: 5rem;
-  border: none;
-  background: none;
-  padding: 0 1rem;
-  margin: 0;
-  font-weight: 400;
-  font-size: 1.5rem;
-  line-height: 5rem;
-  border-radius: 0;
-  text-decoration: none;
+  min-width: 50px;
   text-align: center;
-  text-shadow: none;
-  font-style: italic;
 }
-
-a:hover,
+*/
+/*a:hover,
 button:hover,
 a:active,
 button:active {
   background: var(--active-background, rgba(0,0,0,0.7));
 }
+*/
 
 /* Pressed state */
 a:focus{
   outline: none;
 }
 
-button::-moz-focus-inner,
-.button::-moz-focus-inner {
-  outline: none;
-  border: none;
-  margin-top: -0.2rem; /* To fix line-height bug (697451) */
-  padding: 0;
-}
-
 /* Disabled state */
-a[aria-disabled="true"],
+/*a[aria-disabled="true"],
 button[disabled] {
   opacity: 0.3;
   pointer-events: none;
 }
-
+*/
 /* Hidden */
-[hidden] {
-  display: none;
-}
 
 /* right-to-left */
 
 /* We would need an attribute to know if we are using rtl,
  * as styles are scoped
  */
-html[dir="rtl"] menu {
+/*html[dir="rtl"] menu {
   float: left;
 }
 
@@ -128,20 +125,19 @@ button:hover {
 a:focus,
 button:focus {
   background-color: transparent;
-}
+}*/
 
 /** Action Button
  ---------------------------------------------------------*/
 
 .action-button {
-  font-size: 3rem;
-  color: inherit;
+  font-size: 16px;
 }
 
 /* -----------------------------------------------------------------
   Transitions
 ----------------------------------------------------------------- */
-
+/*
 [transition] {
   display: block;
   position: absolute;
@@ -168,4 +164,4 @@ button:focus {
 [transition="fade"][hidden] {
   opacity: 0;
   pointer-events: none;
-}
+}*/

@@ -45,7 +45,7 @@ proto.createdCallback = function() {
   var shadow = this.createShadowRoot();
 
   this._template = template.content.cloneNode(true);
-  this._actionButton = this._template.getElementById('action-button');
+  this._actionButton = this._template.getElementById('header-nav');
   this._header = this._template.getElementById('header');
   this._configureActionButton();
   this._actionButton.addEventListener(
@@ -139,13 +139,11 @@ proto._onActionButtonClick = function(e) {
 // hack until we can import entire custom-elements
 // using HTML Imports (bug 877072).
 var template = document.createElement('template');
-template.innerHTML = '<header id="header">' +
-    '<button id="action-button" class="action-button icon"></button>' +
-    '<menu id="menu-buttons" type="toolbar">' +
-      '<content id="buttons-content" select="button,a"></content>' +
-    '</menu>' +
+template.innerHTML = '<header>' +
+    '<button id="header-nav" class="action-button icon"></button>' +
     '<content select="h1,h2,h3,h4"></content>' +
-    '<content id="content"></content>' +
+    '<content id="buttons-content" select="button,a"></content>' +
+    
   '</header>';
 
 // Register and return the constructor
