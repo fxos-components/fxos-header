@@ -1,5 +1,5 @@
-(function(define){define(function(require,exports,module){
-'use strict';
+(function(define){'use strict';define(function(require,exports,module){
+/*globals define*//*jshint node:true*/
 
 /**
  * Dependencies
@@ -25,7 +25,7 @@ var proto = Object.create(HTMLElement.prototype);
 var actionTypes = {
   menu: true,
   back: true,
-  close: true
+  close: true,
 };
 
 var stylesheets = [
@@ -143,12 +143,12 @@ template.innerHTML = '<header>' +
     '<button id="header-nav" class="action-button icon"></button>' +
     '<content select="h1,h2,h3,h4"></content>' +
     '<content id="buttons-content" select="button,a"></content>' +
-    
   '</header>';
 
 // Register and return the constructor
 module.exports = document.registerElement('gaia-header', { prototype: proto });
 
-});})((function(n,w){return typeof define=='function'&&define.amd?
-define:typeof module=='object'?function(c){c(require,exports,module);}:function(c){
-var m={exports:{}},r=function(n){return w[n];};w[n]=c(r,m.exports,m)||m.exports;};})('gaia-header',this));
+});})((function(n,w){'use strict';return typeof define=='function'&&define.amd?
+define:typeof module=='object'?function(c){c(require,exports,module);}:
+function(c){var m={exports:{}},r=function(n){return w[n];};
+w[n]=c(r,m.exports,m)||m.exports;};})('gaia-header',this));

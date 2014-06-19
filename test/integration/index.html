@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Gaia header integration tests</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        font-size: 10px;
+        background-color: #fff;
+      }
+    </style>
+    <script>
+    window.GaiaHeaderBaseUrl = '../../';
+    window.packagesBaseUrl = '../../bower_components/';
+    </script>
+    <script src="../../bower_components/gaia-component-utils/index.js"></script>
+    <script src="../../script.js"></script>
+    <script src="../../font_size_utils.js"></script>
+  </head>
+  <body role="application">
+    <gaia-header id="header">
+      <h1 id="title" data-l10n-id="title">Messages</h1>
+      <button id="edit" icon="edit"></button>
+      <button id="add" icon="add"></button>
+    </gaia-header>
+  </body>
+</html>

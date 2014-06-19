@@ -16,7 +16,7 @@ suite('GaiaHeader', function() {
   test('Should hide action button if no action type defined', function() {
     this.container.innerHTML = '<gaia-header></gaia-header>';
     var element = this.container.firstElementChild;
-    var button = element.shadowRoot.getElementById('action-button');
+    var button = element.shadowRoot.getElementById('header-nav');
     assert.equal(button.style.display, 'none');
   });
 
@@ -24,7 +24,7 @@ suite('GaiaHeader', function() {
     ['menu', 'close', 'back'].forEach(function(type) {
       this.container.innerHTML = '<gaia-header action="' + type + '"></gaia-header>';
       var element = this.container.firstElementChild;
-      var buttonInner = element.shadowRoot.getElementById('action-button');
+      var buttonInner = element.shadowRoot.getElementById('header-nav');
       assert.equal(buttonInner.getAttribute('icon'), type);
     }, this);
   });
@@ -32,7 +32,7 @@ suite('GaiaHeader', function() {
   test('Should not show an action button for unsupported action types', function() {
     this.container.innerHTML = '<gaia-header action="unsupported"></gaia-header>';
     var element = this.container.firstElementChild;
-    var button = element.shadowRoot.getElementById('action-button');
+    var button = element.shadowRoot.getElementById('header-nav');
     assert.equal(button.style.display, 'none');
   });
 
@@ -46,7 +46,7 @@ suite('GaiaHeader', function() {
   test('Should add a click event listener to the action button if an action defined', function() {
     this.container.innerHTML = '<gaia-header action="menu"></gaia-header>';
     var element = this.container.firstElementChild;
-    var actionButton = element.shadowRoot.getElementById('action-button');
+    var actionButton = element.shadowRoot.getElementById('header-nav');
     assert.isTrue(HTMLElement.prototype.addEventListener.withArgs('click').calledOn(actionButton));
   });
 
@@ -59,7 +59,7 @@ suite('GaiaHeader', function() {
   test('Should change action button when action changes', function() {
     this.container.innerHTML = '<gaia-header></gaia-header>';
     var element = this.container.firstElementChild;
-    var button = element.shadowRoot.getElementById('action-button');
+    var button = element.shadowRoot.getElementById('header-nav');
     assert.equal(button.style.display, 'none');
     element.setAttribute('action', 'back');
     assert.equal(button.style.display, 'block');
@@ -139,11 +139,11 @@ suite('GaiaHeader', function() {
     });
 
     test('Should be of expected height', function() {
-      assert.equal(this.element.offsetHeight, 50);
+      assert.equal(this.element.offsetHeight, 57);
     });
 
     test('Should place title after action button', function() {
-      var button = this.element.shadowRoot.getElementById('action-button');
+      var button = this.element.shadowRoot.getElementById('header-nav');
       var title = this.element.querySelector('h1');
       var span = document.createElement('span');
 

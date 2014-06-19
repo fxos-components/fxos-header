@@ -1,3 +1,4 @@
-node_modules
 bower_components
+firefox
+node_modules
 .DS_Store
