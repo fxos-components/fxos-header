@@ -27,7 +27,8 @@ header {
 
 /* projected content */
 h1 {
-  margin: 14px 16px;
+  margin: 14px 0;
+  padding: 0 16px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -48,6 +49,7 @@ a, button {
   padding: 0;
   line-height: 50px;
   min-width: 50px;
+  min-height: 50px;
   background: none;
   text-align: center;
   color: var(--header-button-color, #000);

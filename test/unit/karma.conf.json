@@ -2,6 +2,7 @@
   "files": [
     "test/unit/setup.js",
     "bower_components/gaia-component-utils/index.js",
+    "test/unit/mocks/mock_font_fit.js",
     "script.js",
     "test/unit/test.js",
     {

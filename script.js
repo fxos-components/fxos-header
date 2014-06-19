@@ -6,6 +6,7 @@
  */
 
 var componentUtils = require('gaia-component-utils');
+var GaiaHeaderFontFit = require('gaia-header-font-fit');
 
 /**
  * Locals
@@ -46,7 +47,7 @@ proto.createdCallback = function() {
 
   this._template = template.content.cloneNode(true);
   this._actionButton = this._template.getElementById('header-nav');
-  this._header = this._template.getElementById('header');
+  this._headings = this.querySelectorAll('h1,h2,h3,h4');
   this._configureActionButton();
   this._actionButton.addEventListener(
     'click', proto._onActionButtonClick.bind(this)
@@ -54,6 +55,13 @@ proto.createdCallback = function() {
 
   shadow.appendChild(this._template);
   componentUtils.style.call(this, stylesheets);
+
+  setTimeout(function() {
+    for(var i = 0; i < this._headings.length; i++) {
+      GaiaHeaderFontFit.reformatHeading(this._headings[i]);
+      GaiaHeaderFontFit.observeHeadingChanges(this._headings[i]);
+    }
+  }.bind(this), 50);
 };
 
 /**
@@ -64,6 +72,7 @@ proto.createdCallback = function() {
 proto.attributeChangedCallback = function(attr, oldVal, newVal) {
   if (attr === 'action') {
     this._configureActionButton();
+    GaiaHeaderFontFit.reformatHeading(this._heading);
   }
 };
 
