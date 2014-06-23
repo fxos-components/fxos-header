@@ -2,14 +2,12 @@
 
   module.exports = {
     observeHeadingChanges: function(heading) {
-
     },
     reformatHeading: function(heading) {
-
     }
   };
 
 });})((function(n,w){'use strict';return typeof define=='function'&&define.amd?
 define:typeof module=='object'?function(c){c(require,exports,module);}:
 function(c){var m={exports:{}},r=function(n){return w[n];};
-w[n]=c(r,m.exports,m)||m.exports;};})('gaia-header-font-fit',this));
+w[n]=c(r,m.exports,m)||m.exports;};})('mock-gaia-header-font-fit',this));

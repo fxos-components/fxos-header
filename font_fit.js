@@ -2,16 +2,16 @@
 /*globals define,exports,module,require*/
 
   /**
-   * Allowable font sizes for header elements.
-   */
-  var HEADER_SIZES = [
-    16, 17, 18, 19, 20, 21, 22, 23, 24
-  ];
-
-  /**
    * Utility functions for measuring and manipulating font sizes
    */
   var GaiaHeaderFontFit = {
+    /**
+     * Allowable font sizes for header elements.
+     */
+    _HEADER_SIZES: [
+      16, 17, 18, 19, 20, 21, 22, 23, 24
+    ],
+
     /**
      * Perform auto-resize when textContent changes on element.
      *
@@ -31,7 +31,7 @@
      */
     reformatHeading: function(heading) {
       // Skip resize logic if header has no content, ie before localization.
-      if (heading.textContent.trim() === '') {
+      if (!heading || heading.textContent.trim() === '') {
         return;
       }
 
@@ -239,7 +239,7 @@
 
       var info = this._getMaxFontSizeInfo(
         heading.textContent,
-        HEADER_SIZES,
+        this._HEADER_SIZES,
         fontFamily,
         contentWidth
       );
