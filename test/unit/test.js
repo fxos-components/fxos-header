@@ -9,14 +9,14 @@ suite('GaiaHeader', function() {
     this.container = document.createElement('div');
     this.sandbox.spy(HTMLElement.prototype, 'addEventListener');
 
-    realGaiaHeaderFontFit = window['gaia-header-font-fit'];
-    window['gaia-header-font-fit'] = window['mock-gaia-header-font-fit'];
+    realGaiaHeaderFontFit = window['./font-fit'];
+    window['./font-fit'] = window['./test/mocks/mock_font_fit'];
   });
 
   teardown(function() {
     this.sandbox.restore();
     this.clock.restore();
-    window['gaia-header-font-fit'] = realGaiaHeaderFontFit;
+    window['./font-fit'] = realGaiaHeaderFontFit;
   });
 
   test('Should hide action button if no action type defined', function() {

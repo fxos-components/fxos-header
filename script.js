@@ -6,7 +6,7 @@
  */
 
 var componentUtils = require('gaia-component-utils');
-var GaiaHeaderFontFit = require('gaia-header-font-fit');
+var GaiaHeaderFontFit = require('./font-fit');
 
 /**
  * Locals
