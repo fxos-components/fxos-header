@@ -2,9 +2,11 @@
   "files": [
     "test/unit/setup.js",
     "bower_components/gaia-component-utils/index.js",
-    "test/unit/mocks/mock_font_fit.js",
+    "font_fit.js",
     "script.js",
+    "test/unit/mocks/mock_font_fit.js",
     "test/unit/test.js",
+    "test/unit/font_fit_test.js",
     {
       "pattern": "style.css",
       "included": false
