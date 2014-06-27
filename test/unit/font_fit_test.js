@@ -1,6 +1,6 @@
 'use strict';
 
-suite('shared/js/text_utils.js', function() {
+suite('font-fit.js', function() {
   var GaiaHeaderFontFit;
 
   const kDefaultFace = 'Arial';
@@ -130,7 +130,7 @@ suite('shared/js/text_utils.js', function() {
   }
 
   setup(function() {
-    GaiaHeaderFontFit = window['gaia-header-font-fit'];
+    GaiaHeaderFontFit = window['./font-fit'];
     text = '';
   });
 
