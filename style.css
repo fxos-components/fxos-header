@@ -16,18 +16,28 @@ header {
 
 /* left navigation button */
 #header-nav {
+  display: flex;
+  align-items: center;
   min-width: 50px;
   border: none;
   font-size: 40px;
   color: var(--header-nav-button-color, #000);
 }
+
+#header-nav:before {
+  display: block;
+}
+
 #header-nav:active {
   color: var(--header-nav-button-color-active, #fff);
 }
 
 /* projected content */
 h1 {
-  margin: 14px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
   padding: 0 16px;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -36,7 +46,6 @@ h1 {
   font-weight: lighter;
   font-style: italic;
   font-size: 24px;
-  flex: 1;
   color: var(--header-title-color, #000);
 }
 
@@ -46,14 +55,14 @@ button {
   display: block;
   border: none;
   width: auto;
-  text-decoration: none;
-  font-size: 14px;
+  height: auto;
+  margin: 0;
   padding: 0;
-  line-height: 50px;
+  font-size: 14px;
   min-width: 50px;
-  min-height: 50px;
-  background: none;
+  text-decoration: none;
   text-align: center;
+  background: none;
   color: var(--header-button-color, #000);
   font-style: italic;
   transition: var(--button-transition);
