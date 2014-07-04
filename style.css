@@ -40,10 +40,12 @@ h1 {
   color: var(--header-title-color, #000);
 }
 
-a, button {
+a,
+button {
   /* header action menu items */
   display: block;
   border: none;
+  width: auto;
   text-decoration: none;
   font-size: 14px;
   padding: 0;
@@ -58,7 +60,8 @@ a, button {
   transition-delay: var(--button-transition-delay);
 }
 
-a:active, button:active {
+a:active,
+button:active {
   background: var(--header-button-background, #000);
   color: var(--header-button-color-active, #fff);
   transition: none;
