@@ -1,43 +1,73 @@
-/*
-HEADER STYLES
-===================
-*/
+
+/**
+ * Gaia Header
+ */
 
 gaia-header {
   display: block;
 }
 
-/* shadowdom content */
-header {
-  min-height: 50px;
+.inner {
   display: flex;
+  min-height: 50px;
   background: var(--header-background, #fff);
 }
 
-/* left navigation button */
-#header-nav {
-  display: flex;
+/** Action Button
+ ---------------------------------------------------------*/
+
+/**
+ * 1. Hidden by default
+ */
+
+.action-button {
+  display: none; /* 1 */
   align-items: center;
   min-width: 50px;
-  border: none;
   font-size: 40px;
+  border: none;
   color: var(--header-nav-button-color, #000);
 }
 
-#header-nav:before {
-  display: block;
+/**
+ * .action-supported
+ *
+ * 1. For icon vertical-alignment
+ */
+
+.action-supported .action-button {
+  display: flex; /* 1 */
 }
 
-#header-nav:active {
+/**
+ * :active
+ */
+
+.action-button:active {
   color: var(--header-nav-button-color-active, #fff);
 }
 
-/* projected content */
-h1 {
+/** Action Button Icon
+ ---------------------------------------------------------*/
+
+/**
+ * 1. To enable vertical alignment.
+ */
+
+.action-button:before {
+  display: block;
+}
+
+
+/** Title
+ ---------------------------------------------------------*/
+
+.content h1 {
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 1;
+  margin: 0;
   padding: 0 16px;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -49,9 +79,13 @@ h1 {
   color: var(--header-title-color, #000);
 }
 
+/** Buttons
+ ---------------------------------------------------------*/
+
 a,
-button {
-  /* header action menu items */
+button,
+.content a,
+.content button {
   display: block;
   border: none;
   width: auto;
@@ -69,109 +103,39 @@ button {
   transition-delay: var(--button-transition-delay);
 }
 
+/**
+ * :active
+ */
+
 a:active,
-button:active {
+button:active,
+.content a:active,
+.content button:active {
   background: var(--header-button-background, #000);
   color: var(--header-button-color-active, #fff);
   transition: none;
 }
 
-/* all buttons */
-/*a,
-button {
-  overflow: hidden;
-  float: left;
-  min-width: 50px;
-  text-align: center;
-}
-*/
-/*a:hover,
-button:hover,
-a:active,
-button:active {
-  background: var(--active-background, rgba(0,0,0,0.7));
-}
-*/
+/**
+ * :focus
+ */
 
-/* Pressed state */
-a:focus{
+a:focus,
+.content a:focus {
   outline: none;
 }
 
-/* Disabled state */
-/*a[aria-disabled="true"],
-button[disabled] {
-  opacity: 0.3;
-  pointer-events: none;
-}
-*/
-/* Hidden */
-
-/* right-to-left */
-
-/* We would need an attribute to know if we are using rtl,
- * as styles are scoped
- */
-/*html[dir="rtl"] menu {
-  float: left;
-}
-
-html[dir="rtl"] a,
-html[dir="rtl"] button {
-  float: right;
-}
-
-html[dir="rtl"] [icon="back"] {
-  transform: rotate(180deg);
-}
-
-a:active,
-button:active,
-a:hover,
-button:hover {
-  background-color: rgba(0,0,0,0.07);
-}
-
-a:focus,
-button:focus {
-  background-color: transparent;
-}*/
-
-/** Action Button
+/** Icons
  ---------------------------------------------------------*/
 
-.action-button {
-  font-size: 16px;
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  font-family: "gaia-icons";
+  font-weight: normal;
+  font-style: normal;
+  text-rendering: optimizeLegibility;
 }
 
-/* -----------------------------------------------------------------
-  Transitions
------------------------------------------------------------------ */
-/*
-[transition] {
-  display: block;
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-}
-
-[transition="slide"] {
-  transform: translateY(0);
-  transition: transform 0.4s ease;
-}
-
-[transition="slide"][hidden] {
-  transform: translateY(-100%);
-}
-
-[transition="fade"] {
-  opacity: 1;
-  pointer-events: auto;
-  transition: opacity 0.4s ease;
-}
-
-[transition="fade"][hidden] {
-  opacity: 0;
-  pointer-events: none;
-}*/
+.icon-back:before { content: 'back'; }
+.icon-menu:before { content: 'menu'; }
+.icon-close:before { content: 'close'; }

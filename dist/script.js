@@ -324,50 +324,6 @@ function(c){var m={exports:{}},r=function(n){return w[n];};
 w[n]=c(r,m.exports,m)||m.exports;};})('./font-fit',this));
 
 },{}],2:[function(_dereq_,module,exports){
-(function(define){define(function(_dereq_,exports,module){
-
-  /**
-   * ComponentUtils is a utility which allows us to use web components earlier
-   * than we should be able to by polyfilling and fixing platform deficiencies.
-   */
-  module.exports = {
-
-    /**
-     * Injects a style.css into both the shadow root and outside the shadow
-     * root so we can style projected content. Bug 992249.
-     */
-    style: function(stylesheets) {
-      var self = this;
-
-      stylesheets.forEach(add);
-
-      function add(stylesheet) {
-        var style = document.createElement('style');
-        style.innerHTML = '@import url(' + stylesheet.url + ');';
-
-        if (stylesheet.scoped) {
-          style.setAttribute('scoped', '');
-        }
-
-        self.appendChild(style);
-
-        if (!self.shadowRoot) {
-          return;
-        }
-
-        // The setTimeout is necessary to avoid missing @import styles
-        // when appending two stylesheets. Bug 1003294.
-        style.addEventListener('load', function() {
-          self.shadowRoot.appendChild(style.cloneNode(true));
-        });
-      }
-    }
-  };
-
-});})((function(n,w){return typeof define=='function'&&define.amd?
-define:typeof module=='object'?function(c){c(_dereq_,exports,module);}:function(c){
-var m={exports:{}},r=function(n){return w[n];};w[n]=c(r,m.exports,m)||m.exports;};})('gaia-component-utils',this));
-},{}],3:[function(_dereq_,module,exports){
 (function(define){'use strict';define(function(_dereq_,exports,module){
 /*globals define*//*jshint node:true*/
 
@@ -375,8 +331,7 @@ var m={exports:{}},r=function(n){return w[n];};w[n]=c(r,m.exports,m)||m.exports;
  * Dependencies
  */
 
-var componentUtils = _dereq_('gaia-component-utils');
-var GaiaHeaderFontFit = _dereq_('./font-fit');
+var fontFit = _dereq_('./font-fit');
 
 /**
  * Locals
@@ -399,11 +354,6 @@ var actionTypes = {
   close: true,
 };
 
-var stylesheets = [
-  { url: packagesBaseUrl + 'gaia-icons/style.css' },
-  { url: baseUrl + 'style.css', scoped: true }
-];
-
 /**
  * Called when the element is first created.
  *
@@ -414,35 +364,56 @@ var stylesheets = [
  */
 proto.createdCallback = function() {
   var shadow = this.createShadowRoot();
+  var tmpl = template.content.cloneNode(true);
 
-  this._template = template.content.cloneNode(true);
-  this._actionButton = this._template.getElementById('header-nav');
-  this._headings = this.querySelectorAll('h1,h2,h3,h4');
-  this._configureActionButton();
-  this._actionButton.addEventListener(
-    'click', proto._onActionButtonClick.bind(this)
-  );
+  // Get els
+  this.els = {
+    actionButton: tmpl.querySelector('.action-button'),
+    headings: this.querySelectorAll('h1,h2,h3,h4'),
+    inner: tmpl.querySelector('.inner')
+  };
 
-  shadow.appendChild(this._template);
-  componentUtils.style.call(this, stylesheets);
+  // Action button
+  this.configureActionButton();
+  this.els.actionButton.addEventListener('click',
+    proto.onActionButtonClick.bind(this));
 
-  setTimeout(function() {
-    for(var i = 0; i < this._headings.length; i++) {
-      GaiaHeaderFontFit.reformatHeading(this._headings[i]);
-      GaiaHeaderFontFit.observeHeadingChanges(this._headings[i]);
-    }
-  }.bind(this), 50);
+  shadow.appendChild(tmpl);
+  this.styleHack();
+  setTimeout(this.runFontFit.bind(this), 50);
+};
+
+proto.styleHack = function() {
+  var style = this.shadowRoot.querySelector('style');
+  var clone = style.cloneNode(true);
+  var self = this;
+
+  clone.setAttribute('scoped', '');
+  this.classList.add('content');
+  this.appendChild(clone);
+
+  clone.onload  = function() {
+    self.stylesLoaded = true;
+  };
+};
+
+proto.runFontFit = function() {
+  for (var i = 0; i < this.els.headings.length; i++) {
+    fontFit.reformatHeading(this.els.headings[i]);
+    fontFit.observeHeadingChanges(this.els.headings[i]);
+  }
 };
 
 /**
- * Called when one of the attributes on the element changes.
+ * Called when one of the attributes
+ * on the element changes.
  *
  * @private
  */
 proto.attributeChangedCallback = function(attr, oldVal, newVal) {
   if (attr === 'action') {
-    this._configureActionButton();
-    GaiaHeaderFontFit.reformatHeading(this._heading);
+    this.configureActionButton();
+    fontFit.reformatHeading(this._heading);
   }
 };
 
@@ -450,8 +421,8 @@ proto.attributeChangedCallback = function(attr, oldVal, newVal) {
  * When called, trigger the action button.
  */
 proto.triggerAction = function() {
-  if (this._isSupportedAction(this.getAttribute('action'))) {
-    this._actionButton.click();
+  if (this.isSupportedAction(this.getAttribute('action'))) {
+    this.els.actionButton.click();
   }
 };
 
@@ -462,24 +433,17 @@ proto.triggerAction = function() {
  *
  * @private
  */
-proto._configureActionButton = function() {
-  var old = this._actionButton.getAttribute('icon');
+proto.configureActionButton = function() {
+  var old = this.els.actionButton.getAttribute('icon');
   var type = this.getAttribute('action');
+  var supported = this.isSupportedAction(type);
 
-  // TODO: Action button should be
-  // hidden by default then shown
-  // only with supported action types
-  if (!this._isSupportedAction(type)) {
-    this._actionButton.style.display = 'none';
-    return;
-  }
+  this.els.inner.classList.toggle('supported-action', supported);
+  if (!supported) { return; }
 
-  this._actionButton.style.display = 'block';
-  this._actionButton.setAttribute('icon', type);
-  this._actionButton.classList.remove('icon-' + old);
-  this._actionButton.classList.add('icon-' + type);
-
-  console.log(old, type);
+  this.els.actionButton.style.display = 'block';
+  this.els.actionButton.classList.remove('icon-' + old);
+  this.els.actionButton.classList.add('icon-' + type);
 };
 
 /**
@@ -487,7 +451,7 @@ proto._configureActionButton = function() {
  *
  * @private
  */
-proto._isSupportedAction = function(action) {
+proto.isSupportedAction = function(action) {
   return action && actionTypes[action];
 };
 
@@ -501,7 +465,7 @@ proto._isSupportedAction = function(action) {
  * @param  {Event} e
  * @private
  */
-proto._onActionButtonClick = function(e) {
+proto.onActionButtonClick = function(e) {
   var config = { detail: { type: this.getAttribute('action') } };
   var actionEvent = new CustomEvent('action', config);
   setTimeout(this.dispatchEvent.bind(this, actionEvent));
@@ -518,11 +482,25 @@ proto._onActionButtonClick = function(e) {
 // hack until we can import entire custom-elements
 // using HTML Imports (bug 877072).
 var template = document.createElement('template');
-template.innerHTML = '<header>' +
-    '<button id="header-nav" class="action-button icon"></button>' +
-    '<content select="h1,h2,h3,h4"></content>' +
-    '<content id="buttons-content" select="button,a"></content>' +
-  '</header>';
+template.innerHTML = [
+  '<style>@import url(' + baseUrl + 'style.css);</style>',
+  '<div class="inner">',
+    '<button class="action-button"></button>',
+    '<content select="h1,h2,h3,h4"></content>',
+    '<content id="buttons-content" select="button,a"></content>',
+  '</div>'
+].join('');
+
+(function loadFont() {
+  var href = packagesBaseUrl + 'gaia-icons/style.css';
+  var existing = document.querySelector('link[href="' + href + '"]');
+  if (existing) { return; }
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
+  link.href = href;
+  document.head.appendChild(link);
+})();
 
 // Register and return the constructor
 module.exports = document.registerElement('gaia-header', { prototype: proto });
@@ -532,6 +510,6 @@ define:typeof module=='object'?function(c){c(_dereq_,exports,module);}:
 function(c){var m={exports:{}},r=function(n){return w[n];};
 w[n]=c(r,m.exports,m)||m.exports;};})('gaia-header',this));
 
-},{"./font-fit":1,"gaia-component-utils":2}]},{},[3])
-(3)
+},{"./font-fit":1}]},{},[2])
+(2)
 });
