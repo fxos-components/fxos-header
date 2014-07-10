@@ -1,20 +1,18 @@
-(function(define){define(function(require,exports,module){
-'use strict';
+(function(define){'use strict';define(function(require,exports,module){
+/*globals define*//*jshint node:true*/
 
 /**
  * Dependencies
  */
 
-var componentUtils = require('gaia-component-utils');
+var fontFit = require('./lib/font-fit');
 
 /**
  * Locals
  */
 
-// Allow baseurl to be overridden (used for demo page)
-var baseUrl = window.GaiaHeaderBaseUrl;
-var packageBase = baseUrl || '/bower_components/gaia_header/';
-var depsBase = (baseUrl || '/') + 'bower_components/';
+var baseComponents = window.COMPONENTS_BASE_URL || 'bower_components/';
+var basePackage = window.GAIA_HEADER_BASE_URL || base.components + 'gaia-header/';
 
 // Extend from the HTMLElement prototype
 var proto = Object.create(HTMLElement.prototype);
@@ -27,13 +25,8 @@ var proto = Object.create(HTMLElement.prototype);
 var actionTypes = {
   menu: true,
   back: true,
-  close: true
+  close: true,
 };
-
-var stylesheets = [
-  { url: depsBase + 'gaia-icons/style.css' },
-  { url: packageBase + 'style.css', scoped: true }
-];
 
 /**
  * Called when the element is first created.
@@ -45,27 +38,74 @@ var stylesheets = [
  */
 proto.createdCallback = function() {
   var shadow = this.createShadowRoot();
+  var tmpl = template.content.cloneNode(true);
 
-  this._template = template.content.cloneNode(true);
-  this._actionButton = this._template.getElementById('action-button');
-  this._header = this._template.getElementById('header');
-  this._configureActionButton();
-  this._actionButton.addEventListener(
-    'click', proto._onActionButtonClick.bind(this)
-  );
+  // Get els
+  this.els = {
+    actionButton: tmpl.querySelector('.action-button'),
+    headings: this.querySelectorAll('h1,h2,h3,h4'),
+    inner: tmpl.querySelector('.inner')
+  };
 
-  shadow.appendChild(this._template);
-  componentUtils.style.call(this, stylesheets);
+  // Action button
+  this.configureActionButton();
+  this.els.actionButton.addEventListener('click',
+    proto.onActionButtonClick.bind(this));
+
+  shadow.appendChild(tmpl);
+  this.styleHack();
+  setTimeout(this.runFontFit.bind(this), 50);
 };
 
 /**
- * Called when one of the attributes on the element changes.
+ * Load in the the component's styles.
+ *
+ * We're working around a few platform bugs
+ * here related to @import in the shadow-dom
+ * stylesheet. When HTML-Imports are ready
+ * we won't have to use @import anymore.
+ *
+ * @private
+ */
+proto.styleHack = function() {
+  var style = document.createElement('style');
+  var self = this;
+
+  this.style.visibility = 'hidden';
+  style.innerHTML = '@import url(' + basePackage + 'style.css);';
+  style.setAttribute('scoped', '');
+  this.classList.add('content');
+  this.appendChild(style);
+
+  // There are platform issues around using
+  // @import inside shadow root. Ensuring the
+  // stylesheet has loaded before putting it in
+  // the shadow root seems to work around this.
+  style.addEventListener('load', function() {
+    self.shadowRoot.appendChild(style.cloneNode(true));
+    self.style.visibility = '';
+    self.styled = true;
+    self.dispatchEvent(new CustomEvent('styled'));
+  });
+};
+
+proto.runFontFit = function() {
+  for (var i = 0; i < this.els.headings.length; i++) {
+    fontFit.reformatHeading(this.els.headings[i]);
+    fontFit.observeHeadingChanges(this.els.headings[i]);
+  }
+};
+
+/**
+ * Called when one of the attributes
+ * on the element changes.
  *
  * @private
  */
 proto.attributeChangedCallback = function(attr, oldVal, newVal) {
   if (attr === 'action') {
-    this._configureActionButton();
+    this.configureActionButton();
+    fontFit.reformatHeading(this._heading);
   }
 };
 
@@ -73,8 +113,8 @@ proto.attributeChangedCallback = function(attr, oldVal, newVal) {
  * When called, trigger the action button.
  */
 proto.triggerAction = function() {
-  if (this._isSupportedAction(this.getAttribute('action'))) {
-    this._actionButton.click();
+  if (this.isSupportedAction(this.getAttribute('action'))) {
+    this.els.actionButton.click();
   }
 };
 
@@ -85,24 +125,17 @@ proto.triggerAction = function() {
  *
  * @private
  */
-proto._configureActionButton = function() {
-  var old = this._actionButton.getAttribute('icon');
+proto.configureActionButton = function() {
+  var old = this.els.actionButton.getAttribute('icon');
   var type = this.getAttribute('action');
+  var supported = this.isSupportedAction(type);
 
-  // TODO: Action button should be
-  // hidden by default then shown
-  // only with supported action types
-  if (!this._isSupportedAction(type)) {
-    this._actionButton.style.display = 'none';
-    return;
-  }
+  this.els.inner.classList.toggle('supported-action', supported);
+  if (!supported) { return; }
 
-  this._actionButton.style.display = 'block';
-  this._actionButton.setAttribute('icon', type);
-  this._actionButton.classList.remove('icon-' + old);
-  this._actionButton.classList.add('icon-' + type);
-
-  console.log(old, type);
+  this.els.actionButton.style.display = 'block';
+  this.els.actionButton.classList.remove('icon-' + old);
+  this.els.actionButton.classList.add('icon-' + type);
 };
 
 /**
@@ -110,7 +143,7 @@ proto._configureActionButton = function() {
  *
  * @private
  */
-proto._isSupportedAction = function(action) {
+proto.isSupportedAction = function(action) {
   return action && actionTypes[action];
 };
 
@@ -124,7 +157,7 @@ proto._isSupportedAction = function(action) {
  * @param  {Event} e
  * @private
  */
-proto._onActionButtonClick = function(e) {
+proto.onActionButtonClick = function(e) {
   var config = { detail: { type: this.getAttribute('action') } };
   var actionEvent = new CustomEvent('action', config);
   setTimeout(this.dispatchEvent.bind(this, actionEvent));
@@ -141,18 +174,30 @@ proto._onActionButtonClick = function(e) {
 // hack until we can import entire custom-elements
 // using HTML Imports (bug 877072).
 var template = document.createElement('template');
-template.innerHTML = '<header id="header">' +
-    '<button id="action-button" class="action-button icon"></button>' +
-    '<menu id="menu-buttons" type="toolbar">' +
-      '<content id="buttons-content" select="button,a"></content>' +
-    '</menu>' +
-    '<content select="h1,h2,h3,h4"></content>' +
-    '<content id="content"></content>' +
-  '</header>';
+template.innerHTML = [
+  '<div class="inner">',
+    '<button class="action-button"></button>',
+    '<content select="h1,h2,h3,h4"></content>',
+    '<content id="buttons-content" select="button,a"></content>',
+  '</div>'
+].join('');
+
+// Load the icon-font into the document <head>
+(function loadFont() {
+  var href = baseComponents + 'gaia-icons/style.css';
+  var existing = document.querySelector('link[href="' + href + '"]');
+  if (existing) { return; }
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
+  link.href = href;
+  document.head.appendChild(link);
+})();
 
 // Register and return the constructor
 module.exports = document.registerElement('gaia-header', { prototype: proto });
 
-});})((function(n,w){return typeof define=='function'&&define.amd?
-define:typeof module=='object'?function(c){c(require,exports,module);}:function(c){
-var m={exports:{}},r=function(n){return w[n];};w[n]=c(r,m.exports,m)||m.exports;};})('gaia-header',this));
+});})((function(n,w){'use strict';return typeof define=='function'&&define.amd?
+define:typeof module=='object'?function(c){c(require,exports,module);}:
+function(c){var m={exports:{}},r=function(n){return w[n];};
+w[n]=c(r,m.exports,m)||m.exports;};})('gaia-header',this));

@@ -1,7 +1,7 @@
 {
   "name": "gaia-header",
-  "version": "0.0.0",
-  "homepage": "https://github.com/wilsonpage/gaia-header",
+  "version": "0.1.6",
+  "homepage": "https://github.com/gaia-components/gaia-header",
   "authors": [
     "Wilson Page <wilsonpage@me.com>"
   ],
@@ -12,10 +12,13 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "karma.conf.js",
+    "package.json",
+    "README.md",
+    "examples"
   ],
   "dependencies": {
-    "gaia-icons": "wilsonpage/gaia-icons",
-    "gaia-component-utils": "wilsonpage/gaia-component-utils"
+    "gaia-icons": "gaia-components/gaia-icons"
   }
 }

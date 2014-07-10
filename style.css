@@ -1,171 +1,162 @@
-/* -------------------------------------------------------------------
-  HEADERS: layout
-  Form factor or Skin dependent styles should NOT be defined here.
-------------------------------------------------------------------- */
+
+/**
+ * Gaia Header
+ */
 
 gaia-header {
   display: block;
-  height: 5rem;
-  z-index: 10;
-  color: var(--text-color-brand, #858585);
-  background: var(--brand-color, #f4f4f4);
-  border-bottom-right-radius: var(--border-radius, 0);
-  border-bottom-left-radius: var(--border-radius, 0);
-  box-shadow: var(--box-shadow, none);
 }
 
-h1 {
-  font-size: 2.3rem;
-  line-height: 5rem;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  display: block;
-  overflow: hidden;
-  margin: 0;
-  padding: 0 1rem;
-  height: 100%;
-  font-weight: lighter;
-  font-style: italic;
-  text-align: center;
-}
+/** Inner
+ ---------------------------------------------------------*/
 
-h1 em {
-  font-weight: 400;
-  font-size: 1.5rem;
-  line-height: 1em;
-  font-style: normal;
-}
-
-menu {
-  height: 100%;
-  float: right;
-  padding: 0;
-  margin: 0;
-}
-
-/* Buttons */
-a,
-button {
-  box-sizing: border-box;
-  position: relative;
-  display: block;
-  overflow: hidden;
-  float: left;
-  min-width: 5rem;
-  width: auto;
-  height: 5rem;
-  border: none;
-  background: none;
-  padding: 0 1rem;
-  margin: 0;
-  font-weight: 400;
-  font-size: 1.5rem;
-  line-height: 5rem;
-  border-radius: 0;
-  text-decoration: none;
-  text-align: center;
-  text-shadow: none;
-  font-style: italic;
-}
-
-a:hover,
-button:hover,
-a:active,
-button:active {
-  background: var(--active-background, rgba(0,0,0,0.7));
-}
-
-/* Pressed state */
-a:focus{
-  outline: none;
-}
-
-button::-moz-focus-inner,
-.button::-moz-focus-inner {
-  outline: none;
-  border: none;
-  margin-top: -0.2rem; /* To fix line-height bug (697451) */
-  padding: 0;
-}
-
-/* Disabled state */
-a[aria-disabled="true"],
-button[disabled] {
-  opacity: 0.3;
-  pointer-events: none;
-}
-
-/* Hidden */
-[hidden] {
-  display: none;
-}
-
-/* right-to-left */
-
-/* We would need an attribute to know if we are using rtl,
- * as styles are scoped
- */
-html[dir="rtl"] menu {
-  float: left;
-}
-
-html[dir="rtl"] a,
-html[dir="rtl"] button {
-  float: right;
-}
-
-html[dir="rtl"] [icon="back"] {
-  transform: rotate(180deg);
-}
-
-a:active,
-button:active,
-a:hover,
-button:hover {
-  background-color: rgba(0,0,0,0.07);
-}
-
-a:focus,
-button:focus {
-  background-color: transparent;
+.inner {
+  display: flex;
+  min-height: 50px;
+  background: var(--header-background, #fff);
 }
 
 /** Action Button
  ---------------------------------------------------------*/
 
+/**
+ * 1. Hidden by default
+ */
+
 .action-button {
-  font-size: 3rem;
-  color: inherit;
+  display: none; /* 1 */
+  align-items: center;
+  min-width: 50px;
+  font-size: 40px;
+  border: none;
+  color: var(--header-nav-button-color, #000);
 }
 
-/* -----------------------------------------------------------------
-  Transitions
------------------------------------------------------------------ */
+/**
+ * .action-supported
+ *
+ * 1. For icon vertical-alignment
+ */
 
-[transition] {
+.action-supported .action-button {
+  display: flex; /* 1 */
+}
+
+/**
+ * :active
+ */
+
+.action-button:active {
+  color: var(--header-nav-button-color-active, #fff);
+}
+
+/** Action Button Icon
+ ---------------------------------------------------------*/
+
+/**
+ * 1. To enable vertical alignment.
+ */
+
+.action-button:before {
   display: block;
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
 }
 
-[transition="slide"] {
-  transform: translateY(0);
-  transition: transform 0.4s ease;
+
+/** Title
+ ---------------------------------------------------------*/
+
+.content h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  margin: 0;
+  padding: 0 16px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  text-align: center;
+  font-weight: lighter;
+  font-style: italic;
+  font-size: 24px;
+  color: var(--header-title-color, #000);
 }
 
-[transition="slide"][hidden] {
-  transform: translateY(-100%);
+/** Buttons
+ ---------------------------------------------------------*/
+
+a,
+button,
+.content a,
+.content button {
+  display: block;
+  border: none;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  min-width: 50px;
+  text-decoration: none;
+  text-align: center;
+  background: none;
+  border-radius: 0;
+  color: var(--header-button-color, #000);
+  font-style: italic;
+  transition: var(--button-transition);
+  transition-delay: var(--button-transition-delay);
 }
 
-[transition="fade"] {
-  opacity: 1;
-  pointer-events: auto;
-  transition: opacity 0.4s ease;
+/**
+ * :active
+ */
+
+a:active,
+button:active,
+.content a:active,
+.content button:active {
+  background: var(--header-button-background, #000);
+  color: var(--header-button-color-active, #fff);
+  transition: none;
 }
 
-[transition="fade"][hidden] {
-  opacity: 0;
-  pointer-events: none;
+/**
+ * :focus
+ */
+
+a:focus,
+.content a:focus {
+  outline: none;
 }
+
+/** Icon Buttons
+ ---------------------------------------------------------*/
+
+.content a[class*="icon-"],
+.content button[class*="icon-"] {
+  color: var(--header-nav-button-color, #000);
+}
+
+/**
+ * :active
+ */
+
+.content a[class*="icon-"]:active,
+.content button[class*="icon-"]:active {
+  color: var(--header-nav-button-color, #000);
+}
+
+/** Icons
+ ---------------------------------------------------------*/
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  font-family: "gaia-icons";
+  font-weight: normal;
+  font-style: normal;
+  text-rendering: optimizeLegibility;
+}
+
+.icon-back:before { content: 'back'; }
+.icon-menu:before { content: 'menu'; }
+.icon-close:before { content: 'close'; }
