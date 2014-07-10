@@ -26,8 +26,5 @@
   },
   "bugs": {
     "url": "https://github.com/gaia-components/gaia-header/issues"
-  },
-  "dependencies": {
-    "gaia-component-utils": "git://github.com/gaia-components/gaia-component-utils"
   }
 }
