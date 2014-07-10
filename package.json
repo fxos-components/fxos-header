@@ -13,7 +13,7 @@
     "gaia-test": "git://github.com/gaia-components/gaia-test"
   },
   "scripts": {
-    "test": "gaia-test ${TEST_SUITE}",
+    "test": "gaia-test-lint && gaia-test-unit && gaia-test-integration",
     "test-unit": "gaia-test-unit",
     "test-integration": "gaia-test-integration",
     "test-lint": "gaia-test-lint .",
