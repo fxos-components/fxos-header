@@ -5,14 +5,14 @@
  * Dependencies
  */
 
-var fontFit = require('./font-fit');
+var fontFit = require('./lib/font-fit');
 
 /**
  * Locals
  */
 
-var packagesBaseUrl = window.packagesBaseUrl || '/bower_components/';
-var baseUrl = window.GaiaHeaderBaseUrl || packagesBaseUrl + 'gaia-header/';
+var baseComponents = window.COMPONENTS_BASE_URL || 'bower_components/';
+var basePackage = window.GAIA_HEADER_BASE_URL || base.components + 'gaia-header/';
 
 // Extend from the HTMLElement prototype
 var proto = Object.create(HTMLElement.prototype);
@@ -72,7 +72,7 @@ proto.styleHack = function() {
   var self = this;
 
   this.style.visibility = 'hidden';
-  style.innerHTML = '@import url(' + baseUrl + 'style.css);';
+  style.innerHTML = '@import url(' + basePackage + 'style.css);';
   style.setAttribute('scoped', '');
   this.classList.add('content');
   this.appendChild(style);
@@ -184,7 +184,7 @@ template.innerHTML = [
 
 // Load the icon-font into the document <head>
 (function loadFont() {
-  var href = packagesBaseUrl + 'gaia-icons/style.css';
+  var href = baseComponents + 'gaia-icons/style.css';
   var existing = document.querySelector('link[href="' + href + '"]');
   if (existing) { return; }
   var link = document.createElement('link');

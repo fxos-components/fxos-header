@@ -321,7 +321,7 @@
 });})((function(n,w){'use strict';return typeof define=='function'&&define.amd?
 define:typeof module=='object'?function(c){c(_dereq_,exports,module);}:
 function(c){var m={exports:{}},r=function(n){return w[n];};
-w[n]=c(r,m.exports,m)||m.exports;};})('./font-fit',this));
+w[n]=c(r,m.exports,m)||m.exports;};})('./lib/font-fit',this));
 
 },{}],2:[function(_dereq_,module,exports){
 (function(define){'use strict';define(function(_dereq_,exports,module){
@@ -331,14 +331,14 @@ w[n]=c(r,m.exports,m)||m.exports;};})('./font-fit',this));
  * Dependencies
  */
 
-var fontFit = _dereq_('./font-fit');
+var fontFit = _dereq_('./lib/font-fit');
 
 /**
  * Locals
  */
 
-var packagesBaseUrl = window.packagesBaseUrl || '/bower_components/';
-var baseUrl = window.GaiaHeaderBaseUrl || packagesBaseUrl + 'gaia-header/';
+var baseComponents = window.COMPONENTS_BASE_URL || 'bower_components/';
+var basePackage = window.GAIA_HEADER_BASE_URL || base.components + 'gaia-header/';
 
 // Extend from the HTMLElement prototype
 var proto = Object.create(HTMLElement.prototype);
@@ -398,7 +398,7 @@ proto.styleHack = function() {
   var self = this;
 
   this.style.visibility = 'hidden';
-  style.innerHTML = '@import url(' + baseUrl + 'style.css);';
+  style.innerHTML = '@import url(' + basePackage + 'style.css);';
   style.setAttribute('scoped', '');
   this.classList.add('content');
   this.appendChild(style);
@@ -510,7 +510,7 @@ template.innerHTML = [
 
 // Load the icon-font into the document <head>
 (function loadFont() {
-  var href = packagesBaseUrl + 'gaia-icons/style.css';
+  var href = baseComponents + 'gaia-icons/style.css';
   var existing = document.querySelector('link[href="' + href + '"]');
   if (existing) { return; }
   var link = document.createElement('link');
@@ -528,6 +528,6 @@ define:typeof module=='object'?function(c){c(_dereq_,exports,module);}:
 function(c){var m={exports:{}},r=function(n){return w[n];};
 w[n]=c(r,m.exports,m)||m.exports;};})('gaia-header',this));
 
-},{"./font-fit":1}]},{},[2])
+},{"./lib/font-fit":1}]},{},[2])
 (2)
 });

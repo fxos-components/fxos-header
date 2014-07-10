@@ -18,7 +18,7 @@
     "test-integration": "gaia-test-integration",
     "test-lint": "gaia-test-lint .",
     "install": "bower install",
-    "dist": "mkdir -p dist && browserify script.js --outfile ./dist/script.js --standalone GaiaHeader"
+    "build": "mkdir -p dist && browserify script.js --outfile ./dist/script.js --standalone GaiaHeader"
   },
   "repository": {
     "type": "git",

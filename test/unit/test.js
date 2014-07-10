@@ -10,7 +10,7 @@ suite('GaiaHeader', function() {
     this.container = document.createElement('div');
     this.sandbox.spy(HTMLElement.prototype, 'addEventListener');
 
-    realGaiaHeaderFontFit = window['./font-fit'];
+    realGaiaHeaderFontFit = window['./lib/font-fit'];
     window['./font-fit'] = window['./test/mocks/mock_font_fit'];
   });
 
