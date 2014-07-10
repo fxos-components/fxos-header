@@ -1,32 +1,6 @@
 /*global assert,suite,setup,teardown,sinon,test*/
 'use strict';
 
-
-function cssReady(fn, link) {
-
-  var d = document,
-  t = d.createStyleSheet,
-  r = t ? 'rules' : 'cssRules',
-  s = t ? 'styleSheet' : 'sheet',
-  l = d.getElementsByTagName('link');
-
-  // passed link or last link node
-  link || (link = l[l.length - 1]);
-
-  function check() {
-    try {
-      return link && link[s] && link[s][r] && link[s][r][0];
-    } catch(e) {
-      return false;
-    }
-  }
-
-  (function poll() {
-    check() && setTimeout(fn, 0) || setTimeout(poll, 100);
-  })();
-
-}
-
 suite('GaiaHeader', function() {
   var realGaiaHeaderFontFit;
 
@@ -106,7 +80,7 @@ suite('GaiaHeader', function() {
   // to gaia-header whilst in the test-runner,
   // so these tests are failing. Assuming this is a
   // platform issue, but needs more investigation.
-  suite.skip('style', function(done) {
+  suite('style', function(done) {
     setup(function(done) {
       this.clock.restore();
 
@@ -126,41 +100,11 @@ suite('GaiaHeader', function() {
 
       // Insert into DOM to get styling
       document.body.appendChild(this.element);
-
-      // cssReady(done, style);
-      // style.onload = function() {
-      //   console.log('loaded');
-      //   done();
-      // };
-
-      // Temporary workaround for component_utils style loading.
-      // We need to wait for the stylesheet to fully load due to the
-      // async insertion.
-      // var styles = this.element.querySelectorAll('style');
-      // styles[1].addEventListener('load', function() {
-      //   var shadowStyles = this.element.shadowRoot.querySelectorAll('style');
-      //   var loaded = 0;
-
-      //   // console.log(shadowStyles);
-
-      //   // shadowStyles[0].onLoad = onLoad;
-      //   shadowStyles[1].onLoad = onLoad;
-
-      //   function onLoad() {
-      //     // if (++loaded === shadowStyles.length) {
-      //       done();
-      //     // }
-      //   }
-      // }.bind(this));
     });
 
     teardown(function() {
       document.body.removeChild(this.element);
     });
-
-    // test('Should be of expected height', function() {
-    //   assert.equal(this.element.offsetHeight, 57);
-    // });
 
     test('Should place title after action button', function() {
       var button = this.element.shadowRoot.querySelector('.action-button');
@@ -188,7 +132,7 @@ suite('GaiaHeader', function() {
       assert.equal(buttonRight, elementRight);
     });
 
-    test.skip('Should never overlap buttons with title', function() {
+    test('Should never overlap buttons with title', function() {
       var button = this.element.querySelector('#my-button');
       var otherButton = document.createElement('button');
       var title = this.element.querySelector('h1');

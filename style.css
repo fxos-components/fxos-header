@@ -7,6 +7,9 @@ gaia-header {
   display: block;
 }
 
+/** Inner
+ ---------------------------------------------------------*/
+
 .inner {
   display: flex;
   min-height: 50px;
