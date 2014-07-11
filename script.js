@@ -12,7 +12,7 @@ var fontFit = require('./lib/font-fit');
  */
 
 var baseComponents = window.COMPONENTS_BASE_URL || 'bower_components/';
-var base = window.GAIA_HEADER_BASE_URL || base.components + 'gaia-header/';
+var base = window.GAIA_HEADER_BASE_URL || baseComponents + 'gaia-header/';
 
 // Extend from the HTMLElement prototype
 var proto = Object.create(HTMLElement.prototype);
