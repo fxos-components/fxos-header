@@ -503,8 +503,7 @@ var template = document.createElement('template');
 template.innerHTML = [
   '<div class="inner">',
     '<button class="action-button"></button>',
-    '<content select="h1,h2,h3,h4"></content>',
-    '<content id="buttons-content" select="button,a"></content>',
+    '<content></content>',
   '</div>'
 ].join('');
 
