@@ -8,4 +8,4 @@ $ bower install gaia-components/gaia-header
 
 ## Examples
 
-- [Example](http://gaia-components.github.io/gaia-header/examples/)
+- [Example](http://gaia-components.github.io/gaia-header/)

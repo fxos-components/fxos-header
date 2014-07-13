@@ -12,7 +12,7 @@ var fontFit = require('./lib/font-fit');
  */
 
 var baseComponents = window.COMPONENTS_BASE_URL || 'bower_components/';
-var basePackage = window.GAIA_HEADER_BASE_URL || base.components + 'gaia-header/';
+var base = window.GAIA_HEADER_BASE_URL || baseComponents + 'gaia-header/';
 
 // Extend from the HTMLElement prototype
 var proto = Object.create(HTMLElement.prototype);
@@ -72,7 +72,7 @@ proto.styleHack = function() {
   var self = this;
 
   this.style.visibility = 'hidden';
-  style.innerHTML = '@import url(' + basePackage + 'style.css);';
+  style.innerHTML = '@import url(' + base + 'style.css);';
   style.setAttribute('scoped', '');
   this.classList.add('content');
   this.appendChild(style);
@@ -177,8 +177,7 @@ var template = document.createElement('template');
 template.innerHTML = [
   '<div class="inner">',
     '<button class="action-button"></button>',
-    '<content select="h1,h2,h3,h4"></content>',
-    '<content id="buttons-content" select="button,a"></content>',
+    '<content></content>',
   '</div>'
 ].join('');
 
