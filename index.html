@@ -10,6 +10,7 @@
       padding: 0;
       font-size: 17px;
       background-color: #efefef;
+      font-family: sans-serif;
     }
     body {
       background: none;
@@ -21,6 +22,10 @@
       font-size: 2rem;
       margin: 1.5rem 3rem;
     }
+
+    [class*="icon-"]:before {
+      font-size: 28px
+    }
   </style>
   <script>
     window.GAIA_HEADER_BASE_URL = './';
@@ -29,112 +34,52 @@
 </head>
 
 <body>
-  <gaia-header id="header1">
-    <h1 id="title1" data-l10n-id="title">Header</h1>
-    <button class="icon-preview-share"></button>
+  <gaia-header action="back">
+    <h1>Action 'back'</h1>
   </gaia-header>
 
-  <gaia-header id="header2">
-    <h1 id="title2" data-l10n-id="title">Messages</h1>
-    <button id="edit2" icon="edit"></button>
-    <button id="add2" icon="add"></button>
+  <gaia-header action="menu">
+    <h1>Action 'menu'</h1>
   </gaia-header>
 
-  <gaia-header id="header3" action="back">
-    <h1 id="title3">Mark Alfenito</h1>
-    <button id="edit3" icon="edit"></button>
+  <gaia-header action="close">
+    <h1>Action 'close'</h1>
   </gaia-header>
 
-  <gaia-header id="header4" action="menu">
-    <h1 id="title4">Inbox <em>(2)</em></h1>
-    <button id="edit4" icon="edit"></button>
-    <button id="add4" icon="add"></button>
+  <gaia-header id="header">
+    <button>Custom Back Button</button>
+    <h1 id="title">Customised</h1>
+    <button id="done8" class="icon-preview-options"></button>
+    <button id="edit8" class="icon-preview-share"></button>
+    <button>Done</button>
   </gaia-header>
 
-  <gaia-header id="header5" action="close">
-    <h1 id="title5">Title</h1>
-    <button id="done5">done</button>
-  </gaia-header>
+  <div id="message"></div>
 
-  <gaia-header id="header6" action="back" skin="dark">
-    <h1 id="title6">Skin: dark</h1>
-    <button id="edit6" icon="edit"></button>
-    <button id="done6">done</button>
-  </gaia-header>
+  <p><em>The is a bug that breaks shadow-dom layout when the `textContent` of a projected-content node is changed. Use the buttons below to break the layout of the last header. If the element is reflowed (by showing and hiding) its layout is fixed.</em></p>
 
-  <gaia-header id="header7" action="back" skin="organic">
-    <h1 id="title7">Skin: organic</h1>
-    <button id="edit7" icon="edit"></button>
-    <button id="done7">done</button>
-  </gaia-header>
-
-  <gaia-header id="header8" action="back" skin="comms">
-    <h1 id="title8">Skin: comms</h1>
-    <button id="edit8" icon="edit"></button>
-    <button id="done8">done</button>
-  </gaia-header>
-
-  <div id="message">Event message goes here</div>
+  <button id="breakit">Break it</button>
+  <button id="fixit">Fix it</button>
 
   <script>
-    window.onload = function() {
-      document.getElementById('edit2').addEventListener('click', function(e) {
-        document.getElementById('message').innerHTML = 'header2: Edit!';
-      });
-      document.getElementById('add2').addEventListener('click', function(e) {
-        document.getElementById('message').innerHTML = 'header2: Add!';
-      });
-      document.getElementById('header3').addEventListener('action', function(e) {
-        document.getElementById('message').innerHTML = 'header3: ' + e.detail.type;
-      });
-      document.getElementById('edit3').addEventListener('click', function(e) {
-        document.getElementById('message').innerHTML = 'header3: Edit!';
-      });
-      document.getElementById('header4').addEventListener('action', function(e) {
-        document.getElementById('message').innerHTML = 'header4: ' + e.detail.type;
-      });
-      document.getElementById('edit4').addEventListener('click', function(e) {
-        document.getElementById('message').innerHTML = 'header4: Edit!';
-      });
-      document.getElementById('add4').addEventListener('click', function(e) {
-        document.getElementById('message').innerHTML = 'header4: Add!';
-      });
-      document.getElementById('header5').addEventListener('action', function(e) {
-        document.getElementById('message').innerHTML = 'header5: ' + e.detail.type;
-      });
-      document.getElementById('done5').addEventListener('click', function(e) {
-        document.getElementById('message').innerHTML = 'header5: Done!';
-        var h1 = document.querySelector('#header5 h1');
-        h1.textContent = 'Done!';
-      });
-      document.getElementById('header6').addEventListener('action', function(e) {
-        document.getElementById('message').innerHTML = 'header6: ' + e.detail.type;
-      });
-      document.getElementById('edit6').addEventListener('click', function(e) {
-        document.getElementById('message').innerHTML = 'header6: Edit!';
-      });
-      document.getElementById('done6').addEventListener('click', function(e) {
-        document.getElementById('message').innerHTML = 'header6: Done!';
-      });
-      document.getElementById('header7').addEventListener('action', function(e) {
-        document.getElementById('message').innerHTML = 'header7: ' + e.detail.type;
-      });
-      document.getElementById('edit7').addEventListener('click', function(e) {
-        document.getElementById('message').innerHTML = 'header7: Edit!';
-      });
-      document.getElementById('done7').addEventListener('click', function(e) {
-        document.getElementById('message').innerHTML = 'header7: Done!';
-      });
-      document.getElementById('header8').addEventListener('action', function(e) {
-        document.getElementById('message').innerHTML = 'header8: ' + e.detail.type;
-      });
-      document.getElementById('edit8').addEventListener('click', function(e) {
-        document.getElementById('message').innerHTML = 'header8: Edit!';
-      });
-      document.getElementById('done8').addEventListener('click', function(e) {
-        document.getElementById('message').innerHTML = 'header8: Done!';
-      });
-    };
+  var els = document.querySelectorAll('gaia-header');
+  [].forEach.call(els, function(el, i) {
+    el.addEventListener('action', function(e) {
+      var num = i + 1;
+      message.textContent = 'header (' + num + ') action (' + e.detail.type + ')';
+    });
+  });
+
+  breakit.addEventListener('click', function(e) {
+    title.textContent = 'I\'m broken :(';
+  });
+
+  fixit.addEventListener('click', function(e) {
+    title.textContent = 'Forcing reflow fixes me :\'(';
+    header.style.display = 'none';
+    var reflow = header.offsetTop;
+    header.style.display = '';
+  });
   </script>
 </body>
 </html>
