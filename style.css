@@ -76,7 +76,7 @@ gaia-header {
   text-overflow: ellipsis;
   overflow: hidden;
   text-align: center;
-  font-weight: lighter;
+  font-weight: 300;
   font-style: italic;
   font-size: 24px;
   color: var(--header-title-color, #000);
@@ -132,8 +132,11 @@ a:focus,
 /** Icon Buttons
  ---------------------------------------------------------*/
 
-.content a[class*="icon-"],
-.content button[class*="icon-"] {
+/**
+ * Icons are a different color to text
+ */
+
+.content [class*="icon-"] {
   color: var(--header-nav-button-color, #000);
 }
 
@@ -141,16 +144,15 @@ a:focus,
  * :active
  */
 
-.content a[class*="icon-"]:active,
-.content button[class*="icon-"]:active {
-  color: var(--header-nav-button-color, #000);
+.content [class*="icon-"]:active {
+  color: var(--header-nav-button-color-active, #fff);
 }
 
 /** Icons
  ---------------------------------------------------------*/
 
 [class^="icon-"]:before,
-[class*=" icon-"]:before {
+[class*="icon-"]:before {
   font-family: "gaia-icons";
   font-weight: normal;
   font-style: normal;
