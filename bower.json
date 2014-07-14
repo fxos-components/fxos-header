@@ -13,12 +13,12 @@
     "bower_components",
     "test",
     "tests",
+    "index.html",
     "karma.conf.js",
     "package.json",
-    "README.md",
-    "examples"
+    "README.md"
   ],
   "dependencies": {
-    "gaia-icons": "gaia-components/gaia-icons#0.2.0"
+    "gaia-icons": "gaia-components/gaia-icons#0.2.1"
   }
 }
