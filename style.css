@@ -108,6 +108,15 @@ button,
 }
 
 /**
+ * [hidden]
+ */
+
+.content a[hidden],
+.content button[hidden] {
+  display: none;
+}
+
+/**
  * :active
  */
 
