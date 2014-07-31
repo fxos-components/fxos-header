@@ -19,6 +19,6 @@
     "README.md"
   ],
   "dependencies": {
-    "gaia-icons": "gaia-components/gaia-icons#0.2.1"
+    "gaia-icons": "gaia-components/gaia-icons"
   }
 }
