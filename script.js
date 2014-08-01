@@ -172,8 +172,10 @@ proto.onActionButtonClick = function(e) {
 var template = document.createElement('template');
 template.innerHTML = [
   '<div class="inner">',
-    '<button class="action-button"></button>',
-    '<content></content>',
+    '<button class="action-button" title="foo">',
+      '<content select=".l10n-action-button"></content>',
+    '</button>',
+    '<content select="h1,h2,h3,h4,a,button"></content>',
   '</div>'
 ].join('');
 
