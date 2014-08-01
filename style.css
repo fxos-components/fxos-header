@@ -38,7 +38,7 @@ gaia-header {
  * 1. For icon vertical-alignment
  */
 
-.action-supported .action-button {
+.supported-action .action-button {
   display: flex; /* 1 */
 }
 

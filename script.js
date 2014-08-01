@@ -129,13 +129,9 @@ proto.configureActionButton = function() {
   var old = this.els.actionButton.getAttribute('icon');
   var type = this.getAttribute('action');
   var supported = this.isSupportedAction(type);
-
-  this.els.inner.classList.toggle('supported-action', supported);
-  if (!supported) { return; }
-
-  this.els.actionButton.style.display = 'block';
   this.els.actionButton.classList.remove('icon-' + old);
-  this.els.actionButton.classList.add('icon-' + type);
+  this.els.inner.classList.toggle('supported-action', supported);
+  if (supported) { this.els.actionButton.classList.add('icon-' + type); }
 };
 
 /**
