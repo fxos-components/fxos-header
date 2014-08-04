@@ -380,7 +380,9 @@ proto.createdCallback = function() {
 
   shadow.appendChild(tmpl);
   this.styleHack();
-  setTimeout(this.runFontFit.bind(this), 50);
+
+  // Font fit must be run only once the element is styled
+  this.addEventListener('styled', this.runFontFit.bind(this));
 };
 
 /**
@@ -518,7 +520,9 @@ template.innerHTML = [
 })();
 
 // Register and return the constructor
+// and expose `protoype` (bug 1048339)
 module.exports = document.registerElement('gaia-header', { prototype: proto });
+module.exports.prototype = proto;
 
 });})((function(n,w){'use strict';return typeof define=='function'&&define.amd?
 define:typeof module=='object'?function(c){c(_dereq_,exports,module);}:

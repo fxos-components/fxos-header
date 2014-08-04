@@ -28,7 +28,7 @@ gaia-header {
   position: relative;
   align-items: center;
   min-width: 50px;
-  font-size: 40px;
+  font-size: 30px;
   border: none;
   color: var(--header-nav-button-color, #000);
 }

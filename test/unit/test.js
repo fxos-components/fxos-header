@@ -1,7 +1,9 @@
-/*global assert,suite,setup,teardown,sinon,test*/
-'use strict';
+/*global window,assert,suite,setup,teardown,sinon,test*/
 
 suite('GaiaHeader', function() {
+  'use strict';
+
+  var GaiaHeader = window['gaia-header'];
   var realGaiaHeaderFontFit;
 
   setup(function() {
@@ -76,6 +78,17 @@ suite('GaiaHeader', function() {
     assert.equal(callback.args[0][0].detail.type, 'menu');
   });
 
+  test('It calls `runFontFit` only after the element is styled', function() {
+    this.sandbox.stub(GaiaHeader.prototype, 'runFontFit');
+
+    this.container.innerHTML = '<gaia-header action="menu"></gaia-header>';
+    var element = this.container.firstElementChild;
+
+    sinon.assert.notCalled(GaiaHeader.prototype.runFontFit);
+    element.dispatchEvent(new CustomEvent('styled'));
+    sinon.assert.called(GaiaHeader.prototype.runFontFit);
+  });
+
   // Shadow DOM styles seems not to be getting applied
   // to gaia-header whilst in the test-runner,
   // so these tests are failing. Assuming this is a
@@ -141,13 +154,18 @@ suite('GaiaHeader', function() {
       otherButton.textContent = 'another button';
       this.element.appendChild(otherButton);
 
+      // Force reflow to workaround bug 1022866
+      this.element.style.display = 'none';
+      this.element.offsetTop;
+      this.element.style.display = '';
+
       // Get positions
       var buttonLeft = button.getBoundingClientRect().left;
       var otherButtonleft = otherButton.getBoundingClientRect().left;
       var titleRight = title.getBoundingClientRect().right;
 
-      assert.isTrue(titleRight <= buttonLeft);
-      assert.isTrue(titleRight <= otherButtonleft);
+      assert.isTrue(titleRight <= buttonLeft, titleRight + ' <= ' + buttonLeft);
+      assert.isTrue(titleRight <= otherButtonleft, titleRight + ' <= ' +  otherButtonleft);
     });
   });
 
