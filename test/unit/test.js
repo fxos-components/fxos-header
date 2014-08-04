@@ -154,13 +154,18 @@ suite('GaiaHeader', function() {
       otherButton.textContent = 'another button';
       this.element.appendChild(otherButton);
 
+      // Force reflow to workaround bug 1022866
+      this.element.style.display = 'none';
+      this.element.offsetTop;
+      this.element.style.display = '';
+
       // Get positions
       var buttonLeft = button.getBoundingClientRect().left;
       var otherButtonleft = otherButton.getBoundingClientRect().left;
       var titleRight = title.getBoundingClientRect().right;
 
-      assert.isTrue(titleRight <= buttonLeft);
-      assert.isTrue(titleRight <= otherButtonleft);
+      assert.isTrue(titleRight <= buttonLeft, titleRight + ' <= ' + buttonLeft);
+      assert.isTrue(titleRight <= otherButtonleft, titleRight + ' <= ' +  otherButtonleft);
     });
   });
 
