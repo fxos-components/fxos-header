@@ -184,7 +184,8 @@ a:focus,
  * Icons are a different color to text
  */
 
-.content [class*="icon-"] {
+.content .gi,
+.content .icon {
   color: var(--header-nav-button-color, #000);
 }
 
@@ -192,7 +193,8 @@ a:focus,
  * :active
  */
 
-.content [class*="icon-"]:active {
+.content .gi:active,
+.content .icon:active {
   color: var(--header-nav-button-color-active, #fff);
 }
 
