@@ -1,6 +1,7 @@
 {
   "files": [
     "test/unit/setup.js",
+    "bower_components/gaia-icons/script.js",
     "lib/font-fit.js",
     "script.js",
     "test/unit/mocks/mock_font_fit.js",
