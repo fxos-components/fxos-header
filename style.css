@@ -35,7 +35,7 @@ gaia-header[hidden] {
   display: none; /* 1 */
   position: relative;
   align-items: center;
-  min-width: 50px;
+  width: 50px;
   font-size: 30px;
   border: none;
   color: var(--header-nav-button-color, #000);
