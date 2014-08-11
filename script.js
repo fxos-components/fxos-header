@@ -190,7 +190,7 @@ template.innerHTML = [
 // Register and return the constructor
 // and expose `protoype` (bug 1048339)
 module.exports = document.registerElement('gaia-header', { prototype: proto });
-module.exports.prototype = proto;
+module.exports._prototype = proto;
 
 });})((function(n,w){'use strict';return typeof define=='function'&&define.amd?
 define:typeof module=='object'?function(c){c(require,exports,module);}:

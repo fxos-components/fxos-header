@@ -79,14 +79,14 @@ suite('GaiaHeader', function() {
   });
 
   test('It calls `runFontFit` only after the element is styled', function() {
-    this.sandbox.stub(GaiaHeader.prototype, 'runFontFit');
+    this.sandbox.stub(GaiaHeader._prototype, 'runFontFit');
 
     this.container.innerHTML = '<gaia-header action="menu"></gaia-header>';
     var element = this.container.firstElementChild;
 
-    sinon.assert.notCalled(GaiaHeader.prototype.runFontFit);
+    sinon.assert.notCalled(GaiaHeader._prototype.runFontFit);
     element.dispatchEvent(new CustomEvent('styled'));
-    sinon.assert.called(GaiaHeader.prototype.runFontFit);
+    sinon.assert.called(GaiaHeader._prototype.runFontFit);
   });
 
   // Shadow DOM styles seems not to be getting applied
