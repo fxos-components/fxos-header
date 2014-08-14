@@ -114,7 +114,6 @@ gaia-header[hidden] {
 .content h1 {
   flex: 1;
   margin: 0;
-  padding: 0 16px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
