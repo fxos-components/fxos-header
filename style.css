@@ -105,10 +105,13 @@ gaia-header[hidden] {
 /** Title
  ---------------------------------------------------------*/
 
+/**
+ * 1. Vertically center text. We can't use flexbox
+ *    here as it breaks text-overflow ellipsis
+ *    without an inner div.
+ */
+
 .content h1 {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex: 1;
   margin: 0;
   padding: 0 16px;
@@ -116,6 +119,7 @@ gaia-header[hidden] {
   text-overflow: ellipsis;
   overflow: hidden;
   text-align: center;
+  line-height: 50px; /* 1 */
   font-weight: 300;
   font-style: italic;
   font-size: 24px;
