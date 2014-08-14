@@ -22,14 +22,11 @@
       font-size: 2rem;
       margin: 1.5rem 3rem;
     }
-
-    [class*="icon-"]:before {
-      font-size: 28px
-    }
   </style>
   <script>
     window.GAIA_HEADER_BASE_URL = './';
   </script>
+  <!-- <link href="bower_components/gaia-icons/style-embedded.css" type="text/css" rel="stylesheet"> -->
   <script src="dist/script.js"></script>
 </head>
 
@@ -52,8 +49,9 @@
   </gaia-header>
 
   <gaia-header>
-    <h1>Usage</h1>
-    <button class="icon-settings"></button>
+    <h1>really long title really long title really long title really long title really long title really long title really long title really long title really long title really long title really long title</h1>
+    <a data-icon="email"></a>
+    <button data-icon="settings"></button>
   </gaia-header>
 
   <gaia-header action="close">
@@ -65,8 +63,8 @@
   <gaia-header id="header">
     <button>Custom Back Button</button>
     <h1 id="title">Customised</h1>
-    <button id="done8" class="icon-preview-options"></button>
-    <button id="edit8" class="icon-preview-share"></button>
+    <button id="done8" data-icon="more"></button>
+    <button id="edit8" data-icon="share"></button>
     <button>Done</button>
   </gaia-header>
 

@@ -26,5 +26,8 @@
   },
   "bugs": {
     "url": "https://github.com/gaia-components/gaia-header/issues"
+  },
+  "browser": {
+    "gaia-icons": "./bower_components/gaia-icons/script.js"
   }
 }
