@@ -314,6 +314,11 @@ w[n]=c(r,m.exports,m)||m.exports;};})('gaia-icons',this));
         styleOptions.contentWidth - styleOptions.paddingRight -
         styleOptions.paddingLeft;
 
+      // If there is no space to the left or right of the title
+      // we apply padding so that it's not flush up against edge
+      heading.classList.toggle('flush-left', !sideSpaceLeft);
+      heading.classList.toggle('flush-right', !sideSpaceRight);
+
       // If both margins have the same width, the header is already centered.
       if (sideSpaceLeft === sideSpaceRight) {
         return;

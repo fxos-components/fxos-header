@@ -131,11 +131,13 @@ suite('font-fit.js', function() {
 
   setup(function() {
     GaiaHeaderFontFit = window['./font-fit'];
+    this.sandbox = sinon.sandbox.create();
     text = '';
   });
 
   teardown(function() {
     GaiaHeaderFontFit.resetCache();
+    this.sandbox.restore();
   });
 
   suite('Global', function() {
@@ -372,12 +374,14 @@ suite('font-fit.js', function() {
   });
 
   suite('GaiaHeaderFontFit.centerTextToScreen', function() {
-    suiteSetup(function() {
+    setup(function() {
       // Body often has a default margin which needs to be removed
       // for the centering logic to work like it does in apps.
       document.body.style.margin = '0';
 
-      sinon.stub(GaiaHeaderFontFit, '_getWindowWidth', function() {
+      // We have to stub window width incase tests
+      // are run inside different window sizes
+      this.sandbox.stub(GaiaHeaderFontFit, '_getWindowWidth', function() {
         return kContainerWidth + leftButtonWidth + rightButtonWidth;
       });
     });
@@ -470,6 +474,37 @@ suite('font-fit.js', function() {
       GaiaHeaderFontFit.reformatHeading(el);
 
       // Clean up.
+      document.body.removeChild(el.parentNode);
+    });
+
+    test('It adds padding if text is flush with container', function() {
+      var el = setupHeaderElement();
+
+      // Set title to fill window width
+      el.style.width = GaiaHeaderFontFit._getWindowWidth() + 'px';
+
+      el.textContent = 'Fooovadvdaivdanviadvnadivnadvinadivnadviadnvadivadivinadiviadvnadivnadvinadivnadviadnvadivadivinadiviadvnadivnadvinadivnadviadnvadivadivinadivi';
+
+      document.body.appendChild(el.parentNode);
+
+      GaiaHeaderFontFit.reformatHeading(el);
+      assert.isTrue(el.classList.contains('flush-left'));
+      assert.isTrue(el.classList.contains('flush-right'));
+
+      document.body.removeChild(el.parentNode);
+    });
+
+    test('It adds padding if text is flush with container', function() {
+      var el = setupHeaderElementWithButtons();
+
+      el.textContent = 'Fooovadvdaivdanviadvnadivnadvinadivnadviadnvadivadivinadiviadvnadivnadvinadivnadviadnvadivadivinadiviadvnadivnadvinadivnadviadnvadivadivinadivi';
+
+      document.body.appendChild(el.parentNode);
+
+      GaiaHeaderFontFit.reformatHeading(el);
+      assert.isFalse(el.classList.contains('flush-left'));
+      assert.isFalse(el.classList.contains('flush-right'));
+
       document.body.removeChild(el.parentNode);
     });
 

@@ -125,6 +125,30 @@ gaia-header[hidden] {
   color: var(--header-title-color, #000);
 }
 
+/**
+ * .flush-left
+ *
+ * When the fitted text is flush with the
+ * edge of the left edge of the container
+ * we pad it in a bit.
+ */
+
+.content h1.flush-left {
+  padding-left: 10px;
+}
+
+/**
+ * .flush-right
+ *
+ * When the fitted text is flush with the
+ * edge of the right edge of the container
+ * we pad it in a bit.
+ */
+
+.content h1.flush-right {
+  padding-right: 10px; /* 1 */
+}
+
 /** Buttons
  ---------------------------------------------------------*/
 

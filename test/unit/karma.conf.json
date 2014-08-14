@@ -14,6 +14,10 @@
     {
       "pattern": "bower_components/gaia-icons/style.css",
       "included": false
+    },
+    {
+      "pattern": "bower_components/gaia-icons/fonts/gaia-icons.ttf",
+      "included": false
     }
   ]
 }
