@@ -73,6 +73,12 @@ proto.createdCallback = function() {
  * stylesheet. When HTML-Imports are ready
  * we won't have to use @import anymore.
  *
+ * The `-content` class is added to the element
+ * as a simple 'polyfill' for `::content` selector.
+ * We can use `.-content` in our CSS to indicate
+ * we're styling 'distributed' nodes. This will
+ * make the transition to `::content` a lot simpler.
+ *
  * @private
  */
 proto.styleHack = function() {
@@ -82,7 +88,7 @@ proto.styleHack = function() {
   this.style.visibility = 'hidden';
   style.innerHTML = '@import url(' + base + 'style.css);';
   style.setAttribute('scoped', '');
-  this.classList.add('content');
+  this.classList.add('-content');
   this.appendChild(style);
 
   // There are platform issues around using

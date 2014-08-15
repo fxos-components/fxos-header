@@ -93,7 +93,7 @@ gaia-header[hidden] {
  *   </gaia-header>
  */
 
-.content .l10n-action {
+.-content .l10n-action {
   position: absolute;
   left: 0;
   top: 0;
@@ -111,7 +111,7 @@ gaia-header[hidden] {
  *    without an inner div.
  */
 
-.content h1 {
+.-content h1 {
   flex: 1;
   margin: 0;
   white-space: nowrap;
@@ -133,7 +133,7 @@ gaia-header[hidden] {
  * we pad it in a bit.
  */
 
-.content h1.flush-left {
+.-content h1.flush-left {
   padding-left: 10px;
 }
 
@@ -145,7 +145,7 @@ gaia-header[hidden] {
  * we pad it in a bit.
  */
 
-.content h1.flush-right {
+.-content h1.flush-right {
   padding-right: 10px; /* 1 */
 }
 
@@ -154,8 +154,8 @@ gaia-header[hidden] {
 
 a,
 button,
-.content a,
-.content button {
+.-content a,
+.-content button {
   box-sizing: border-box;
   display: flex;
   border: none;
@@ -182,8 +182,8 @@ button,
  * [hidden]
  */
 
-.content a[hidden],
-.content button[hidden] {
+.-content a[hidden],
+.-content button[hidden] {
   display: none;
 }
 
@@ -193,8 +193,8 @@ button,
 
 a:active,
 button:active,
-.content a:active,
-.content button:active {
+.-content a:active,
+.-content button:active {
   background: var(--header-button-background, #000);
   color: var(--header-button-color-active, #fff);
   transition: none;
@@ -205,7 +205,7 @@ button:active,
  */
 
 a:focus,
-.content a:focus {
+.-content a:focus {
   outline: none;
 }
 
@@ -216,8 +216,8 @@ a:focus,
  * Icons are a different color to text
  */
 
-.content .icon,
-.content [data-icon] {
+.-content .icon,
+.-content [data-icon] {
   color: var(--header-nav-button-color, #000);
 }
 
@@ -225,8 +225,8 @@ a:focus,
  * :active
  */
 
-.content .icon,
-.content [data-icon]:active {
+.-content .icon,
+.-content [data-icon]:active {
   color: var(--header-nav-button-color-active, #fff);
 }
 
