@@ -89,6 +89,19 @@ suite('GaiaHeader', function() {
     sinon.assert.called(GaiaHeader._prototype.runFontFit);
   });
 
+  test('It fails silently when `window.getComputedStyle()` returns null (ie. hidden iframe)', function(done) {
+    this.sandbox.stub(window, 'getComputedStyle').returns(null);
+    this.container.innerHTML = '<gaia-header action="menu"><h1>title</h1></gaia-header>';
+    var element = this.container.firstElementChild;
+
+    element.addEventListener('styled', function() {
+      done();
+    });
+
+    // Insert into DOM to get styling
+    document.body.appendChild(element);
+  });
+
   // Shadow DOM styles seems not to be getting applied
   // to gaia-header whilst in the test-runner,
   // so these tests are failing. Assuming this is a
@@ -153,11 +166,6 @@ suite('GaiaHeader', function() {
       title.textContent = 'really long title really long title really long title';
       otherButton.textContent = 'another button';
       this.element.appendChild(otherButton);
-
-      // Force reflow to workaround bug 1022866
-      this.element.style.display = 'none';
-      this.element.offsetTop;
-      this.element.style.display = '';
 
       // Get positions
       var buttonLeft = button.getBoundingClientRect().left;

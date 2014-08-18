@@ -74,6 +74,14 @@ w[n]=c(r,m.exports,m)||m.exports;};})('gaia-icons',this));
       // Cache the element style properties to avoid reflows.
       var style = this._getStyleProperties(heading);
 
+      // If the document is inside a hidden iframe
+      // `window.getComputedStyle()` returns null,
+      // and various canvas APIs throw errors; so we
+      // must abort here to avoid exceptions.
+      if (!style) {
+        return;
+      }
+
       // Perform auto-resize and center.
       style.textWidth = this._autoResizeElement(heading, style);
       this._centerTextToScreen(heading, style);
@@ -239,14 +247,14 @@ w[n]=c(r,m.exports,m)||m.exports;};})('gaia-icons',this));
      * @private
      */
     _getStyleProperties: function(heading) {
-      var style = window.getComputedStyle(heading);
+      var style = getComputedStyle(heading) || {};
       var contentWidth = this._getContentWidth(style);
       if (isNaN(contentWidth)) {
         contentWidth = 0;
       }
 
       return {
-        fontFamily: style.fontFamily,
+        fontFamily: style.fontFamily || 'unknown',
         contentWidth: contentWidth,
         paddingRight: parseInt(style.paddingRight, 10),
         paddingLeft: parseInt(style.paddingLeft, 10),
@@ -309,6 +317,7 @@ w[n]=c(r,m.exports,m)||m.exports;};})('gaia-icons',this));
         styleOptions.paddingLeft;
 
       // Get the amount of space on each side of the header text element.
+      var tightText = styleOptions.textWidth > (styleOptions.contentWidth - 30);
       var sideSpaceLeft = styleOptions.offsetLeft;
       var sideSpaceRight = this._getWindowWidth() - sideSpaceLeft -
         styleOptions.contentWidth - styleOptions.paddingRight -
@@ -316,8 +325,8 @@ w[n]=c(r,m.exports,m)||m.exports;};})('gaia-icons',this));
 
       // If there is no space to the left or right of the title
       // we apply padding so that it's not flush up against edge
-      heading.classList.toggle('flush-left', !sideSpaceLeft);
-      heading.classList.toggle('flush-right', !sideSpaceRight);
+      heading.classList.toggle('flush-left', tightText && !sideSpaceLeft);
+      heading.classList.toggle('flush-right', tightText && !sideSpaceRight);
 
       // If both margins have the same width, the header is already centered.
       if (sideSpaceLeft === sideSpaceRight) {
