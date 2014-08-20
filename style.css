@@ -248,6 +248,7 @@ a:focus,
   font-family: "gaia-icons";
   font-style: normal;
   text-rendering: optimizeLegibility;
+  font-weight: 500;
 }
 
 .icon-back:before { content: 'back'; }
