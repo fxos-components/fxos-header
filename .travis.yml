@@ -6,7 +6,7 @@ node_js:
 env:
   - TEST_SUITE=lint
   - TEST_SUITE=unit
-  - TEST_SUITE=integration
+  # - TEST_SUITE=integration
 
 before_script:
   - export DISPLAY=:99.0
