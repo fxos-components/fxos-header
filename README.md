@@ -1,4 +1,4 @@
-# &lt;gaia-header&gt; ![](https://travis-ci.org/gaia-components/gaia-header.svg)
+# &lt;gaia-header&gt; [![](https://travis-ci.org/gaia-components/gaia-header.svg)](https://travis-ci.org/gaia-components/gaia-header)
 
 ## Installation
 
