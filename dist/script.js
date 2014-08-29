@@ -624,7 +624,6 @@ var stickyActive = (function() {
     var on = options.on || noop;
     var off = options.off || noop;
     var lag = options.ms || 300;
-    var classes = el.classList;
     var timeout;
 
     el.addEventListener(pointer.down, function(e) {
