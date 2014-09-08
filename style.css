@@ -117,10 +117,6 @@ gaia-header[hidden] {
   color: var(--header-title-color, #000);
 }
 
-.-content h1:active {
-  color: red;
-}
-
 /**
  * .flush-left
  *
