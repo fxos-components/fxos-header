@@ -78,40 +78,18 @@ suite('GaiaHeader', function() {
     assert.equal(callback.args[0][0].detail.type, 'menu');
   });
 
-  test('It calls `runFontFit` only after the element is styled', function() {
-    this.sandbox.stub(GaiaHeader._prototype, 'runFontFit');
-
-    this.container.innerHTML = '<gaia-header action="menu"></gaia-header>';
-    var element = this.container.firstElementChild;
-
-    sinon.assert.notCalled(GaiaHeader._prototype.runFontFit);
-    element.dispatchEvent(new CustomEvent('styled'));
-    sinon.assert.called(GaiaHeader._prototype.runFontFit);
-  });
-
-  test('It fails silently when `window.getComputedStyle()` returns null (ie. hidden iframe)', function(done) {
+  test('It fails silently when `window.getComputedStyle()` returns null (ie. hidden iframe)', function() {
     this.sandbox.stub(window, 'getComputedStyle').returns(null);
     this.container.innerHTML = '<gaia-header action="menu"><h1>title</h1></gaia-header>';
     var element = this.container.firstElementChild;
-
-    element.addEventListener('styled', function() {
-      done();
-    });
 
     // Insert into DOM to get styling
     document.body.appendChild(element);
   });
 
-  // Shadow DOM styles seems not to be getting applied
-  // to gaia-header whilst in the test-runner,
-  // so these tests are failing. Assuming this is a
-  // platform issue, but needs more investigation.
-  suite('style', function(done) {
-    setup(function(done) {
+  suite('style', function() {
+    setup(function() {
       this.clock.restore();
-
-      // Sizes are in rems, so we set the base font-size
-      document.documentElement.style.fontSize = '10px';
 
       // Create and inject element
       this.container.innerHTML = [
@@ -122,7 +100,6 @@ suite('GaiaHeader', function() {
       ].join('');
 
       this.element = this.container.firstElementChild;
-      this.element.addEventListener('styled', function() { done(); });
 
       // Insert into DOM to get styling
       document.body.appendChild(this.element);

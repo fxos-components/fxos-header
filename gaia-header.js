@@ -1,5 +1,7 @@
 (function(define){'use strict';define(function(require,exports,module){
-/*globals define*//*jshint node:true*/
+/*jshint esnext:true*/
+/*jshint node:true*/
+/*globals define*/
 
 /**
  * Dependencies
@@ -59,47 +61,47 @@ proto.createdCallback = function() {
   this.setupInteractionListeners();
   shadow.appendChild(tmpl);
   this.styleHack();
+  this.runFontFit();
+};
 
-  // Font fit must be run only once the element is styled
-  this.addEventListener('styled', this.runFontFit.bind(this));
+proto.styleHack = function() {
+  var style = this.shadowRoot.querySelector('style').cloneNode(true);
+  this.classList.add('-content', '-host');
+  style.setAttribute('scoped', '');
+  this.appendChild(style);
+};
+
+proto.attachedCallback = function() {
+  this.shadowStyleHack();
+  this.rerunFontFit();
 };
 
 /**
- * Load in the the component's styles.
+ * Workaround for bug 1056783.
  *
- * We're working around a few platform bugs
- * here related to @import in the shadow-dom
- * stylesheet. When HTML-Imports are ready
- * we won't have to use @import anymore.
- *
- * The `-content` class is added to the element
- * as a simple 'polyfill' for `::content` selector.
- * We can use `.-content` in our CSS to indicate
- * we're styling 'distributed' nodes. This will
- * make the transition to `::content` a lot simpler.
+ * Fixes shadow-dom stylesheets not applying
+ * when shadow host node is detached on
+ * shadow-root creation.
  *
  * @private
  */
-proto.styleHack = function() {
-  var style = document.createElement('style');
-  var self = this;
+proto.shadowStyleHack = function() {
+  var style = this.shadowRoot.querySelector('style');
+  this.shadowRoot.removeChild(style);
+  this.shadowRoot.appendChild(style);
+};
 
-  this.style.visibility = 'hidden';
-  style.innerHTML = '@import url(' + base + 'style.css);';
-  style.setAttribute('scoped', '');
-  this.classList.add('-content');
-  this.appendChild(style);
-
-  // There are platform issues around using
-  // @import inside shadow root. Ensuring the
-  // stylesheet has loaded before putting it in
-  // the shadow root seems to work around this.
-  style.addEventListener('load', function() {
-    self.shadowRoot.appendChild(style.cloneNode(true));
-    self.style.visibility = '';
-    self.styled = true;
-    self.dispatchEvent(new CustomEvent('styled'));
-  });
+/**
+ * Rerun font-fit logic.
+ *
+ * TODO: We really need an official API for this.
+ *
+ * @private
+ */
+proto.rerunFontFit = function() {
+  for (var i = 0; i < this.els.headings.length; i++) {
+    this.els.headings[i].textContent = this.els.headings[i].textContent;
+  }
 };
 
 proto.runFontFit = function() {
@@ -207,15 +209,275 @@ proto.setupInteractionListeners = function() {
 // things getting out of sync. This is a short-term
 // hack until we can import entire custom-elements
 // using HTML Imports (bug 877072).
+
 var template = document.createElement('template');
-template.innerHTML = [
-  '<div class="inner">',
-    '<button class="action-button">',
-      '<content select=".l10n-action"></content>',
-    '</button>',
-    '<content select="h1,h2,h3,h4,a,button"></content>',
-  '</div>'
-].join('');
+template.innerHTML = `
+<style>
+
+gaia-header {
+  display: block;
+
+  --gaia-header-button-color:
+    var(--header-button-color,
+    var(--header-color,
+    var(--link-color,
+    inherit)));
+}
+
+/**
+ * [hidden]
+ */
+
+gaia-header[hidden] {
+  display: none;
+}
+
+/** Reset
+ ---------------------------------------------------------*/
+
+::-moz-focus-inner { border: 0; }
+
+/** Inner
+ ---------------------------------------------------------*/
+
+.inner {
+  display: flex;
+  min-height: 50px;
+
+  background:
+    var(--header-background,
+    var(--background,
+    #fff));
+}
+
+/** Action Button
+ ---------------------------------------------------------*/
+
+/**
+ * 1. Hidden by default
+ */
+
+.action-button {
+  display: none; /* 1 */
+  position: relative;
+  align-items: center;
+  width: 50px;
+  font-size: 30px;
+  border: none;
+
+  color:
+    var(--header-action-button-color,
+    var(--header-icon-color,
+    var(--gaia-header-button-color)));
+}
+
+/**
+ * .action-supported
+ *
+ * 1. For icon vertical-alignment
+ */
+
+.supported-action .action-button {
+  display: flex; /* 1 */
+}
+
+/** Action Button Icon
+ ---------------------------------------------------------*/
+
+/**
+ * 1. To enable vertical alignment.
+ */
+
+.action-button:before {
+  display: block;
+}
+
+/** Action Button Text
+ ---------------------------------------------------------*/
+
+/**
+ * To provide custom localized content for
+ * the action-button, we allow the user
+ * to provide an element with the class
+ * .l10n-action. This node is then
+ * pulled inside the real action-button.
+ *
+ * Example:
+ *
+ *   <gaia-header action="back">
+ *     <span class="l10n-action" aria-label="Back">Localized text</span>
+ *     <h1>title</h1>
+ *   </gaia-header>
+ */
+
+.-content .l10n-action {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 0;
+}
+
+/** Title
+ ---------------------------------------------------------*/
+
+/**
+ * 1. Vertically center text. We can't use flexbox
+ *    here as it breaks text-overflow ellipsis
+ *    without an inner div.
+ */
+
+.-content h1 {
+  flex: 1;
+  margin: 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  text-align: center;
+  line-height: 50px; /* 1 */
+  font-weight: 300;
+  font-style: italic;
+  font-size: 24px;
+
+  color:
+    var(--header-title-color,
+    var(--header-color,
+    var(--title-color,
+    inherit)));
+}
+
+/**
+ * .flush-left
+ *
+ * When the fitted text is flush with the
+ * edge of the left edge of the container
+ * we pad it in a bit.
+ */
+
+.-content h1.flush-left {
+  padding-left: 10px;
+}
+
+/**
+ * .flush-right
+ *
+ * When the fitted text is flush with the
+ * edge of the right edge of the container
+ * we pad it in a bit.
+ */
+
+.-content h1.flush-right {
+  padding-right: 10px; /* 1 */
+}
+
+/** Buttons
+ ---------------------------------------------------------*/
+
+a,
+button,
+.-content a,
+.-content button {
+  box-sizing: border-box;
+  display: flex;
+  border: none;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0 10px;
+  font-size: 14px;
+  line-height: 1;
+  min-width: 50px;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  text-align: center;
+  background: none;
+  border-radius: 0;
+  font-style: italic;
+
+  transition:
+    var(--button-trasition);
+
+  color:
+    var(--gaia-header-button-color);
+}
+
+/**
+ * .active
+ *
+ * Turn off transiton-delay so the
+ * active state shows instantly.
+ *
+ * Only apply the :active state when the
+ * component indicates an interaction is
+ * taking place.
+ */
+
+a.active,
+button.active,
+.-content a.active,
+.-content button.active {
+  opacity: 0.2;
+  transition: none;
+}
+
+/**
+ * [hidden]
+ */
+
+.-content a[hidden],
+.-content button[hidden] {
+  display: none;
+}
+
+/**
+ * [disabled]
+ */
+
+.-content a[disabled],
+.-content button[disabled] {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/** Icon Buttons
+ ---------------------------------------------------------*/
+
+/**
+ * Icons are a different color to text
+ */
+
+.-content .icon,
+.-content [data-icon] {
+  color:
+    var(--header-icon-color,
+    var(--gaia-header-button-color));
+}
+
+/** Icons
+ ---------------------------------------------------------*/
+
+[class^="icon-"]:before,
+[class*="icon-"]:before {
+  font-family: 'gaia-icons';
+  font-style: normal;
+  text-rendering: optimizeLegibility;
+  font-weight: 500;
+}
+
+.icon-back:before { content: 'back'; }
+.icon-menu:before { content: 'menu'; }
+.icon-close:before { content: 'close'; }
+
+</style>
+
+<div class="inner">
+  <button class="action-button">
+    <content select=".l10n-action"></content>
+  </button>
+  <content select="h1,h2,h3,h4,a,button"></content>
+</div>`;
 
 /**
  * Adds a '.active' helper class to the given
