@@ -4,35 +4,32 @@
   <meta charset="utf-8">
   <title>Header Demo</title>
   <meta name="description" content="Demo app for Custom Element based headers">
-  <style type="text/css">
-    html, body {
-      margin: 0;
-      padding: 0;
-      font-size: 17px;
-      background-color: #efefef;
-      font-family: sans-serif;
-    }
-    body {
-      background: none;
-    }
+  <link rel="stylesheet" type="text/css" href="bower_components/gaia-theme/gaia-base.css">
+  <link rel="stylesheet" type="text/css" href="bower_components/gaia-theme/gaia-theme.css">
+  <link rel="stylesheet" type="text/css" href="bower_components/gaia-fonts/style.css">
+  <script src="bower_components/gaia-theme/lib/gaia-theme-selector.js"></script>
+  <script src="bower_components/gaia-icons/script.js"></script>
+  <script src="lib/font-fit.js"></script>
+  <script src="gaia-header.js"></script>
+  <style>
+
     gaia-header {
       margin-bottom: 15px;
     }
+
     #message {
       font-size: 2rem;
       margin: 1.5rem 3rem;
     }
+
   </style>
-  <script>
-    window.GAIA_HEADER_BASE_URL = './';
-  </script>
-  <!-- <link href="bower_components/gaia-icons/style-embedded.css" type="text/css" rel="stylesheet"> -->
-  <script src="lib/font-fit.js"></script>
-  <script src="bower_components/gaia-icons/script.js"></script>
-  <script src="script.js"></script>
 </head>
 
-<body>
+<body class="l-pt-mega">
+  <gaia-theme-selector></gaia-theme-selector>
+
+  <h1 class="large l-align-center l-mb-small">&lt;gaia-header&gt;</h1>
+
   <gaia-header action="back">
     <h1>Keyboard Settings</h1>
   </gaia-header>
@@ -87,10 +84,7 @@
 
   <div id="message"></div>
 
-  <p><em>The is a bug that breaks shadow-dom layout when the `textContent` of a projected-content node is changed. Use the buttons below to break the layout of the last header. If the element is reflowed (by showing and hiding) its layout is fixed.</em></p>
-
-  <button id="breakit">Break it</button>
-  <button id="fixit">Fix it</button>
+  <button id="append">Append a header</button>
 
   <script>
   var els = document.querySelectorAll('gaia-header');
@@ -101,16 +95,12 @@
     });
   });
 
-  breakit.addEventListener('click', function(e) {
-    title.textContent = 'I\'m broken :(';
+  append.addEventListener('click', function() {
+    var div = document.createElement('div');
+    div.innerHTML = '<gaia-header action="menu"><h1>Gaia Header</h1></gaia-header>';
+    document.body.insertBefore(div.firstElementChild, message);
   });
 
-  fixit.addEventListener('click', function(e) {
-    title.textContent = 'Forcing reflow fixes me :\'(';
-    header.style.display = 'none';
-    var reflow = header.offsetTop;
-    header.style.display = '';
-  });
   </script>
 </body>
 </html>
