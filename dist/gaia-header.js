@@ -31,10 +31,7 @@ c(require,exports,module);}:function(c){var m={exports:{}};c(function(n){
 return w[n];},m.exports,m);w[n]=m.exports;};})('gaia-icons',this));
 
 },{}],2:[function(require,module,exports){
-;(function(define){define(function(require,exports,module){
-/*jshint esnext:true*/
-/*jshint node:true*/
-/*globals define*/
+;(function(define){'use strict';define(function(require,exports,module){
 
 /**
  * Dependencies
@@ -48,6 +45,17 @@ var fontFit = require('./lib/font-fit');
  */
 
 var baseComponents = window.COMPONENTS_BASE_URL || 'bower_components/';
+
+/**
+ * Detects presence of shadow-dom
+ * CSS selectors.
+ *
+ * @return {Boolean}
+ */
+var hasShadowCSS = (function() {
+  try { document.querySelector(':host'); return true; }
+  catch (e) { return false; }
+})();
 
 /**
  * Element prototype, extends from HTMLElement
@@ -96,7 +104,8 @@ proto.createdCallback = function() {
   this.runFontFit();
 };
 
-proto.styleHack = function() {
+proto.shadowStyleHack = function() {
+  if (hasShadowCSS) { return; }
   var style = this.shadowRoot.querySelector('style').cloneNode(true);
   this.classList.add('-content', '-host');
   style.setAttribute('scoped', '');
@@ -578,13 +587,12 @@ module.exports = document.registerElement('gaia-header', { prototype: proto });
 module.exports._prototype = proto;
 
 });})(typeof define=='function'&&define.amd?define
-:(function(n,w){return typeof module=='object'?function(c){
+:(function(n,w){'use strict';return typeof module=='object'?function(c){
 c(require,exports,module);}:function(c){var m={exports:{}};c(function(n){
 return w[n];},m.exports,m);w[n]=m.exports;};})('gaia-header',this));
 
 },{"./lib/font-fit":3,"gaia-icons":1}],3:[function(require,module,exports){
-;(function(define){define(function(require,exports,module){
-/*globals define,exports,module,require*/
+;(function(define){'use strict';define(function(require,exports,module){
 
   /**
    * Utility functions for measuring and manipulating font sizes
@@ -917,7 +925,7 @@ return w[n];},m.exports,m);w[n]=m.exports;};})('gaia-header',this));
   module.exports = GaiaHeaderFontFit;
 
 });})(typeof define=='function'&&define.amd?define
-:(function(n,w){return typeof module=='object'?function(c){
+:(function(n,w){'use strict';return typeof module=='object'?function(c){
 c(require,exports,module);}:function(c){var m={exports:{}};c(function(n){
 return w[n];},m.exports,m);w[n]=m.exports;};})('./lib/font-fit',this));
 

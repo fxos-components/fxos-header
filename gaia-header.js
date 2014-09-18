@@ -14,6 +14,17 @@ var fontFit = require('./lib/font-fit');
 var baseComponents = window.COMPONENTS_BASE_URL || 'bower_components/';
 
 /**
+ * Detects presence of shadow-dom
+ * CSS selectors.
+ *
+ * @return {Boolean}
+ */
+var hasShadowCSS = (function() {
+  try { document.querySelector(':host'); return true; }
+  catch (e) { return false; }
+})();
+
+/**
  * Element prototype, extends from HTMLElement
  *
  * @type {Object}
@@ -60,7 +71,8 @@ proto.createdCallback = function() {
   this.runFontFit();
 };
 
-proto.styleHack = function() {
+proto.shadowStyleHack = function() {
+  if (hasShadowCSS) { return; }
   var style = this.shadowRoot.querySelector('style').cloneNode(true);
   this.classList.add('-content', '-host');
   style.setAttribute('scoped', '');
