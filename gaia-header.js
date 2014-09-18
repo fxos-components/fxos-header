@@ -24,6 +24,8 @@ var hasShadowCSS = (function() {
   catch (e) { return false; }
 })();
 
+// console.log(hasShadowCSS);
+
 /**
  * Element prototype, extends from HTMLElement
  *
@@ -67,7 +69,7 @@ proto.createdCallback = function() {
   this.configureActionButton();
   this.setupInteractionListeners();
   shadow.appendChild(tmpl);
-  this.styleHack();
+  this.shadowStyleHack();
   this.runFontFit();
 };
 
@@ -80,7 +82,7 @@ proto.shadowStyleHack = function() {
 };
 
 proto.attachedCallback = function() {
-  this.shadowStyleHack();
+  this.restyleShadowDom();
   this.rerunFontFit();
 };
 
@@ -93,7 +95,7 @@ proto.attachedCallback = function() {
  *
  * @private
  */
-proto.shadowStyleHack = function() {
+proto.restyleShadowDom = function() {
   var style = this.shadowRoot.querySelector('style');
   this.shadowRoot.removeChild(style);
   this.shadowRoot.appendChild(style);
