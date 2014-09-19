@@ -53,14 +53,13 @@ var actionTypes = {
  * @private
  */
 proto.createdCallback = function() {
-  var shadow = this.createShadowRoot();
-  var tmpl = template.content.cloneNode(true);
+  this.createShadowRoot().innerHTML = template;
 
   // Get els
   this.els = {
-    actionButton: tmpl.querySelector('.action-button'),
+    actionButton: this.shadowRoot.querySelector('.action-button'),
     headings: this.querySelectorAll('h1,h2,h3,h4'),
-    inner: tmpl.querySelector('.inner')
+    inner: this.shadowRoot.querySelector('.inner')
   };
 
   this.els.actionButton.addEventListener('click',
@@ -68,7 +67,6 @@ proto.createdCallback = function() {
 
   this.configureActionButton();
   this.setupInteractionListeners();
-  shadow.appendChild(tmpl);
   this.shadowStyleHack();
   this.runFontFit();
 };
@@ -220,11 +218,10 @@ proto.setupInteractionListeners = function() {
 // hack until we can import entire custom-elements
 // using HTML Imports (bug 877072).
 
-var template = document.createElement('template');
-template.innerHTML = `
+var template = `
 <style>
 
-gaia-header {
+:host {
   display: block;
 
   --gaia-header-button-color:
@@ -320,7 +317,7 @@ gaia-header[hidden] {
  *   </gaia-header>
  */
 
-.-content .l10n-action {
+::content .l10n-action {
   position: absolute;
   left: 0;
   top: 0;
@@ -338,7 +335,7 @@ gaia-header[hidden] {
  *    without an inner div.
  */
 
-.-content h1 {
+::content h1 {
   flex: 1;
   margin: 0;
   white-space: nowrap;
@@ -365,7 +362,7 @@ gaia-header[hidden] {
  * we pad it in a bit.
  */
 
-.-content h1.flush-left {
+::content h1.flush-left {
   padding-left: 10px;
 }
 
@@ -377,7 +374,7 @@ gaia-header[hidden] {
  * we pad it in a bit.
  */
 
-.-content h1.flush-right {
+::content h1.flush-right {
   padding-right: 10px; /* 1 */
 }
 
@@ -386,8 +383,8 @@ gaia-header[hidden] {
 
 a,
 button,
-.-content a,
-.-content button {
+::content a,
+::content button {
   box-sizing: border-box;
   display: flex;
   border: none;
@@ -426,8 +423,8 @@ button,
 
 a.active,
 button.active,
-.-content a.active,
-.-content button.active {
+::content a.active,
+::content button.active {
   opacity: 0.2;
   transition: none;
 }
@@ -436,8 +433,8 @@ button.active,
  * [hidden]
  */
 
-.-content a[hidden],
-.-content button[hidden] {
+::content a[hidden],
+::content button[hidden] {
   display: none;
 }
 
@@ -445,8 +442,8 @@ button.active,
  * [disabled]
  */
 
-.-content a[disabled],
-.-content button[disabled] {
+::content a[disabled],
+::content button[disabled] {
   pointer-events: none;
   opacity: 0.5;
 }
@@ -458,8 +455,8 @@ button.active,
  * Icons are a different color to text
  */
 
-.-content .icon,
-.-content [data-icon] {
+::content .icon,
+::content [data-icon] {
   color:
     var(--header-icon-color,
     var(--gaia-header-button-color));
@@ -488,6 +485,15 @@ button.active,
   </button>
   <content select="h1,h2,h3,h4,a,button"></content>
 </div>`;
+
+// If the browser doesn't support shadow-css
+// selectors yet, we update the template
+// to use the shim classes instead.
+if (!hasShadowCSS) {
+  template = template
+    .replace('::content', '.-content', 'g')
+    .replace(':host', '.-host', 'g');
+}
 
 /**
  * Adds a '.active' helper class to the given
