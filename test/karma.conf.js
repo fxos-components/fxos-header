@@ -3,18 +3,13 @@ module.exports = function(config) {
   config.set({
     frameworks: ['mocha', 'sinon-chai'],
     browsers: ['firefox_latest'],
-    reporters: ['dots'],
-    urlRoot: '/karma/',
-    client: {
-      mocha: { 'ui': 'tdd' }
-    },
+    client: { mocha: { 'ui': 'tdd' } },
+    basePath: '../',
 
     customLaunchers: {
       firefox_latest: {
         base: 'FirefoxNightly',
-        prefs: {
-          'dom.webcomponents.enabled': true
-        }
+        prefs: { 'dom.webcomponents.enabled': true }
       }
     },
 
@@ -23,9 +18,9 @@ module.exports = function(config) {
       'bower_components/pressed/pressed.js',
       'lib/font-fit.js',
       'gaia-header.js',
-      'test/unit/mocks/mock_font_fit.js',
-      'test/unit/test.js',
-      'test/unit/font_fit_test.js',
+      'test/mocks/mock_font_fit.js',
+      'test/font_fit_test.js',
+      'test/test.js',
       {
         pattern: 'bower_components/gaia-icons/style.css',
         included: false

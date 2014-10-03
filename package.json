@@ -17,11 +17,9 @@
     "mozilla-download": "^0.4.3"
   },
   "scripts": {
-    "test": "./node_modules/karma/bin/karma start --single-run",
-    "test-unit": "gaia-test-unit",
-    "test-integration": "gaia-test-integration",
-    "test-lint": "gaia-test-lint .",
     "install": "bower install",
+    "test": "./node_modules/karma/bin/karma start test/karma.conf.js --single-run",
+    "test-dev": "./node_modules/karma/bin/karma start test/karma.conf.js",
     "build": "mkdir -p dist && browserify gaia-header.js --outfile ./dist/gaia-header.js --standalone GaiaHeader"
   },
   "repository": {
