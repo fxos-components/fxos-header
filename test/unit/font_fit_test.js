@@ -130,7 +130,7 @@ suite('font-fit.js', function() {
   }
 
   setup(function() {
-    GaiaHeaderFontFit = window['./font-fit'];
+    GaiaHeaderFontFit = window['./lib/font-fit'];
     this.sandbox = sinon.sandbox.create();
     text = '';
   });
