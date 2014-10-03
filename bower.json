@@ -12,9 +12,7 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests",
     "index.html",
-    "karma.conf.js",
     "package.json",
     "README.md"
   ],
