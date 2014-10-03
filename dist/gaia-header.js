@@ -461,7 +461,8 @@ gaia-header[hidden] {
     var(--header-title-color,
     var(--header-color,
     var(--title-color,
-    inherit)));
+    var(--text-color,
+    inherit))));
 }
 
 /**
