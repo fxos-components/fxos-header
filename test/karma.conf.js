@@ -22,7 +22,7 @@ module.exports = function(config) {
       'test/font_fit_test.js',
       'test/test.js',
       {
-        pattern: 'bower_components/gaia-icons/style.css',
+        pattern: 'bower_components/gaia-icons/gaia-icons.css',
         included: false
       },
       {
