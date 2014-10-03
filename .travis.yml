@@ -4,12 +4,17 @@ node_js:
   - '0.10'
 
 env:
-  - TEST_SUITE=lint
+  # - TEST_SUITE=lint
   - TEST_SUITE=unit
   # - TEST_SUITE=integration
+
+install:
+  - npm install
+  - ./node_modules/.bin/mozilla-download ./firefox/ --branch=nightly --channel=prerelease
+  - export FIREFOX_NIGHTLY_BIN="./firefox/firefox-bin"
 
 before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
 
-script: "npm run test-${TEST_SUITE}"
+script: "npm test"
