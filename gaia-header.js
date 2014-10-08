@@ -200,7 +200,7 @@ proto.onActionButtonClick = function(e) {
  * @private
  */
 proto.setupInteractionListeners = function() {
-  pressed(this.els.inner);
+  pressed(this.els.inner, { instant: true });
 };
 
 // HACK: Create a <template> in memory at runtime.
