@@ -1,4 +1,5 @@
 /*global window,assert,suite,setup,teardown,sinon,test*/
+/*jshint esnext:true*/
 
 suite('GaiaHeader', function() {
   'use strict';
@@ -7,7 +8,6 @@ suite('GaiaHeader', function() {
   var realGaiaHeaderFontFit;
 
   setup(function() {
-    this.clock = sinon.useFakeTimers();
     this.sandbox = sinon.sandbox.create();
     this.container = document.createElement('div');
     this.sandbox.spy(HTMLElement.prototype, 'addEventListener');
@@ -18,12 +18,10 @@ suite('GaiaHeader', function() {
 
   teardown(function() {
     this.sandbox.restore();
-    this.clock.restore();
     window['./font-fit'] = realGaiaHeaderFontFit;
   });
 
   test('It hides the action button if no action type defined', function() {
-    this.clock.restore();
     this.container.innerHTML = '<gaia-header></gaia-header>';
     var inner = this.container.firstElementChild.shadowRoot.querySelector('.inner');
     assert.isFalse(inner.classList.contains('action-supported'));
@@ -69,6 +67,7 @@ suite('GaiaHeader', function() {
   });
 
   test('triggerAction() should cause a `click` on action button', function() {
+    this.clock = sinon.useFakeTimers();
     this.container.innerHTML = '<gaia-header action="menu"></gaia-header>';
     var element = this.container.firstElementChild;
     var callback = sinon.spy();
@@ -76,6 +75,7 @@ suite('GaiaHeader', function() {
     element.triggerAction();
     this.clock.tick(1);
     assert.equal(callback.args[0][0].detail.type, 'menu');
+    this.clock.restore();
   });
 
   test('It fails silently when `window.getComputedStyle()` returns null (ie. hidden iframe)', function() {
@@ -89,15 +89,13 @@ suite('GaiaHeader', function() {
 
   suite('style', function() {
     setup(function() {
-      this.clock.restore();
 
       // Create and inject element
-      this.container.innerHTML = [
-        '<gaia-header action="menu">',
-          '<h1>my title</h1>',
-          '<button id="my-button">my button</button>',
-        '</gaia-header>'
-      ].join('');
+      this.container.innerHTML = `
+        <gaia-header action="menu">,
+          <h1>my title</h1>,
+          <button id="my-button">my button</button>,
+        </gaia-header>`;
 
       this.element = this.container.firstElementChild;
 
@@ -155,6 +153,14 @@ suite('GaiaHeader', function() {
   });
 
   suite('GaiaHeader#onActionButtonClick()', function(done) {
+    setup(function() {
+      this.clock = sinon.useFakeTimers();
+    });
+
+    teardown(function() {
+      this.clock.restore();
+    });
+
     test('Should emit an \'action\' event', function() {
       this.container.innerHTML = '<gaia-header action="menu"></gaia-header>';
       var element = this.container.firstElementChild;
@@ -177,6 +183,155 @@ suite('GaiaHeader', function() {
       this.clock.tick(1);
 
       assert.equal(callback.args[0][0].detail.type, 'menu');
+    });
+  });
+
+  suite('RTL', function() {
+
+    teardown(function() {
+      document.documentElement.removeAttribute('dir');
+      this.container.remove();
+    });
+
+    test('It reverses the direction of the contents when document has dir=rtl attribute', function(done) {
+      this.container.innerHTML = `
+        <gaia-header action="back">
+          <h1>Title</h1>
+          <button>Done</button>
+        </gaia-header>`;
+
+      var element = this.container.firstElementChild;
+      var actionButton = element.els.actionButton;
+      var userButton = element.querySelector('button');
+      var positions;
+
+      document.body.appendChild(this.container);
+
+      positions = {
+        actionButton: actionButton.getBoundingClientRect(),
+        userButton: userButton.getBoundingClientRect()
+      };
+
+      assert.ok(positions.actionButton.left < positions.userButton.left,
+        'By default the action button should sit left of user content');
+
+      // Switch to RTL
+      document.documentElement.setAttribute('dir', 'rtl');
+
+      // Mutation observers are async,
+      // so we have to wait till the
+      // next turn for them to respond.
+      setTimeout(onAttributeChanged);
+
+      function onAttributeChanged() {
+        positions = {
+          actionButton: actionButton.getBoundingClientRect(),
+          userButton: userButton.getBoundingClientRect()
+        };
+
+        assert.ok(positions.actionButton.left > positions.userButton.left,
+          'In RTL mode the action button should sit right of user content');
+
+        done();
+      }
+    });
+
+    test('It uses a \'forward\' arrow instead of back', function() {
+
+      // Switch to RTL
+      document.documentElement.setAttribute('dir', 'rtl');
+
+      this.container.innerHTML = `
+        <gaia-header action="back">
+          <h1>Title</h1>
+          <button>Done</button>
+        </gaia-header>`;
+
+      var element = this.container.firstElementChild;
+      var actionButton = element.els.actionButton;
+      var userButton = element.querySelector('button');
+
+      document.body.appendChild(this.container);
+
+      var backIcon = getComputedStyle(actionButton, ':before').content.replace('"', '', 'g');
+      assert.equal(backIcon, 'forward');
+    });
+
+    test('It stays in sync with <html>', function(done) {
+      this.container.innerHTML = '<gaia-header action="back"></gaia-header>';
+      var element = this.container.firstElementChild;
+      var inner = element.els.inner;
+
+      assert.equal(inner.getAttribute('dir'), 'ltr');
+
+      // Switch to RTL
+      document.documentElement.setAttribute('dir', 'rtl');
+
+      // Mutation observers are async,
+      // so we have to wait till the
+      // next turn for them to respond.
+      setTimeout(function() {
+        assert.equal(inner.getAttribute('dir'), 'rtl');
+        document.documentElement.setAttribute('dir', 'ltr');
+        setTimeout(function() {
+          assert.equal(inner.getAttribute('dir'), 'ltr');
+          done();
+        });
+      });
+    });
+
+    test('It re-runs font-fit when `dir` changes', function(done) {
+      this.container.innerHTML = '<gaia-header action="back"></gaia-header>';
+      var element = this.container.firstElementChild;
+
+      sinon.spy(element, 'rerunFontFit');
+
+      // Switch to RTL
+      document.documentElement.setAttribute('dir', 'rtl');
+
+      setTimeout(function() {
+        sinon.assert.called(element.rerunFontFit, 'font-fit was re-run');
+        done();
+      });
+    });
+
+    test('It stops observing when detached and starts again when attached', function(done) {
+      this.container.innerHTML = '<gaia-header action="back"></gaia-header>';
+      var container = this.container;
+      var el = container.firstElementChild;
+      var inner = el.els.inner;
+
+      document.body.appendChild(container);
+      document.documentElement.setAttribute('dir', 'rtl');
+
+      setTimeout(function() {
+        assert.equal(inner.getAttribute('dir'), 'rtl', 'It changed');
+
+        // Remove it from the DOM
+        el.remove();
+
+        // Change the direction
+        document.documentElement.setAttribute('dir', 'ltr');
+
+        setTimeout(function() {
+          assert.equal(inner.getAttribute('dir'), 'rtl', 'It didn\'t change');
+
+          // Put it back in the DOM
+          container.appendChild(el);
+
+          setTimeout(function() {
+            assert.equal(inner.getAttribute('dir'), 'ltr', 'It changed');
+
+            // Change direction
+            document.documentElement.setAttribute('dir', 'rtl');
+
+            setTimeout(function() {
+              assert.equal(inner.getAttribute('dir'), 'rtl', 'It changed');
+              done();
+            });
+          });
+        });
+      });
     });
   });
 });

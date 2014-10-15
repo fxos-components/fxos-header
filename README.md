@@ -6,6 +6,20 @@
 $ bower install gaia-components/gaia-header
 ```
 
+## Examples
+
+- [Example](http://gaia-components.github.io/gaia-header/)
+
+## Tests
+
+1. Ensure Firefox Nightly is installed on your machine.
+2. `$ npm install`
+3. `$ npm test`
+
+If your would like tests to run on file change use:
+
+`$ npm run test-dev`
+
 ## Localization
 
 If choosing to use the built in action-button you may wish to localize the content within. You can do this by providing a specicial `.l10n-action` child node.
@@ -17,6 +31,6 @@ If choosing to use the built in action-button you may wish to localize the conte
 </gaia-header>
 ```
 
-## Examples
+## RTL
 
-- [Example](http://gaia-components.github.io/gaia-header/)
+Header content will appear 'right-to-left' if the document states so (`<html dir="rtl">`). Things won't work correctly if the `dir` attribute is on any other node.

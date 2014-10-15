@@ -31,6 +31,8 @@
 
   <h1 class="large l-align-center l-mb-small">&lt;gaia-header&gt;</h1>
 
+  <button id="rtl">Toggle RTL</button>
+
   <gaia-header action="back">
     <h1>Keyboard Settings</h1>
   </gaia-header>
@@ -100,6 +102,12 @@
     var div = document.createElement('div');
     div.innerHTML = '<gaia-header action="menu"><h1>Gaia Header</h1></gaia-header>';
     document.body.insertBefore(div.firstElementChild, message);
+  });
+
+  rtl.addEventListener('click', function() {
+    var el = document.documentElement;
+    var dir = el.getAttribute('dir');
+    el.setAttribute('dir', dir === 'rtl' ? 'ltr' : 'rtl');
   });
 
   </script>
