@@ -43,28 +43,34 @@ return w[n];},m.exports,m);w[n]=m.exports;};})('gaia-icons',this));
  * @type {Object}
  */
 var pointer = [
-  { down: 'touchstart', up: 'touchend' },
-  { down: 'mousedown', up: 'mouseup' }
+  { down: 'touchstart', up: 'touchend', move: 'touchmove' },
+  { down: 'mousedown', up: 'mouseup', move: 'mousemove' }
 ]['ontouchstart' in window ? 0 : 1];
 
-exports = module.exports = function(el, options) {
+module.exports = function(el, options) {
   var released = (options && options.released) || 200;
   var min = (options && options.min) || 300;
+  var instant = options && options.instant;
   var timeouts = {};
   var removeReleased;
 
   el.addEventListener(pointer.down, function(e) {
+    // if (scrolling) { return; }
     var start = e.timeStamp;
     var target = e.target;
+    var pressed = false;
+    var last = e;
 
     // If there is a removeRelease pending
     // run it before we add any more 'pressed'
     if (removeReleased) { removeReleased(); }
 
-    // Add the 'pressed' class up the tree
-    // and clear and pending timeouts.
-    classListUp(target, 'add', 'pressed');
-    clearTimeout(timeouts.pressed);
+    if (instant) { onPressed(); }
+    else { notScrolling(e, onPressed); }
+
+    function onPressed() {
+      classListUp(target, 'add', 'pressed');
+    }
 
     addEventListener(pointer.up, function fn(e) {
       removeEventListener(pointer.up, fn, true);
@@ -92,6 +98,59 @@ exports = module.exports = function(el, options) {
   }, true);
 };
 
+function notScrolling(e, fn) {
+  detectScrolling(e, function(scrolling) {
+    if (!scrolling) { fn(); }
+  });
+}
+
+function detectScrolling(e, fn) {
+  var period = 76;
+  var last = e;
+
+  if (windowScrolling) { return fn(true); }
+  if (!e.touches) { return fn(false); }
+
+  addEventListener('touchmove', onTouchMove, true);
+  setTimeout(detect, period);
+
+  function detect() {
+    removeEventListener('touchmove', onTouchMove, true);
+    if (windowScrolling) { return fn(true); }
+    var time = last.timeStamp - e.timeStamp;
+    var distance = getDistance(e.touches[0], last.touches[0]);
+    var speed = distance / time;
+    var scrolling = speed > 0.03;
+    fn(scrolling);
+  }
+
+  function onTouchMove(e) { last = e; }
+
+  function getDistance(a, b) {
+    var xs = 0;
+    var ys = 0;
+
+    xs = b.clientX - a.clientX;
+    xs = xs * xs;
+
+    ys = b.clientY - a.clientY;
+    ys = ys * ys;
+
+    return Math.sqrt(xs + ys);
+  }
+}
+
+var windowScrolling = false;
+var scrollTimeout;
+
+addEventListener('scroll', function() {
+  windowScrolling = true;
+  clearTimeout(scrollTimeout);
+  scrollTimeout = setTimeout(function() {
+    windowScrolling = false;
+  }, 60);
+});
+
 /**
  * Run a classList method on every
  * element up the DOM tree.
@@ -111,6 +170,7 @@ function classListUp(el, method, cls) {
 :(function(n,w){'use strict';return typeof module=='object'?function(c){
 c(require,exports,module);}:function(c){var m={exports:{}};c(function(n){
 return w[n];},m.exports,m);w[n]=m.exports;};})('pressed',this));
+
 },{}],3:[function(require,module,exports){
 ;(function(define){'use strict';define(function(require,exports,module){
 /*jshint esnext:true*/
@@ -179,8 +239,57 @@ proto.createdCallback = function() {
   this.setupInteractionListeners();
   this.shadowStyleHack();
   this.runFontFit();
+  this.setupRTL();
 };
 
+/**
+ * Sets up mutation observes to listen for
+ * 'dir' attribute changes on <html> and
+ * runs the intial configuration.
+ *
+ * @private
+ */
+proto.setupRTL = function() {
+  var observer = new MutationObserver(onAttributeChanged);
+  var self = this;
+
+  observer.observe(document.documentElement, { attributes: true });
+  this.configureRTL();
+
+  function onAttributeChanged(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.attributeName !== 'dir') { return; }
+      self.configureRTL();
+      self.rerunFontFit();
+    });
+  }
+};
+
+/**
+ * Syncs the inner's 'dir' attribute
+ * with the one on <html> .
+ *
+ * @private
+ */
+proto.configureRTL = function() {
+  var value = document.documentElement.getAttribute('dir') || 'ltr';
+  if (value) this.els.inner.setAttribute('dir', value);
+};
+
+/**
+ * The Gecko platform doesn't yet have
+ * `::content` or `:host`, selectors,
+ * without these we are unable to style
+ * user-content in the light-dom from
+ * within our shadow-dom style-sheet.
+ *
+ * To workaround this, we clone the <style>
+ * node into the root of the component,
+ * so our selectors are able to target
+ * light-dom content.
+ *
+ * @private
+ */
 proto.shadowStyleHack = function() {
   if (hasShadowCSS) { return; }
   var style = this.shadowRoot.querySelector('style').cloneNode(true);
@@ -314,7 +423,7 @@ proto.onActionButtonClick = function(e) {
  * @private
  */
 proto.setupInteractionListeners = function() {
-  pressed(this.els.inner);
+  pressed(this.els.inner, { instant: true });
 };
 
 // HACK: Create a <template> in memory at runtime.
@@ -594,9 +703,23 @@ button.released,
   font-weight: 500;
 }
 
-.icon-back:before { content: 'back'; }
 .icon-menu:before { content: 'menu'; }
 .icon-close:before { content: 'close'; }
+
+/** Back Icon
+ ---------------------------------------------------------*/
+
+.icon-back:before {
+  content: 'back';
+}
+
+/**
+ * [dir='rtl']
+ */
+
+[dir='rtl'] .icon-back:before {
+  content: 'forward';
+}
 
 </style>
 
