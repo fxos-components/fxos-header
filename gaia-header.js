@@ -64,7 +64,6 @@ proto.createdCallback = function() {
   this.configureActionButton();
   this.shadowStyleHack();
   this.runFontFit();
-  this.setupRtl();
 };
 
 /**
@@ -76,91 +75,7 @@ proto.createdCallback = function() {
 proto.attachedCallback = function() {
   this.restyleShadowDom();
   this.rerunFontFit();
-  this.setupRtl();
 };
-
-/**
- * Called when the element is detached
- * (removed) from the DOM.
- *
- * @private
- */
-proto.detachedCallback = function() {
-  this.teardownRtl();
-};
-
-/**
- * Sets up mutation observes to listen for
- * 'dir' attribute changes on <html> and
- * runs the initial configuration.
- *
- * Although the `dir` attribute should
- * be able to be placed on any ancestor
- * node, we are currently only supporting
- * <html>. This is to keep the logic
- * simple and compatible with mozL10n.js.
- *
- * We could walk up the DOM and attach
- * a mutation observer to the nearest
- * ancestor with a `dir` attribute,
- * but then things start to get messy
- * and complex for little gain.
- *
- * We re-run font-fit to make sure
- * the heading is re-positioned after
- * the buttons switch around. We could
- * potentially let the font-fit observer
- * catch the `textContent` change that
- * *may* happen after a language change,
- * but that's only if the heading has
- * been localized.
- *
- * Once `:host-context()` selector lands
- * (bug 1082060) we may be able to reconsider
- * this implementation. But even then, we would
- * need a way to re-run font-fit.
- *
- * @private
- */
-proto.setupRtl = function() {
-  if (this.observerRtl) { return; }
-
-  var self = this;
-  this.observerRtl = new MutationObserver(onAttributeChanged);
-  this.observerRtl.observe(document.documentElement, { attributes: true });
-  this.configureRtl();
-
-  function onAttributeChanged(mutations) {
-    mutations.forEach(function(mutation) {
-      if (mutation.attributeName !== 'dir') { return; }
-      this.configureRtl();
-      this.rerunFontFit();
-    }, self);
-  }
-};
-
-/**
- * Stop the mutation observer.
- *
- * @private
- */
-proto.teardownRtl = function() {
-  if (!this.observerRtl) { return; }
-  this.observerRtl.disconnect();
-  this.observerRtl = null;
-};
-
-/**
- * Syncs the inner's 'dir' attribute
- * with the one on <html> .
- *
- * @private
- */
-proto.configureRtl = function() {
-  var value = document.documentElement.getAttribute('dir') || 'ltr';
-  if (value) this.els.inner.setAttribute('dir', value);
-};
-
 /**
  * The Gecko platform doesn't yet have
  * `::content` or `:host`, selectors,
@@ -355,6 +270,7 @@ gaia-header[hidden] {
 .inner {
   display: flex;
   min-height: 50px;
+  direction: ltr;
 
   background:
     var(--header-background,
@@ -591,24 +507,7 @@ button.released,
 
 .icon-menu:before { content: 'menu'; }
 .icon-close:before { content: 'close'; }
-
-/** Back Icon
- ---------------------------------------------------------*/
-
-.icon-back:before {
-  content: 'back';
-}
-
-/**
- * [dir='rtl']
- *
- * Switch to use the 'forward' icon
- * when in right-to-left direction.
- */
-
-[dir='rtl'] .icon-back:before {
-  content: 'forward';
-}
+.icon-back:before { content: 'back'; }
 
 </style>
 
