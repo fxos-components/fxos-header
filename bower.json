@@ -19,7 +19,8 @@
   ],
   "dependencies": {
     "gaia-icons": "gaia-components/gaia-icons#~0.7.0",
-    "pressed": "gaia-components/pressed#~0.1.0"
+    "pressed": "gaia-components/pressed#~0.1.0",
+    "gaia-component": "gaia-components/gaia-component"
   },
   "devDependencies": {
     "gaia-theme": "gaia-components/gaia-theme",
