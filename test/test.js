@@ -1,4 +1,5 @@
 /*global window,assert,suite,setup,teardown,sinon,test*/
+/*jshint esnext:true*/
 
 suite('GaiaHeader', function() {
   'use strict';
@@ -7,7 +8,6 @@ suite('GaiaHeader', function() {
   var realGaiaHeaderFontFit;
 
   setup(function() {
-    this.clock = sinon.useFakeTimers();
     this.sandbox = sinon.sandbox.create();
     this.container = document.createElement('div');
     this.sandbox.spy(HTMLElement.prototype, 'addEventListener');
@@ -18,12 +18,10 @@ suite('GaiaHeader', function() {
 
   teardown(function() {
     this.sandbox.restore();
-    this.clock.restore();
     window['./font-fit'] = realGaiaHeaderFontFit;
   });
 
   test('It hides the action button if no action type defined', function() {
-    this.clock.restore();
     this.container.innerHTML = '<gaia-header></gaia-header>';
     var inner = this.container.firstElementChild.shadowRoot.querySelector('.inner');
     assert.isFalse(inner.classList.contains('action-supported'));
@@ -69,6 +67,7 @@ suite('GaiaHeader', function() {
   });
 
   test('triggerAction() should cause a `click` on action button', function() {
+    this.clock = sinon.useFakeTimers();
     this.container.innerHTML = '<gaia-header action="menu"></gaia-header>';
     var element = this.container.firstElementChild;
     var callback = sinon.spy();
@@ -76,40 +75,29 @@ suite('GaiaHeader', function() {
     element.triggerAction();
     this.clock.tick(1);
     assert.equal(callback.args[0][0].detail.type, 'menu');
+    this.clock.restore();
   });
 
-  test('It calls `runFontFit` only after the element is styled', function() {
-    this.sandbox.stub(GaiaHeader._prototype, 'runFontFit');
-
-    this.container.innerHTML = '<gaia-header action="menu"></gaia-header>';
+  test('It fails silently when `window.getComputedStyle()` returns null (ie. hidden iframe)', function() {
+    this.sandbox.stub(window, 'getComputedStyle').returns(null);
+    this.container.innerHTML = '<gaia-header action="menu"><h1>title</h1></gaia-header>';
     var element = this.container.firstElementChild;
 
-    sinon.assert.notCalled(GaiaHeader._prototype.runFontFit);
-    element.dispatchEvent(new CustomEvent('styled'));
-    sinon.assert.called(GaiaHeader._prototype.runFontFit);
+    // Insert into DOM to get styling
+    document.body.appendChild(element);
   });
 
-  // Shadow DOM styles seems not to be getting applied
-  // to gaia-header whilst in the test-runner,
-  // so these tests are failing. Assuming this is a
-  // platform issue, but needs more investigation.
-  suite('style', function(done) {
-    setup(function(done) {
-      this.clock.restore();
-
-      // Sizes are in rems, so we set the base font-size
-      document.documentElement.style.fontSize = '10px';
+  suite('style', function() {
+    setup(function() {
 
       // Create and inject element
-      this.container.innerHTML = [
-        '<gaia-header action="menu">',
-          '<h1>my title</h1>',
-          '<button id="my-button">my button</button>',
-        '</gaia-header>'
-      ].join('');
+      this.container.innerHTML = `
+        <gaia-header action="menu">,
+          <h1>my title</h1>,
+          <button id="my-button">my button</button>,
+        </gaia-header>`;
 
       this.element = this.container.firstElementChild;
-      this.element.addEventListener('styled', function() { done(); });
 
       // Insert into DOM to get styling
       document.body.appendChild(this.element);
@@ -154,11 +142,6 @@ suite('GaiaHeader', function() {
       otherButton.textContent = 'another button';
       this.element.appendChild(otherButton);
 
-      // Force reflow to workaround bug 1022866
-      this.element.style.display = 'none';
-      this.element.offsetTop;
-      this.element.style.display = '';
-
       // Get positions
       var buttonLeft = button.getBoundingClientRect().left;
       var otherButtonleft = otherButton.getBoundingClientRect().left;
@@ -170,6 +153,14 @@ suite('GaiaHeader', function() {
   });
 
   suite('GaiaHeader#onActionButtonClick()', function(done) {
+    setup(function() {
+      this.clock = sinon.useFakeTimers();
+    });
+
+    teardown(function() {
+      this.clock.restore();
+    });
+
     test('Should emit an \'action\' event', function() {
       this.container.innerHTML = '<gaia-header action="menu"></gaia-header>';
       var element = this.container.firstElementChild;

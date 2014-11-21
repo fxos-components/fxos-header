@@ -4,33 +4,34 @@
   <meta charset="utf-8">
   <title>Header Demo</title>
   <meta name="description" content="Demo app for Custom Element based headers">
-  <style type="text/css">
-    html, body {
-      margin: 0;
-      padding: 0;
-      font-size: 17px;
-      background-color: #efefef;
-      font-family: sans-serif;
-    }
-    body {
-      background: none;
-    }
+  <link rel="stylesheet" type="text/css" href="bower_components/base/base.css">
+  <link rel="stylesheet" type="text/css" href="bower_components/gaia-theme/gaia-theme.css">
+  <link rel="stylesheet" type="text/css" href="bower_components/gaia-fonts/style.css">
+  <script src="bower_components/gaia-theme/lib/gaia-theme-selector.js"></script>
+  <script src="bower_components/gaia-icons/gaia-icons.js"></script>
+  <script src="bower_components/gaia-component/gaia-component.js"></script>
+  <script src="bower_components/pressed/pressed.js"></script>
+  <script src="lib/font-fit.js"></script>
+  <script src="gaia-header.js"></script>
+  <style>
+
     gaia-header {
       margin-bottom: 15px;
     }
+
     #message {
       font-size: 2rem;
       margin: 1.5rem 3rem;
     }
+
   </style>
-  <script>
-    window.GAIA_HEADER_BASE_URL = './';
-  </script>
-  <!-- <link href="bower_components/gaia-icons/style-embedded.css" type="text/css" rel="stylesheet"> -->
-  <script src="dist/script.js"></script>
 </head>
 
-<body>
+<body class="l-pt-mega">
+  <gaia-theme-selector></gaia-theme-selector>
+
+  <button id="rtl">Toggle RTL</button>
+
   <gaia-header action="back">
     <h1>Keyboard Settings</h1>
   </gaia-header>
@@ -44,14 +45,29 @@
   </gaia-header>
 
   <gaia-header action="close">
+    <h1>No action button</h1>
+    <button data-icon="settings"></button>
+  </gaia-header>
+
+  <gaia-header action="close">
     <h1>Custom a href</h1>
     <a href="#">Custom</a>
+  </gaia-header>
+
+  <gaia-header action="back">
+    <h1>really long title really long title really long title really long title really long title really long title really long title really long title really long title really long title really long title</h1>
   </gaia-header>
 
   <gaia-header>
     <h1>really long title really long title really long title really long title really long title really long title really long title really long title really long title really long title really long title</h1>
     <a data-icon="email"></a>
     <button data-icon="settings"></button>
+  </gaia-header>
+
+  <gaia-header>
+    <h1>Messages</h1>
+    <a data-icon="compose"></a>
+    <button data-icon="more"></button>
   </gaia-header>
 
   <gaia-header action="close">
@@ -64,16 +80,13 @@
     <button>Custom Back Button</button>
     <h1 id="title">Customised</h1>
     <button id="done8" data-icon="more"></button>
-    <button id="edit8" data-icon="share"></button>
+    <button id="edit8" data-icon="share" disabled></button>
     <button>Done</button>
   </gaia-header>
 
   <div id="message"></div>
 
-  <p><em>The is a bug that breaks shadow-dom layout when the `textContent` of a projected-content node is changed. Use the buttons below to break the layout of the last header. If the element is reflowed (by showing and hiding) its layout is fixed.</em></p>
-
-  <button id="breakit">Break it</button>
-  <button id="fixit">Fix it</button>
+  <button id="append">Append a header</button>
 
   <script>
   var els = document.querySelectorAll('gaia-header');
@@ -84,16 +97,18 @@
     });
   });
 
-  breakit.addEventListener('click', function(e) {
-    title.textContent = 'I\'m broken :(';
+  append.addEventListener('click', function() {
+    var div = document.createElement('div');
+    div.innerHTML = '<gaia-header action="menu"><h1>Gaia Header</h1></gaia-header>';
+    document.body.insertBefore(div.firstElementChild, message);
   });
 
-  fixit.addEventListener('click', function(e) {
-    title.textContent = 'Forcing reflow fixes me :\'(';
-    header.style.display = 'none';
-    var reflow = header.offsetTop;
-    header.style.display = '';
+  rtl.addEventListener('click', function() {
+    var el = document.documentElement;
+    var dir = el.getAttribute('dir');
+    el.setAttribute('dir', dir === 'rtl' ? 'ltr' : 'rtl');
   });
+
   </script>
 </body>
 </html>
