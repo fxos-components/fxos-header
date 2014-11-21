@@ -147,146 +147,6 @@ return w[n];},m.exports,m);w[n]=m.exports;};})('gaia-icons',this));
 
 },{}],3:[function(require,module,exports){
 ;(function(define){'use strict';define(function(require,exports,module){
-
-/**
- * Pointer event abstraction to make
- * it work for touch and mouse.
- *
- * @type {Object}
- */
-var pointer = [
-  { down: 'touchstart', up: 'touchend', move: 'touchmove' },
-  { down: 'mousedown', up: 'mouseup', move: 'mousemove' }
-]['ontouchstart' in window ? 0 : 1];
-
-module.exports = function(el, options) {
-  var released = (options && options.released) || 200;
-  var scope = (options && options.scope) || el;
-  var min = (options && options.min) || 300;
-  var instant = options && options.instant;
-  var timeouts = {};
-  var removeReleased;
-
-  el.addEventListener(pointer.down, function(e) {
-    var start = e.timeStamp;
-    var target = e.target;
-    var pressed = false;
-    var last = e;
-
-    // If there is a removeRelease pending
-    // run it before we add any more 'pressed'
-    if (removeReleased) { removeReleased(); }
-
-    if (instant) { onPressed(); }
-    else { notScrolling(e, onPressed); }
-
-    function onPressed() {
-      classListUp(target, scope, 'add', 'pressed');
-    }
-
-    addEventListener(pointer.up, function fn(e) {
-      removeEventListener(pointer.up, fn, true);
-
-      var duration = e.timeStamp - start;
-      var delta = min - duration;
-      var lag = Math.max(delta, 0);
-
-      // Once we consider the 'press' event
-      // to be over, we remove the 'pressed'
-      // class and add a 'released' class.
-      timeouts.pressed = setTimeout(function() {
-        classListUp(target, scope, 'remove', 'pressed');
-        classListUp(target, scope, 'add', 'released');
-
-        removeReleased = function() {
-          clearTimeout(timeouts.released);
-          classListUp(target, scope, 'remove', 'released');
-          removeReleased = null;
-        };
-
-        timeouts.released = setTimeout(removeReleased, released);
-      }, lag);
-    }, true);
-  }, true);
-};
-
-function notScrolling(e, fn) {
-  detectScrolling(e, function(scrolling) {
-    if (!scrolling) { fn(); }
-  });
-}
-
-function detectScrolling(e, fn) {
-  var period = 76;
-  var last = e;
-
-  if (windowScrolling) { return fn(true); }
-  if (!e.touches) { return fn(false); }
-
-  addEventListener('touchmove', onTouchMove, true);
-  setTimeout(detect, period);
-
-  function detect() {
-    removeEventListener('touchmove', onTouchMove, true);
-    if (windowScrolling) { return fn(true); }
-    var time = last.timeStamp - e.timeStamp;
-    var distance = getDistance(e.touches[0], last.touches[0]);
-    var speed = distance / time;
-    var scrolling = speed > 0.03;
-    fn(scrolling);
-  }
-
-  function onTouchMove(e) { last = e; }
-
-  function getDistance(a, b) {
-    var xs = 0;
-    var ys = 0;
-
-    xs = b.clientX - a.clientX;
-    xs = xs * xs;
-
-    ys = b.clientY - a.clientY;
-    ys = ys * ys;
-
-    return Math.sqrt(xs + ys);
-  }
-}
-
-var windowScrolling = false;
-var scrollTimeout;
-
-// addEventListener('scroll', function() {
-//   windowScrolling = true;
-//   clearTimeout(scrollTimeout);
-//   scrollTimeout = setTimeout(function() {
-//     windowScrolling = false;
-//   }, 60);
-// });
-
-/**
- * Run a classList method on every
- * element up the DOM tree, until
- * the given scope.
- *
- * @param  {Element} el
- * @param {Element} scope
- * @param  {String} method
- * @param  {String} cls
- */
-function classListUp(el, scope, method, cls) {
-  while (el && el.classList && el !== scope.parentNode) {
-    el.classList[method](cls);
-    el = el.parentNode;
-  }
-}
-
-});})(typeof define=='function'&&define.amd?define
-:(function(n,w){'use strict';return typeof module=='object'?function(c){
-c(require,exports,module);}:function(c){var m={exports:{}};c(function(n){
-return w[n];},m.exports,m);w[n]=m.exports;};})('pressed',this));
-
-},{}],4:[function(require,module,exports){
-;(function(define){'use strict';define(function(require,exports,module){
 /*jshint esnext:true*/
 
 /**
@@ -295,7 +155,6 @@ return w[n];},m.exports,m);w[n]=m.exports;};})('pressed',this));
 
 var Component = require('gaia-component');
 var fontFit = require('./lib/font-fit');
-var pressed = require('pressed');
 
 // Load 'gaia-icons' font-family
 require('gaia-icons');
@@ -333,7 +192,6 @@ module.exports = Component.register('gaia-header', {
     };
 
     this.els.actionButton.addEventListener('click', e => this.onActionButtonClick(e));
-    this.setupInteractionListeners();
     this.configureActionButton();
     this.runFontFit();
   },
@@ -441,27 +299,6 @@ module.exports = Component.register('gaia-header', {
     setTimeout(this.dispatchEvent.bind(this, actionEvent));
   },
 
-  /**
-   * Adds helper classes to allow us to style
-   * specifically when a touch interaction is
-   * taking place.
-   *
-   * We use this specifically to apply a
-   * transition-delay when the user releases
-   * their finger from a button so that they
-   * can momentarily see the :active state,
-   * reinforcing the UI has responded to
-   * their touch.
-   *
-   * We bind to mouse events to facilitate
-   * desktop usage.
-   *
-   * @private
-   */
-  setupInteractionListeners: function() {
-    pressed(this.els.inner, { scope: this, instant: true });
-  },
-
   template: `
   <style>
 
@@ -516,10 +353,11 @@ module.exports = Component.register('gaia-header', {
     font-size: 30px;
     margin: 0;
     padding: 0;
+    border: 0;
     align-items: center;
     background: none;
     cursor: pointer;
-    border: 0;
+    transition: opacity 200ms 280ms;
 
     color:
       var(--header-action-button-color,
@@ -538,29 +376,12 @@ module.exports = Component.register('gaia-header', {
   }
 
   /**
-   * .pressed
-   *
-   * The pressed.js library adds a 'pressed'
-   * class which we use instead of :active,
-   * to give us more control over
-   * interaction styling.
+   * :active
    */
 
-  .action-button.pressed {
+  .action-button:active {
+    transition: none;
     opacity: 0.2;
-  }
-
-  /**
-   * .released
-   *
-   * The pressed.js library adds a 'released'
-   * class for a few ms after the finger
-   * leaves the button. This allows us
-   * to style touchend interactions.
-   */
-
-  .action-button.released {
-    transition: opacity 200ms;
   }
 
   /** Action Button Icon
@@ -678,36 +499,20 @@ module.exports = Component.register('gaia-header', {
     font-style: italic;
     cursor: pointer;
 
+    transition: opacity 200ms 280ms;
+
     color:
       var(--gaia-header-button-color);
   }
 
   /**
-   * .pressed
-   *
-   * The pressed.js library adds a 'pressed'
-   * class which we use instead of :active,
-   * to give us more control over
-   * interaction styling.
+   * :active
    */
 
-  ::content a.pressed,
-  ::content button.pressed {
+  ::content a:active,
+  ::content button:active {
+    transition: none;
     opacity: 0.2;
-  }
-
-  /**
-   * .released
-   *
-   * The pressed.js library adds a 'released'
-   * class for a few ms after the finger
-   * leaves the button. This allows us
-   * to style touchend interactions.
-   */
-
-  ::content a.released,
-  ::content button.released {
-    transition: opacity 200ms;
   }
 
   /**
@@ -726,7 +531,7 @@ module.exports = Component.register('gaia-header', {
   ::content a[disabled],
   ::content button[disabled] {
     pointer-events: none;
-    opacity: 0.3;
+    color: var(--header-disabled-button-color);
   }
 
   /** Icon Buttons
@@ -773,7 +578,7 @@ module.exports = Component.register('gaia-header', {
 c(require,exports,module);}:function(c){var m={exports:{}};c(function(n){
 return w[n];},m.exports,m);w[n]=m.exports;};})('gaia-header',this));
 
-},{"./lib/font-fit":5,"gaia-component":1,"gaia-icons":2,"pressed":3}],5:[function(require,module,exports){
+},{"./lib/font-fit":4,"gaia-component":1,"gaia-icons":2}],4:[function(require,module,exports){
 ;(function(define){'use strict';define(function(require,exports,module){
 
   /**
@@ -1111,5 +916,5 @@ return w[n];},m.exports,m);w[n]=m.exports;};})('gaia-header',this));
 c(require,exports,module);}:function(c){var m={exports:{}};c(function(n){
 return w[n];},m.exports,m);w[n]=m.exports;};})('./lib/font-fit',this));
 
-},{}]},{},[4])(4)
+},{}]},{},[3])(3)
 });

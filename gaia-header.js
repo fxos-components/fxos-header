@@ -7,7 +7,6 @@
 
 var Component = require('gaia-component');
 var fontFit = require('./lib/font-fit');
-var pressed = require('pressed');
 
 // Load 'gaia-icons' font-family
 require('gaia-icons');
@@ -45,7 +44,6 @@ module.exports = Component.register('gaia-header', {
     };
 
     this.els.actionButton.addEventListener('click', e => this.onActionButtonClick(e));
-    this.setupInteractionListeners();
     this.configureActionButton();
     this.runFontFit();
   },
@@ -153,27 +151,6 @@ module.exports = Component.register('gaia-header', {
     setTimeout(this.dispatchEvent.bind(this, actionEvent));
   },
 
-  /**
-   * Adds helper classes to allow us to style
-   * specifically when a touch interaction is
-   * taking place.
-   *
-   * We use this specifically to apply a
-   * transition-delay when the user releases
-   * their finger from a button so that they
-   * can momentarily see the :active state,
-   * reinforcing the UI has responded to
-   * their touch.
-   *
-   * We bind to mouse events to facilitate
-   * desktop usage.
-   *
-   * @private
-   */
-  setupInteractionListeners: function() {
-    pressed(this.els.inner, { scope: this, instant: true });
-  },
-
   template: `
   <style>
 
@@ -228,10 +205,11 @@ module.exports = Component.register('gaia-header', {
     font-size: 30px;
     margin: 0;
     padding: 0;
+    border: 0;
     align-items: center;
     background: none;
     cursor: pointer;
-    border: 0;
+    transition: opacity 200ms 280ms;
 
     color:
       var(--header-action-button-color,
@@ -250,29 +228,12 @@ module.exports = Component.register('gaia-header', {
   }
 
   /**
-   * .pressed
-   *
-   * The pressed.js library adds a 'pressed'
-   * class which we use instead of :active,
-   * to give us more control over
-   * interaction styling.
+   * :active
    */
 
-  .action-button.pressed {
+  .action-button:active {
+    transition: none;
     opacity: 0.2;
-  }
-
-  /**
-   * .released
-   *
-   * The pressed.js library adds a 'released'
-   * class for a few ms after the finger
-   * leaves the button. This allows us
-   * to style touchend interactions.
-   */
-
-  .action-button.released {
-    transition: opacity 200ms;
   }
 
   /** Action Button Icon
@@ -390,36 +351,20 @@ module.exports = Component.register('gaia-header', {
     font-style: italic;
     cursor: pointer;
 
+    transition: opacity 200ms 280ms;
+
     color:
       var(--gaia-header-button-color);
   }
 
   /**
-   * .pressed
-   *
-   * The pressed.js library adds a 'pressed'
-   * class which we use instead of :active,
-   * to give us more control over
-   * interaction styling.
+   * :active
    */
 
-  ::content a.pressed,
-  ::content button.pressed {
+  ::content a:active,
+  ::content button:active {
+    transition: none;
     opacity: 0.2;
-  }
-
-  /**
-   * .released
-   *
-   * The pressed.js library adds a 'released'
-   * class for a few ms after the finger
-   * leaves the button. This allows us
-   * to style touchend interactions.
-   */
-
-  ::content a.released,
-  ::content button.released {
-    transition: opacity 200ms;
   }
 
   /**
@@ -438,7 +383,7 @@ module.exports = Component.register('gaia-header', {
   ::content a[disabled],
   ::content button[disabled] {
     pointer-events: none;
-    opacity: 0.3;
+    color: var(--header-disabled-button-color);
   }
 
   /** Icon Buttons
