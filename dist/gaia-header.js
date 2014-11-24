@@ -2,6 +2,8 @@
 ;(function(define){define(function(require,exports,module){
 'use strict';
 
+var removeAttribute = HTMLElement.prototype.removeAttribute;
+var setAttribute = HTMLElement.prototype.setAttribute;
 var noop  = function() {};
 
 /**
@@ -11,25 +13,41 @@ var noop  = function() {};
  * @return {Boolean}
  */
 var hasShadowCSS = (function() {
-  try { document.querySelector(':host'); return true; }
+  var div = document.createElement('div');
+  try { div.querySelector(':host'); return true; }
   catch (e) { return false; }
 })();
 
+/**
+ * Register a new component.
+ *
+ * @param  {String} name
+ * @param  {Object} props
+ * @return {constructor}
+ * @public
+ */
 module.exports.register = function(name, props) {
-  var proto = mixin(Object.create(base), props);
-  var output = extractLightDomCSS(proto.template);
+  injectGlobalCss(props.globalCss);
+  delete props.globalCSS;
 
-  proto.template =  output.template;
-  proto.lightCSS =  output.lightCSS;
+  var proto = Object.assign(Object.create(base), props);
+  var output = extractLightDomCSS(proto.template, name);
+
+  proto.template = output.template;
+  proto.lightCss = output.lightCss;
+
+  if (props.attrs) {
+    Object.defineProperties(proto, props.attrs);
+  }
 
   // Register and return the constructor
-  // and expose `protoype` (bug 1048339)
-  var El = document.registerElement('gaia-header', { prototype: proto });
+  // and expose `protoytpe` (bug 1048339)
+  var El = document.registerElement(name, { prototype: proto });
   El.prototype = proto;
   return El;
 };
 
-var base = mixin(Object.create(HTMLElement.prototype), {
+var base = Object.assign(Object.create(HTMLElement.prototype), {
   attributeChanged: noop,
   attached: noop,
   detached: noop,
@@ -37,20 +55,65 @@ var base = mixin(Object.create(HTMLElement.prototype), {
   template: '',
 
   createdCallback: function() {
-    this.injectLightCSS(this);
+    this.injectLightCss(this);
     this.created();
   },
 
+  /**
+   * It is very common to want to keep object
+   * properties in-sync with attributes,
+   * for example:
+   *
+   *   el.value = 'foo';
+   *   el.setAttribute('value', 'foo');
+   *
+   * So we support an object on the prototype
+   * named 'attrs' to provide a consistent
+   * way for component authors to define
+   * these properties. When an attribute
+   * changes we keep the attr[name]
+   * up-to-date.
+   *
+   * @param  {String} name
+   * @param  {String||null} from
+   * @param  {String||null} to
+   */
   attributeChangedCallback: function(name, from, to) {
+    if (this.attrs && this.attrs[name]) { this[name] = to; }
     this.attributeChanged(name, from, to);
   },
 
-  attachedCallback: function() {
-    this.attached();
+  attachedCallback: function() { this.attached(); },
+  detachedCallback: function() { this.detached(); },
+
+  /**
+   * Sets an attribute internally
+   * and externally. This is so that
+   * we can style internal shadow-dom
+   * content.
+   *
+   * @param {String} name
+   * @param {String} value
+   */
+  setAttr: function(name, value) {
+    var internal = this.shadowRoot.firstElementChild;
+    setAttribute.call(internal, name, value);
+    setAttribute.call(this, name, value);
   },
 
-  detachedCallback: function() {
-    this.detached();
+  /**
+   * Removes an attribute internally
+   * and externally. This is so that
+   * we can style internal shadow-dom
+   * content.
+   *
+   * @param {String} name
+   * @param {String} value
+   */
+  removeAttr: function() {
+    var internal = this.shadowRoot.firstElementChild;
+    removeAttribute.call(internal, name, value);
+    removeAttribute.call(this, name, value);
   },
 
   /**
@@ -67,12 +130,12 @@ var base = mixin(Object.create(HTMLElement.prototype), {
    *
    * @private
    */
-  injectLightCSS: function(el) {
+  injectLightCss: function(el) {
     if (hasShadowCSS) { return; }
-    var style = document.createElement('style');
-    style.setAttribute('scoped', '');
-    style.innerHTML = el.lightCSS;
-    el.appendChild(style);
+    this.lightStyle = document.createElement('style');
+    this.lightStyle.setAttribute('scoped', '');
+    this.lightStyle.innerHTML = el.lightCss;
+    el.appendChild(this.lightStyle);
   }
 });
 
@@ -84,26 +147,38 @@ var base = mixin(Object.create(HTMLElement.prototype), {
  *
  * @return {String}
  */
-function extractLightDomCSS(template) {
+function extractLightDomCSS(template, name) {
   var regex = /(?::host|::content)[^{]*\{[^}]*\}/g;
-  var lightCSS = '';
+  var lightCss = '';
 
   if (!hasShadowCSS) {
     template = template.replace(regex, function(match) {
-      lightCSS += match.replace(/::content|:host/g, 'gaia-header');
+      lightCss += match.replace(/::content|:host/g, name);
       return '';
     });
   }
 
   return {
     template: template,
-    lightCSS: lightCSS
+    lightCss: lightCss
   };
 }
 
-function mixin(a, b) {
-  for (var key in b) { a[key] = b[key]; }
-  return a;
+/**
+ * Some CSS rules, such as @keyframes
+ * and @font-face don't work inside
+ * scoped or shadow <style>. So we
+ * have to put them into 'global'
+ * <style> in the head of the
+ * document.
+ *
+ * @param  {String} css
+ */
+function injectGlobalCss(css) {
+  if (!css) return;
+  var style = document.createElement('style');
+  style.innerHTML = css;
+  document.head.appendChild(style);
 }
 
 });})(typeof define=='function'&&define.amd?define
