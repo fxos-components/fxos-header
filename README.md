@@ -30,7 +30,3 @@ If choosing to use the built in action-button you may wish to localize the conte
   <h1>title</h1>
 </gaia-header>
 ```
-
-## RTL
-
-Header content will appear 'right-to-left' if the document states so (`<html dir="rtl">`). Things won't work correctly if the `dir` attribute is on any other node.
