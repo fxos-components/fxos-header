@@ -294,6 +294,7 @@ module.exports = Component.register('gaia-header', {
     font-weight: 300;
     font-style: italic;
     font-size: 24px;
+    -moz-user-select: none;
 
     color:
       var(--header-title-color,
