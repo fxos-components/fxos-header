@@ -2,8 +2,6 @@
 ;(function(define){define(function(require,exports,module){
 'use strict';
 
-var removeAttribute = HTMLElement.prototype.removeAttribute;
-var setAttribute = HTMLElement.prototype.setAttribute;
 var noop  = function() {};
 
 /**
@@ -13,41 +11,25 @@ var noop  = function() {};
  * @return {Boolean}
  */
 var hasShadowCSS = (function() {
-  var div = document.createElement('div');
-  try { div.querySelector(':host'); return true; }
+  try { document.querySelector(':host'); return true; }
   catch (e) { return false; }
 })();
 
-/**
- * Register a new component.
- *
- * @param  {String} name
- * @param  {Object} props
- * @return {constructor}
- * @public
- */
 module.exports.register = function(name, props) {
-  injectGlobalCss(props.globalCss);
-  delete props.globalCSS;
-
-  var proto = Object.assign(Object.create(base), props);
+  var proto = mixin(Object.create(base), props);
   var output = extractLightDomCSS(proto.template, name);
 
-  proto.template = output.template;
-  proto.lightCss = output.lightCss;
-
-  if (props.attrs) {
-    Object.defineProperties(proto, props.attrs);
-  }
+  proto.template =  output.template;
+  proto.lightCSS =  output.lightCSS;
 
   // Register and return the constructor
-  // and expose `protoytpe` (bug 1048339)
+  // and expose `protoype` (bug 1048339)
   var El = document.registerElement(name, { prototype: proto });
-  El.prototype = proto;
+  //El.prototype = proto;
   return El;
 };
 
-var base = Object.assign(Object.create(HTMLElement.prototype), {
+var base = mixin(Object.create(HTMLElement.prototype), {
   attributeChanged: noop,
   attached: noop,
   detached: noop,
@@ -55,65 +37,20 @@ var base = Object.assign(Object.create(HTMLElement.prototype), {
   template: '',
 
   createdCallback: function() {
-    this.injectLightCss(this);
+    this.injectLightCSS(this);
     this.created();
   },
 
-  /**
-   * It is very common to want to keep object
-   * properties in-sync with attributes,
-   * for example:
-   *
-   *   el.value = 'foo';
-   *   el.setAttribute('value', 'foo');
-   *
-   * So we support an object on the prototype
-   * named 'attrs' to provide a consistent
-   * way for component authors to define
-   * these properties. When an attribute
-   * changes we keep the attr[name]
-   * up-to-date.
-   *
-   * @param  {String} name
-   * @param  {String||null} from
-   * @param  {String||null} to
-   */
   attributeChangedCallback: function(name, from, to) {
-    if (this.attrs && this.attrs[name]) { this[name] = to; }
     this.attributeChanged(name, from, to);
   },
 
-  attachedCallback: function() { this.attached(); },
-  detachedCallback: function() { this.detached(); },
-
-  /**
-   * Sets an attribute internally
-   * and externally. This is so that
-   * we can style internal shadow-dom
-   * content.
-   *
-   * @param {String} name
-   * @param {String} value
-   */
-  setAttr: function(name, value) {
-    var internal = this.shadowRoot.firstElementChild;
-    setAttribute.call(internal, name, value);
-    setAttribute.call(this, name, value);
+  attachedCallback: function() {
+    this.attached();
   },
 
-  /**
-   * Removes an attribute internally
-   * and externally. This is so that
-   * we can style internal shadow-dom
-   * content.
-   *
-   * @param {String} name
-   * @param {String} value
-   */
-  removeAttr: function() {
-    var internal = this.shadowRoot.firstElementChild;
-    removeAttribute.call(internal, name, value);
-    removeAttribute.call(this, name, value);
+  detachedCallback: function() {
+    this.detached();
   },
 
   /**
@@ -130,12 +67,12 @@ var base = Object.assign(Object.create(HTMLElement.prototype), {
    *
    * @private
    */
-  injectLightCss: function(el) {
+  injectLightCSS: function(el) {
     if (hasShadowCSS) { return; }
-    this.lightStyle = document.createElement('style');
-    this.lightStyle.setAttribute('scoped', '');
-    this.lightStyle.innerHTML = el.lightCss;
-    el.appendChild(this.lightStyle);
+    var style = document.createElement('style');
+    style.setAttribute('scoped', '');
+    style.innerHTML = el.lightCSS;
+    el.appendChild(style);
   }
 });
 
@@ -149,42 +86,31 @@ var base = Object.assign(Object.create(HTMLElement.prototype), {
  */
 function extractLightDomCSS(template, name) {
   var regex = /(?::host|::content)[^{]*\{[^}]*\}/g;
-  var lightCss = '';
+  var lightCSS = '';
 
   if (!hasShadowCSS) {
     template = template.replace(regex, function(match) {
-      lightCss += match.replace(/::content|:host/g, name);
+      lightCSS += match.replace(/::content|:host/g, name);
       return '';
     });
   }
 
   return {
     template: template,
-    lightCss: lightCss
+    lightCSS: lightCSS
   };
 }
 
-/**
- * Some CSS rules, such as @keyframes
- * and @font-face don't work inside
- * scoped or shadow <style>. So we
- * have to put them into 'global'
- * <style> in the head of the
- * document.
- *
- * @param  {String} css
- */
-function injectGlobalCss(css) {
-  if (!css) return;
-  var style = document.createElement('style');
-  style.innerHTML = css;
-  document.head.appendChild(style);
+function mixin(a, b) {
+  for (var key in b) { a[key] = b[key]; }
+  return a;
 }
 
 });})(typeof define=='function'&&define.amd?define
 :(function(n,w){'use strict';return typeof module=='object'?function(c){
 c(require,exports,module);}:function(c){var m={exports:{}};c(function(n){
 return w[n];},m.exports,m);w[n]=m.exports;};})('gaia-component',this));
+
 },{}],2:[function(require,module,exports){
 (function(define){define(function(require,exports,module){
 /*jshint laxbreak:true*/
@@ -776,13 +702,20 @@ return w[n];},m.exports,m);w[n]=m.exports;};})('gaia-header',this));
 
     /**
      * Auto-resize all text changes.
+     * We reformat only once even if several mutations occur for one target.
      *
      * @param {Array} mutations A MutationRecord list.
      * @private
      */
     _handleTextChanges: function(mutations) {
+      var targets = new Set();
+
       for (var i = 0; i < mutations.length; i++) {
-        this.reformatHeading(mutations[i].target);
+        targets.add(mutations[i].target);
+      }
+
+      for (var target of targets) {
+        this.reformatHeading(target);
       }
     },
 
