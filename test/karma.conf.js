@@ -19,10 +19,8 @@ module.exports = function(config) {
     files: [
       'bower_components/gaia-component/gaia-component.js',
       'bower_components/gaia-icons/gaia-icons.js',
-      'lib/font-fit.js',
+      'bower_components/font-fit/font-fit.js',
       'gaia-header.js',
-      'test/mocks/mock_font_fit.js',
-      'test/font_fit_test.js',
       'test/test.js',
       {
         pattern: 'bower_components/gaia-icons/gaia-icons.css',
