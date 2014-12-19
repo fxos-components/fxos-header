@@ -237,6 +237,34 @@ suite('font-fit.js', function() {
     });
   });
 
+  suite('GaiaHeaderFontFit.observeHeadingChanges', function() {
+    test('should call reformatHeading when header changes', function(done) {
+      var el = setupHeaderElement();
+      GaiaHeaderFontFit.observeHeadingChanges(el);
+      this.sandbox.stub(GaiaHeaderFontFit, 'reformatHeading');
+
+      function onMutations() {
+        observer.disconnect();
+        try {
+          sinon.assert.calledWith(
+            GaiaHeaderFontFit.reformatHeading,
+            el
+          );
+          sinon.assert.calledOnce(GaiaHeaderFontFit.reformatHeading);
+          done();
+        } catch (e) {
+          done(e);
+        }
+      }
+
+      var observer = new MutationObserver(onMutations);
+      observer.observe(el, { childList: true });
+
+      el.textContent = 'first change';
+      el.textContent = 'second change';
+    });
+  });
+
   suite('GaiaHeaderFontFit._getFontWidth', function() {
     test('Should measureText correctly for multiple fontSizes', function() {
       var string = 'arbitrary' + Date.now();
