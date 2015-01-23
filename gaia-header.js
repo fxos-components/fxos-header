@@ -138,8 +138,10 @@ exports = module.exports = component.register('gaia-header', {
   runFontFit: function() {
     debug('run font-fit');
 
-    // Nothing is run if `no-font-fit` attr is present
-    if (this.noFontFit) { return Promise.reject('no-font-fit'); }
+    // Nothing is run if `no-font-fit` attribute
+    // is present. We don't `reject()` as this
+    // isn't technically an error state.
+    if (this.noFontFit) { return Promise.resolve(); }
 
     var titles = this.els.titles;
     var space = this.getTitleSpace();

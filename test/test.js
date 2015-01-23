@@ -29,7 +29,7 @@ suite('GaiaHeader', function() {
     // it's the same no matter the size of the
     // browser window across test environments.
     this.innerWidth = Object.getOwnPropertyDescriptor(window, 'innerWidth');
-    this.innerWidth_spy = sinon.spy(function() { return windowWidth; });
+    this.innerWidth_spy = sinon.spy(() => windowWidth);
     Object.defineProperty(window, 'innerWidth', {
       get: this.innerWidth_spy
     });
@@ -196,7 +196,7 @@ suite('GaiaHeader', function() {
 
       var el = this.dom.firstElementChild;
 
-      afterNext(el, 'runFontFit').catch(() => {
+      afterNext(el, 'runFontFit').then(() => {
         sinon.assert.notCalled(this.fontFit);
       }).then(done, done);
     });
@@ -286,9 +286,9 @@ suite('GaiaHeader', function() {
         // font-fit needs to be run.
         el.action = null;
 
-        return afterNext(el, 'runFontFit').then(() => {
-          sinon.assert.calledOnce(this.fontFit);
-        });
+        return afterNext(el, 'runFontFit');
+      }).then(() => {
+        sinon.assert.calledOnce(this.fontFit);
       }).then(done, done);
     });
 
@@ -308,9 +308,9 @@ suite('GaiaHeader', function() {
         // the mutation observer
         button.hidden = true;
 
-        return afterNext(el, 'runFontFit').then(() => {
-          sinon.assert.calledOnce(this.fontFit);
-        });
+        return afterNext(el, 'runFontFit');
+      }).then(() => {
+        sinon.assert.calledOnce(this.fontFit);
       }).then(done, done);
     });
 
@@ -329,10 +329,9 @@ suite('GaiaHeader', function() {
         // Hiding a button triggers
         // the mutation observer
         button.classList.add('hidden');
-
-        return afterNext(el, 'runFontFit').then(() => {
-          sinon.assert.calledOnce(this.runFontFit);
-        });
+        return afterNext(el, 'runFontFit');
+      }).then(() => {
+        sinon.assert.calledOnce(this.runFontFit);
       }).then(done, done);
     });
   });
@@ -340,8 +339,7 @@ suite('GaiaHeader', function() {
   suite('title-start and title-end attributes', function() {
     var h1, el;
 
-    function insertHeader(container, attrs, done) {
-      done = done || function() {};
+    function insertHeader(container, attrs) {
       attrs = attrs || {};
 
       var start = 'titleStart' in attrs ? 'title-start="' +  attrs.titleStart + '"' : '';
@@ -356,12 +354,12 @@ suite('GaiaHeader', function() {
       el = container.firstElementChild;
       h1 = el.querySelector('h1');
 
-      return afterNext(el, 'runFontFit').then(done);
+      return afterNext(el, 'runFontFit');
     }
 
     suite('normal cases', function() {
       setup(function(done) {
-        insertHeader(this.dom, { titleStart: 50, titleEnd: 100 }, done);
+        insertHeader(this.dom, { titleStart: 50, titleEnd: 100 }).then(done);
       });
 
       test('are correctly taken into account', function() {
@@ -369,17 +367,15 @@ suite('GaiaHeader', function() {
       });
 
       test('changing start attribute is taken into account', function(done) {
+        el.setAttribute('title-start', '0');
 
         afterNext(el, 'runFontFit').then(() => {
-          afterNext(el, 'runFontFit').then(() => {
-            assert.equal(h1.style.MozMarginStart, '100px');
-          }).then(done, done);
-
           assert.equal(h1.style.MozMarginStart, '100px');
           el.removeAttribute('title-start');
-        });
-
-        el.setAttribute('title-start', '0');
+          return afterNext(el, 'runFontFit');
+        }).then(() => {
+          assert.equal(h1.style.MozMarginStart, '100px');
+        }).then(done, done);
       });
 
       test('changing end attribute is taken into account', function(done) {
@@ -389,10 +385,9 @@ suite('GaiaHeader', function() {
         afterNext(el, 'runFontFit').then(() => {
           assert.equal(h1.style.MozMarginStart, '-50px');
           el.removeAttribute('title-end');
-
-          return afterNext(el, 'runFontFit').then(() => {
-            assert.equal(h1.style.MozMarginStart, '-50px');
-          });
+          return afterNext(el, 'runFontFit');
+        }).then(() => {
+          assert.equal(h1.style.MozMarginStart, '-50px');
         }).then(done, done);
       });
 
@@ -439,7 +434,7 @@ suite('GaiaHeader', function() {
       });
 
       test('setAttribute not called if value didn\'t change', function() {
-        insertHeader(this.dom, { titleStart: 50, titleEnd: '50' });
+        insertHeader(this.dom, { titleStart: '50', titleEnd: '50' });
 
         this.sinon.spy(el, 'setAttribute');
         this.sinon.spy(el, 'attributeChanged');
@@ -508,24 +503,21 @@ suite('GaiaHeader', function() {
       // the element is detached
       h1.textContent = 'bar';
 
-      return afterNext(el, 'runFontFit').catch(() => {
+      return afterNext(el, 'runFontFit');
+    }).catch(() => {
+      sinon.assert.notCalled(this.runFontFit, 'font-fit doesn\'t run when detached');
 
-        sinon.assert.notCalled(this.runFontFit, 'font-fit doesn\'t run when detached');
+      // Reattach the element
+      this.dom.appendChild(el);
+      return afterNext(el, 'runFontFit');
+    }).then(() => {
+      sinon.assert.called(el.runFontFit, 'font-fit run when re-attached');
+      sinon.assert.called(el.observerStart, 'observer started again');
 
-        // Reattach the element
-        this.dom.appendChild(el);
-
-        return afterNext(el, 'runFontFit').then(() => {
-          sinon.assert.called(el.runFontFit, 'font-fit run when re-attached');
-          sinon.assert.called(el.observerStart, 'observer started again');
-
-          h1.textContent = 'foo';
-
-          return afterNext(el, 'runFontFit').then(() => {
-            sinon.assert.called(el.runFontFit, 'font-fit run on mutation');
-          });
-        });
-      });
+      h1.textContent = 'foo';
+      return afterNext(el, 'runFontFit');
+    }).then(() => {
+      sinon.assert.called(el.runFontFit, 'font-fit run on mutation');
     }).then(done, done);
   });
 
@@ -537,7 +529,7 @@ suite('GaiaHeader', function() {
       el.runFontFit.restore();
       this.sinon.spy(el, 'runFontFit');
 
-      afterNext(el, 'runFontFit').catch(() => {
+      afterNext(el, 'runFontFit').then(() => {
         sinon.assert.notCalled(el.fontFit);
       }).then(done, done);
     });
@@ -546,13 +538,13 @@ suite('GaiaHeader', function() {
       this.dom.innerHTML = '<gaia-header no-font-fit><h1>title</h1></gaia-header>';
       var el = this.dom.firstElementChild;
 
-      afterNext(el, 'runFontFit').catch(() => {
+      afterNext(el, 'runFontFit').then(() => {
+        sinon.assert.notCalled(el.fontFit);
         this.fontFit.reset();
         el.removeAttribute('no-font-fit');
-
-        return afterNext(el, 'runFontFit').then(() => {
-          sinon.assert.called(this.fontFit);
-        });
+        return afterNext(el, 'runFontFit');
+      }).then(() => {
+        sinon.assert.called(this.fontFit);
       }).then(done, done);
     });
 
@@ -561,27 +553,23 @@ suite('GaiaHeader', function() {
       this.dom.innerHTML = '<gaia-header no-font-fit><h1>title</h1></gaia-header>';
       var el = this.dom.firstElementChild;
 
-      afterNext(el, 'runFontFit').catch(() => {
+      afterNext(el, 'runFontFit').then(() => {
         el.noFontFit = 'foo';
-
-        return afterNext(el, 'setTitleStyle').catch(() => {
-          sinon.assert.notCalled(el.setTitleStyle);
-          el.noFontFit = '';
-
-          return afterNext(el, 'setTitleStyle').catch(() => {
-            sinon.assert.notCalled(el.setTitleStyle);
-            el.noFontFit = null;
-
-            return afterNext(el, 'setTitleStyle').then(() => {
-              sinon.assert.calledOnce(el.setTitleStyle);
-              el.noFontFit = false;
-
-              return afterNext(el, 'setTitleStyle').catch(() => {
-                sinon.assert.calledOnce(el.setTitleStyle);
-              });
-            });
-          });
-        });
+        return afterNext(el, 'setTitleStyle');
+      }).catch(() => {
+        sinon.assert.notCalled(el.setTitleStyle);
+        el.noFontFit = '';
+        return afterNext(el, 'setTitleStyle');
+      }).catch(() => {
+        sinon.assert.notCalled(el.setTitleStyle);
+        el.noFontFit = null;
+        return afterNext(el, 'setTitleStyle');
+      }).then(() => {
+        sinon.assert.calledOnce(el.setTitleStyle);
+        el.noFontFit = false;
+        return afterNext(el, 'setTitleStyle');
+      }).catch(() => {
+        sinon.assert.calledOnce(el.setTitleStyle);
       }).then(done, done);
     });
   });
@@ -718,24 +706,20 @@ suite('GaiaHeader', function() {
       var el = this.dom.firstElementChild;
       var h1 = el.querySelector('h1');
 
-      afterNext(el, 'runFontFit')
-        .then(() => {
-          assert.equal(h1.style.MozMarginStart, '50px');
-        })
-        .then(() => {
-          this.dom.innerHTML = `<gaia-header action="menu">
-            <h1>Header title</h1>
-          </gaia-header>`;
+      afterNext(el, 'runFontFit').then(() => {
+        assert.equal(h1.style.MozMarginStart, '50px');
 
-          el = this.dom.firstElementChild;
-          h1 = el.querySelector('h1');
+        this.dom.innerHTML = `<gaia-header action="menu">
+          <h1>Header title</h1>
+        </gaia-header>`;
 
-          return afterNext(el, 'runFontFit').then(() => {
-            assert.equal(h1.style.MozMarginStart, '-50px');
-          });
-        })
+        el = this.dom.firstElementChild;
+        h1 = el.querySelector('h1');
 
-        .then(done, done);
+        return afterNext(el, 'runFontFit');
+      }).then(() => {
+        assert.equal(h1.style.MozMarginStart, '-50px');
+      }).then(done, done);
     });
 
     test('It doesn\'t center if there is not enough space', function(done) {
@@ -886,11 +870,11 @@ suite('GaiaHeader', function() {
       this.fontFit.reset();
       title1.hidden = true;
       title2.hidden = false;
-      return afterNext(el, 'runFontFit').then(() => {
-        sinon.assert.notCalled(this.fontFit, 'font-fit not required');
-        assert.equal(title1.style.MozMarginStart, '50px');
-        assert.equal(title2.style.MozMarginStart, '50px');
-      });
+      return afterNext(el, 'runFontFit');
+    }).then(() => {
+      sinon.assert.notCalled(this.fontFit, 'font-fit not required');
+      assert.equal(title1.style.MozMarginStart, '50px');
+      assert.equal(title2.style.MozMarginStart, '50px');
     }).then(done, done);
   });
 
@@ -913,7 +897,7 @@ suite('GaiaHeader', function() {
     el.remove();
 
     afterNext(el, 'setTitleStyle').then(() => {
-      done(new Error('should not have run'));
+      done('timed out');
     }).catch(done, done);
   });
 
@@ -938,9 +922,7 @@ suite('GaiaHeader', function() {
       obj[method] = function() {
         clearTimeout(timeout);
         obj[method] = real; // restore asap
-        var result = real.apply(this, arguments);
-        if (result && result.then) { return result.then(resolve, reject); }
-        else { resolve(result); }
+        resolve(real.apply(obj, arguments));
       };
     });
   }
