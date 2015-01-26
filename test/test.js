@@ -886,7 +886,7 @@ suite('GaiaHeader', function() {
 
     afterNext(el, 'runFontFit').then(() => {
       done(new Error('should not have run'));
-    }).catch(done, done);
+    }).catch(() => done());
   });
 
   test('it clears pending async `setTitleStyles`', function(done) {
@@ -898,7 +898,7 @@ suite('GaiaHeader', function() {
 
     afterNext(el, 'setTitleStyle').then(() => {
       done('timed out');
-    }).catch(done, done);
+    }).catch(() => done());
   });
 
   /**
@@ -916,7 +916,7 @@ suite('GaiaHeader', function() {
       // after `wait` period: reject.
       timeout = setTimeout(() => {
         obj[method] = real;
-        reject();
+        reject(new Error('timeout exceeded'));
       }, wait);
 
       obj[method] = function() {
