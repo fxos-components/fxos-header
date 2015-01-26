@@ -922,7 +922,9 @@ suite('GaiaHeader', function() {
       obj[method] = function() {
         clearTimeout(timeout);
         obj[method] = real; // restore asap
-        resolve(real.apply(obj, arguments));
+        var result = real.apply(obj, arguments);
+        resolve(result);
+        return result;
       };
     });
   }
