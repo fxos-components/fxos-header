@@ -737,8 +737,27 @@ suite('GaiaHeader', function() {
       }).then(done, done);
     });
 
-    test('It should remove start padding if there is an action button', function(done) {
+    test('It doesn\'t have start/end padding if title is centerable', function(done) {
       this.dom.innerHTML = `<gaia-header action="menu">
+        <h1>Title can be center</h1>
+        <button></button>
+      </gaia-header>`;
+
+      var el = this.dom.firstElementChild;
+      var h1 = el.querySelector('h1');
+
+      afterNext(el, 'runFontFit').then(() => {
+        var style = getComputedStyle(h1);
+
+        // NOTE: ComputedStyle doesn't
+        // know what `MozPadding(Start|End)` is.
+        assert.equal(style.paddingLeft, '0px');
+        assert.equal(style.paddingRight, '0px');
+      }).then(done, done);
+    });
+
+    test('It should apply 10px padding-start when overflowing and no buttons before', function(done) {
+      this.dom.innerHTML = `<gaia-header>
         <h1>This title is far far far far far far far far far far far far far far far far far far too long to center</h1>
       </gaia-header>`;
 
@@ -746,22 +765,20 @@ suite('GaiaHeader', function() {
       var h1 = el.querySelector('h1');
 
       afterNext(el, 'runFontFit').then(() => {
-        assert.equal(getComputedStyle(h1).paddingLeft, '0px');
+        assert.equal(getComputedStyle(h1).paddingLeft, '10px');
       }).then(done, done);
     });
 
-    test('It should remove padding-end if there are buttons after', function(done) {
+    test('It should apply 10px padding-end when overflowing and no buttons after', function(done) {
       this.dom.innerHTML = `<gaia-header action="menu">
         <h1>This title is far far far far far far far far far far far far far far too long to center</h1>
-        <button></button>
-        <button></button>
       </gaia-header>`;
 
       var el = this.dom.firstElementChild;
       var h1 = el.querySelector('h1');
 
       afterNext(el, 'runFontFit').then(() => {
-        assert.equal(getComputedStyle(h1).paddingRight, '0px');
+        assert.equal(getComputedStyle(h1).paddingRight, '10px');
       }).then(done, done);
     });
   });

@@ -440,11 +440,20 @@ const KNOWN_ACTIONS = {
 const TITLE_FONT = 'italic 300 24px FiraSans';
 
 /**
+ * The padding (start/end) used if
+ * the title needs padding away from
+ * the edge of the header.
+ *
+ * @type {Number}
+ */
+const TITLE_PADDING = 10;
+
+/**
  * Register the element.
  *
  * @return {Element} constructor
  */
-exports = module.exports = component.register('gaia-header', {
+module.exports = component.register('gaia-header', {
 
   /**
    * Called when the element is first created.
@@ -581,7 +590,7 @@ exports = module.exports = component.register('gaia-header', {
   getTitleStyle: function(el, space) {
     debug('get el style', el, space);
     var text = el.textContent;
-    var styleId = text + space;
+    var styleId = text + space.value;
 
     // Bail when there's no text (or just whitespace)
     if (!text || !text.trim()) { return false; }
@@ -591,24 +600,30 @@ exports = module.exports = component.register('gaia-header', {
     if (getStyleId(el) === styleId) { return false; }
 
     var marginStart = this.getTitleMarginStart();
-    var textSpace = space - Math.abs(marginStart);
+    var textSpace = space.value - Math.abs(marginStart);
     var fontFitResult = this.fontFit(text, textSpace);
     var overflowing = fontFitResult.textWidth > textSpace;
+    var padding = { start: 0, end: 0 };
 
     // If the text is overflowing in the
     // centered title, we remove centering
     // to free up space, rerun fontFit to
     // get a fontSize which fits this space.
     if (overflowing) {
-      fontFitResult = this.fontFit(text, space);
+      debug('title overflowing');
+      padding.start = !space.start ? TITLE_PADDING : 0;
+      padding.end = !space.end ? TITLE_PADDING : 0;
+      textSpace = space.value + padding.start + padding.end;
+      fontFitResult = this.fontFit(text, textSpace);
       marginStart = 0;
     }
 
     return {
+      id: styleId,
       fontSize: fontFitResult.fontSize,
       marginStart: marginStart,
       overflowing: overflowing,
-      id: styleId
+      padding: padding
     };
   },
 
@@ -666,8 +681,9 @@ exports = module.exports = component.register('gaia-header', {
     debug('set title style', style);
     this.observerStop();
     el.style.MozMarginStart = style.marginStart + 'px';
+    el.style.MozPaddingStart = style.padding.start + 'px';
+    el.style.MozPaddingEnd = style.padding.end + 'px';
     el.style.fontSize = style.fontSize + 'px';
-    el.classList.toggle('cant-center', !!style.overflowing);
     setStyleId(el, style.id);
     this.observerStart();
   },
@@ -745,14 +761,17 @@ exports = module.exports = component.register('gaia-header', {
    * @private
    */
   getTitleSpace: function() {
-    var titlePadding = 20;
-    var previous = this._titleSpace;
-    var value = this.getWidth()
-      - this.titleStart
-      - this.titleEnd
-      - titlePadding;
-    debug('get title space', value);
-    return value;
+    var start = this.titleStart;
+    var end = this.titleEnd;
+    var space = this.getWidth() - start - end;
+    var result = {
+      value: space,
+      start: start,
+      end: end
+    };
+
+    debug('get title space', result);
+    return result;
   },
 
   /**
@@ -1122,7 +1141,7 @@ exports = module.exports = component.register('gaia-header', {
   ::content h1 {
     flex: 1;
     margin: 0;
-    padding: 0 10px;
+    padding: 0;
     overflow: hidden;
 
     white-space: nowrap;
@@ -1140,46 +1159,6 @@ exports = module.exports = component.register('gaia-header', {
       var(--title-color,
       var(--text-color,
       inherit))));
-  }
-
-  /**
-   * .cant-center
-   *
-   * In the rare event that there isn't
-   * enough room to center, it's best we
-   * fallback to left alignment, otherwise
-   * the title just looks broken.
-   */
-
-  ::content h1.cant-center {
-    text-align: start;
-    padding: 0;
-  }
-
-  /**
-   * .cant-center:first-child
-   *
-   * When the title is the first visible
-   * child (ie. no after any buttons) and
-   * it can't be centered we add some
-   * padding-start for aesthetics.
-   */
-
-  :host(:not([action])) h1.cant-center {
-    -moz-padding-start: 10px;
-  }
-
-  /**
-   * .cant-center
-   *
-   * When the title is the last visible child
-   * (ie. it's not before any buttons) and
-   * it can't be centered we add some
-   * padding-end for aesthetics.
-   */
-
-  ::content h1.cant-center:nth-last-child(2) {
-    -moz-padding-end: 10px;
   }
 
   /** Buttons
