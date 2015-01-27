@@ -51,7 +51,7 @@ const TITLE_PADDING = 10;
  *
  * @return {Element} constructor
  */
-exports = module.exports = component.register('gaia-header', {
+module.exports = component.register('gaia-header', {
 
   /**
    * Called when the element is first created.
