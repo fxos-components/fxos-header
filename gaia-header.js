@@ -270,17 +270,22 @@ module.exports = component.register('gaia-header', {
    * Fit text and center a title between
    * the buttons before and after.
    *
+   * Right now, because gaia-header is not
+   * fully rtl-compatible (due to Gaia),
+   * we're using `marginLeft` etc. These
+   * will be changed to `marginStart` etc
+   * when we become fully RTL.
+   *
    * @param  {HTMLH1Element} title
    * @param  {Number} space
-   * @return {Promise}
    * @private
    */
   setTitleStyle: function(el, style) {
     debug('set title style', style);
     this.observerStop();
-    el.style.MozMarginStart = style.marginStart + 'px';
-    el.style.MozPaddingStart = style.padding.start + 'px';
-    el.style.MozPaddingEnd = style.padding.end + 'px';
+    el.style.marginLeft = style.marginStart + 'px';
+    el.style.paddingLeft = style.padding.start + 'px';
+    el.style.paddingRight = style.padding.end + 'px';
     el.style.fontSize = style.fontSize + 'px';
     setStyleId(el, style.id);
     this.observerStart();
@@ -757,6 +762,22 @@ module.exports = component.register('gaia-header', {
       var(--title-color,
       var(--text-color,
       inherit))));
+  }
+
+  /**
+   * [dir=rtl]
+   *
+   * When the document is in RTL mode we still
+   * want the <h1> text to be reversed to that
+   * strings like '1 selected' become 'selected 1'.
+   *
+   * When we're happy for gaia-header to be fully
+   * RTL responsive we won't need this rule anymore,
+   * but this depends on all Gaia apps being ready.
+   */
+
+  :host-context([dir=rtl]) ::content h1 {
+    direction: rtl;
   }
 
   /** Buttons
