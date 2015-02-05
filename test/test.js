@@ -7,8 +7,9 @@ suite('GaiaHeader', function() {
   var GaiaHeader = window['gaia-header'];
   var FontFit = window['font-fit'];
 
+  var windowWidth = 500;
+
   setup(function() {
-    var windowWidth = 500;
     this.sinon = sinon.sandbox.create();
 
     // Spy/stub FontFit
@@ -780,7 +781,7 @@ suite('GaiaHeader', function() {
       }).then(done, done);
     });
 
-    test('It should apply 10px padding-start when overflowing and no buttons before', function(done) {
+    test.only('It should apply 10px paddings when overflowing and no buttons before/after', function(done) {
       this.dom.innerHTML = `<gaia-header>
         <h1>This title is far far far far far far far far far far far far far far far far far far too long to center</h1>
       </gaia-header>`;
@@ -790,19 +791,10 @@ suite('GaiaHeader', function() {
 
       afterNext(el, 'runFontFit').then(() => {
         assert.equal(getComputedStyle(h1).paddingLeft, '10px');
-      }).then(done, done);
-    });
-
-    test('It should apply 10px padding-end when overflowing and no buttons after', function(done) {
-      this.dom.innerHTML = `<gaia-header action="menu">
-        <h1>This title is far far far far far far far far far far far far far far too long to center</h1>
-      </gaia-header>`;
-
-      var el = this.dom.firstElementChild;
-      var h1 = el.querySelector('h1');
-
-      afterNext(el, 'runFontFit').then(() => {
         assert.equal(getComputedStyle(h1).paddingRight, '10px');
+        sinon.assert.calledWithMatch(
+          GaiaHeader.prototype.fontFit,
+          sinon.match.any, windowWidth - 20); // 2 * 10px
       }).then(done, done);
     });
   });
