@@ -368,15 +368,22 @@ module.exports = component.register('gaia-header', {
   },
 
   /**
-   * When the components DOM changes we run
-   * the debounced version runFontFit.
+   * When the components DOM changes we
+   * call `.runFontFit()` (sync).
+   *
+   * If the `textContent` is changed in a
+   * mutation observer just after attaching,
+   * we end up running twice.
+   *
+   * If there is a pending async .runFontFit(),
+   * then we don't want to run it now.
    *
    * @param  {Array} mutations
    * @private
    */
   onMutation: function(mutations) {
     debug('on mutation', mutations);
-    this.runFontFit();
+    if (!this.pending.runFontFitSoon) { this.runFontFit(); }
   },
 
   /**
