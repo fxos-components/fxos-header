@@ -696,7 +696,7 @@ module.exports = component.register('gaia-header', {
       debug('title overflowing');
       padding.start = !space.start ? TITLE_PADDING : 0;
       padding.end = !space.end ? TITLE_PADDING : 0;
-      textSpace = space.value + padding.start + padding.end;
+      textSpace = space.value - padding.start - padding.end;
       fontFitResult = this.fontFit(text, textSpace);
       marginStart = 0;
     }
