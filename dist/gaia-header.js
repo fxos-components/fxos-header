@@ -1146,6 +1146,7 @@ module.exports = component.register('gaia-header', {
     background: none;
     cursor: pointer;
     transition: opacity 200ms 280ms;
+    -moz-user-select: none;
 
     color:
       var(--header-action-button-color,
@@ -1300,6 +1301,7 @@ module.exports = component.register('gaia-header', {
     text-align: center;
     background: none;
     border-radius: 0;
+    -moz-user-select: none;
     font-style: italic;
     cursor: pointer;
     transition: opacity 200ms 280ms;
