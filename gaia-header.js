@@ -172,7 +172,7 @@ module.exports = component.register('gaia-header', {
 
     var titles = this.els.titles;
     var space = this.getTitleSpace();
-    var styles = [].map.call(titles, (el) => this.getTitleStyle(el, space));
+    var styles = [].map.call(titles, el => this.getTitleStyle(el, space));
 
     // Update the title styles using the latest
     // styles. This function can be called many
@@ -206,20 +206,21 @@ module.exports = component.register('gaia-header', {
   getTitleStyle: function(el, space) {
     debug('get el style', el, space);
     var text = el.textContent;
-    var styleId = text + space.value;
+    var styleId = space.start + text + space.end;
 
     // Bail when there's no text (or just whitespace)
-    if (!text || !text.trim()) { return false; }
+    if (!text || !text.trim()) { return debug('exit: no text'); }
 
     // If neither the text or the titleSpace
     // changed, there's no reason to continue.
-    if (getStyleId(el) === styleId) { return false; }
+    if (getStyleId(el) === styleId) { return debug('exit: no change'); }
 
     var marginStart = this.getTitleMarginStart();
     var textSpace = space.value - Math.abs(marginStart);
-    var fontFitResult = this.fontFit(
-      text, textSpace, { min: MINIMUM_FONT_SIZE_CENTERED }
-    );
+    var fontFitResult = this.fontFit(text, textSpace, {
+      min: MINIMUM_FONT_SIZE_CENTERED
+    });
+
     var overflowing = fontFitResult.textWidth > textSpace;
     var padding = { start: 0, end: 0 };
 

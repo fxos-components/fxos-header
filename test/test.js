@@ -335,6 +335,29 @@ suite('GaiaHeader', function() {
         sinon.assert.calledOnce(this.runFontFit);
       }).then(done, done);
     });
+
+    test('It copes with several subsequent async mutations', function(done) {
+      this.dom.innerHTML = `<gaia-header>
+        <h1>foo</h1>
+        <button></button>
+        <button></button>
+      </gaia-header>`;
+
+      var el = this.dom.firstElementChild;
+      var buttons = el.querySelectorAll('button');
+      var h1 = el.querySelector('h1');
+
+      afterNext(el, 'runFontFit').then(() => {
+        h1.textContent = 'Something else';
+        return new Promise(resolve => setTimeout(resolve));
+      }).then(() => {
+        buttons[0].remove();
+        el.action = 'back';
+        return afterNext(el, 'runFontFit');
+      }).then(() => {
+        assert.equal(h1.style.marginLeft, '0px');
+      }).then(done, done);
+    });
   });
 
   suite('title-start and title-end attributes', function() {
@@ -784,7 +807,7 @@ suite('GaiaHeader', function() {
       }).then(done, done);
     });
 
-    test.only('It should apply 10px paddings when overflowing and no buttons before/after', function(done) {
+    test('It should apply 10px paddings when overflowing and no buttons before/after', function(done) {
       this.dom.innerHTML = `<gaia-header>
         <h1>This title is far far far far far far far far far far far far far far far far far far too long to center</h1>
       </gaia-header>`;
