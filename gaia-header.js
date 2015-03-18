@@ -488,7 +488,8 @@ module.exports = component.register('gaia-header', {
     for (var i = 0; i < l; i++) {
       var el = children[i];
       if (el.tagName === 'H1') { break; }
-      if (!isButton(el)) { continue; }
+      if (!contributesToLayout(el)) { continue; }
+
       els.push(el);
     }
 
@@ -511,7 +512,8 @@ module.exports = component.register('gaia-header', {
     for (var i = children.length - 1; i >= 0; i--) {
       var el = children[i];
       if (el.tagName === 'H1') { break; }
-      if (!isButton(el)) { continue; }
+      if (!contributesToLayout(el)) { continue; }
+
       els.push(el);
     }
 
@@ -621,7 +623,7 @@ module.exports = component.register('gaia-header', {
     <button class="action-button">
       <content select=".l10n-action"></content>
     </button>
-    <content select="h1,a,button"></content>
+    <content></content>
   </div>
 
   <style>
@@ -931,13 +933,12 @@ module.exports = component.register('gaia-header', {
 
 /**
  * Determines whether passed element
- * is regarded as a button in the
- * scope of gaia-header.
+ * contributes to the layout in gaia-header.
  *
  * @param  {Element}  el
  * @return {Boolean}
  */
-function isButton(el) { return { BUTTON: true, A: true }[el.tagName]; }
+function contributesToLayout(el) { return el.tagName !== 'STYLE'; }
 
 /**
  * Set a 'style id' property that
