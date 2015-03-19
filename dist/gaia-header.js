@@ -191,7 +191,13 @@ exports.register = function(name, props) {
   Object.defineProperties(proto, descriptors);
 
   // Register the custom-element and return the constructor
-  return document.registerElement(name, { prototype: proto });
+  try {
+    return document.registerElement(name, { prototype: proto });
+  } catch (e) {
+    if (e.name !== 'NotSupportedError') {
+      throw e;
+    }
+  }
 };
 
 var base = {
@@ -511,6 +517,7 @@ function addDirObserver() {
 :(function(n,w){'use strict';return typeof module=='object'?function(c){
 c(require,exports,module);}:function(c){var m={exports:{}};c(function(n){
 return w[n];},m.exports,m);w[n]=m.exports;};})('gaia-component',this));
+
 },{}],3:[function(require,module,exports){
 (function(define){define(function(require,exports,module){
 /*jshint laxbreak:true*/
