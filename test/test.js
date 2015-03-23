@@ -660,9 +660,10 @@ suite('GaiaHeader', function() {
 
       // Create and inject element
       this.dom.innerHTML = `
-        <gaia-header action="menu">,
-          <h1>my title</h1>,
-          <button id="my-button">my button</button>,
+        <gaia-header action="menu">
+          <h1>my title</h1>
+          <div class="indicator">indicator</div>
+          <button id="my-button">my button</button>
         </gaia-header>`;
 
       this.element = this.dom.firstElementChild;
@@ -703,6 +704,7 @@ suite('GaiaHeader', function() {
 
     test('Should never overlap buttons with title', function() {
       var button = this.element.querySelector('#my-button');
+      var indicator = this.element.querySelector('.indicator');
       var otherButton = document.createElement('button');
       var title = this.element.querySelector('h1');
 
@@ -713,10 +715,22 @@ suite('GaiaHeader', function() {
       // Get positions
       var buttonLeft = button.getBoundingClientRect().left;
       var otherButtonleft = otherButton.getBoundingClientRect().left;
+      var indicatorLeft = indicator.getBoundingClientRect().left;
       var titleRight = title.getBoundingClientRect().right;
 
       assert.isTrue(titleRight <= buttonLeft, titleRight + ' <= ' + buttonLeft);
-      assert.isTrue(titleRight <= otherButtonleft, titleRight + ' <= ' +  otherButtonleft);
+      assert.isTrue(titleRight <= otherButtonleft, titleRight + ' <= ' + otherButtonleft);
+      assert.isTrue(titleRight <= indicatorLeft, titleRight + ' <= ' + indicatorLeft);
+    });
+
+    test('Should import all elements', function() {
+      var nodes = this.element.querySelectorAll('#my-button, .indicator, h1');
+      var content = this.element.shadowRoot.querySelector('.inner > content');
+      var distributed = Array.from(content.getDistributedNodes());
+
+      Array.from(nodes).forEach((elt) => {
+        assert.include(distributed, elt);
+      });
     });
   });
 
