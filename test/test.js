@@ -1,11 +1,9 @@
-/*global window,assert,suite,setup,teardown,sinon,test*/
-/*jshint esnext:true*/
-
+/* jshint maxlen:100 */
+/*global sinon, assert, suite, setup, teardown, test, UIEvent */
 suite('GaiaHeader', function() {
   'use strict';
 
   var GaiaHeader = window['gaia-header'];
-  var FontFit = window['font-fit'];
 
   var windowWidth = 500;
 
@@ -30,7 +28,7 @@ suite('GaiaHeader', function() {
     // it's the same no matter the size of the
     // browser window across test environments.
     this.innerWidth = Object.getOwnPropertyDescriptor(window, 'innerWidth');
-    this.innerWidth_spy = sinon.spy(() => windowWidth);
+    this.innerWidth_spy = this.sinon.spy(() => windowWidth);
     Object.defineProperty(window, 'innerWidth', {
       get: this.innerWidth_spy
     });
@@ -49,7 +47,8 @@ suite('GaiaHeader', function() {
     assert.equal(getComputedStyle(actionButton).display, 'none');
   });
 
-  test('It doesn\'t show an action button for unsupported action types', function() {
+  test('It doesn\'t show an action button for unsupported action types',
+    function() {
     this.dom.innerHTML = '<gaia-header action="unsupported"></gaia-header>';
     var el = this.dom.firstElementChild;
     var actionButton = el.shadowRoot.querySelector('.action-button');
@@ -72,7 +71,6 @@ suite('GaiaHeader', function() {
   test('It catches changes to the `action` attribute', function() {
     this.dom.innerHTML = '<gaia-header action="back"><h1></h1></gaia-header>';
     var element = this.dom.firstElementChild;
-    var h1 = element.querySelector('h1');
     var actionButton = element.shadowRoot.querySelector('.action-button');
     var icon = getComputedStyle(actionButton, ':before').content.replace(/"/g, '');
 
@@ -132,18 +130,21 @@ suite('GaiaHeader', function() {
     });
 
     test('It doesn\'t throw when there is no header', function() {
-      var el = new GaiaHeader();
+      GaiaHeader();
     });
 
-    test('It shouldn\'t run if there is no title `textContent` (ie. before l10n)', function(done) {
+    test('It shouldn\'t run if there is no title `textContent` (ie. before l10n)',
+      function(done) {
       this.dom.innerHTML = '<gaia-header action="back"><h1></h1></gaia-header>';
 
       var el = this.dom.firstElementChild;
       var h1 = el.querySelector('h1');
 
       afterNext(el, 'runFontFit').then(() => {
-        assert.equal(h1.style.fontSize, '', 'font-size should not have been set');
-        assert.equal(h1.style.marginLeft, '', 'margin should not have been set');
+        assert.equal(h1.style.fontSize, '',
+          'font-size should not have been set');
+        assert.equal(h1.style.marginLeft, '',
+          'margin should not have been set');
 
         h1.textContent = 'Localized title';
         return afterNext(el, 'runFontFit');
@@ -161,14 +162,18 @@ suite('GaiaHeader', function() {
       var h1 = el.querySelector('h1');
 
       afterNext(el, 'runFontFit').then(() => {
-        assert.equal(h1.style.fontSize, '', 'font-size should not have been set');
-        assert.equal(h1.style.marginLeft, '', 'margin should not have been set');
+        assert.equal(h1.style.fontSize, '',
+          'font-size should not have been set');
+        assert.equal(h1.style.marginLeft, '',
+          'margin should not have been set');
         sinon.assert.notCalled(this.fontFit);
       }).then(done, done);
     });
 
-    test('It doesn\'t run font-fit when title-space or textContent haven\'t changed', function(done){
-      this.dom.innerHTML = '<gaia-header action="back"><h1>Title</h1></gaia-header>';
+    test('It doesn\'t run font-fit when title-space or textContent haven\'t changed',
+      function(done) {
+      this.dom.innerHTML =
+        '<gaia-header action="back"><h1>Title</h1></gaia-header>';
 
       var el = this.dom.firstElementChild;
       var h1 = el.querySelector('h1');
@@ -187,7 +192,8 @@ suite('GaiaHeader', function() {
       }).then(done, done);
     });
 
-    test('It should not run when attached if the `no-font-fit` attribute is present', function(done) {
+    test('It should not run when attached if the `no-font-fit` attribute is present',
+      function(done) {
       this.dom.innerHTML = `
         <gaia-header action="back" no-font-fit>
         <h1>Header title</h1>
@@ -200,7 +206,8 @@ suite('GaiaHeader', function() {
       }).then(done, done);
     });
 
-    test('It works when we change `textContent` right after font-fit has been called', function(done) {
+    test('It works when we change `textContent` right after font-fit has been called',
+      function(done) {
       this.dom.innerHTML = `<gaia-header action="back">
         <h1>short</h1></gaia-header>`;
 
@@ -229,7 +236,6 @@ suite('GaiaHeader', function() {
       </gaia-header>`;
 
       var el = this.dom.firstElementChild;
-      var h1 = el.querySelector('h1');
 
       el.runFontFit();
       el.runFontFit();
@@ -282,7 +288,8 @@ suite('GaiaHeader', function() {
         window.requestAnimationFrame.yield();
         return afterNext(header, 'runFontFit');
       }).then(() => {
-        sinon.assert.notCalled(this.fontFit, 'fontFit is not called if the width does not change');
+        sinon.assert.notCalled(this.fontFit,
+          'fontFit is not called if the width does not change');
 
         window.requestAnimationFrame.reset();
         header.runFontFit.reset();
@@ -291,8 +298,10 @@ suite('GaiaHeader', function() {
         windowWidth = 700;
         var resizeEvent = new UIEvent('resize');
         window.dispatchEvent(resizeEvent);
-        sinon.assert.notCalled(window.requestAnimationFrame, 'nothing is run when header is detached');
-        sinon.assert.notCalled(header.runFontFit, 'fontFit is not called when header is detached');
+        sinon.assert.notCalled(window.requestAnimationFrame,
+          'nothing is run when header is detached');
+        sinon.assert.notCalled(header.runFontFit,
+          'fontFit is not called when header is detached');
       });
     });
 
@@ -547,7 +556,7 @@ suite('GaiaHeader', function() {
 
     this.dom.innerHTML = '<gaia-header action="menu"></gaia-header>';
     var el = this.dom.firstElementChild;
-    var callback = sinon.spy();
+    var callback = this.sinon.spy();
 
     el.addEventListener('action', callback);
     el.triggerAction();
@@ -629,8 +638,8 @@ suite('GaiaHeader', function() {
       }).then(done, done);
     });
 
-    test('It only runs fontFit when the value changes from truthey to falsey', function(done) {
-
+    test('It only runs fontFit when the value changes from truthey to falsey',
+      function(done) {
       this.dom.innerHTML = '<gaia-header no-font-fit><h1>title</h1></gaia-header>';
       var el = this.dom.firstElementChild;
 
@@ -742,7 +751,7 @@ suite('GaiaHeader', function() {
     test('Should emit an \'action\' event', function() {
       this.dom.innerHTML = '<gaia-header action="menu"></gaia-header>';
       var element = this.dom.firstElementChild;
-      var callback = sinon.spy();
+      var callback = this.sinon.spy();
 
       element.addEventListener('action', callback);
       element.onActionButtonClick();
@@ -754,7 +763,7 @@ suite('GaiaHeader', function() {
     test('Should pass the action type as `event.detail.type`', function() {
       this.dom.innerHTML = '<gaia-header action="menu"></gaia-header>';
       var element = this.dom.firstElementChild;
-      var callback = sinon.spy();
+      var callback = this.sinon.spy();
 
       element.addEventListener('action', callback);
       element.onActionButtonClick();
@@ -765,7 +774,7 @@ suite('GaiaHeader', function() {
 
     test('Empty icon buttons should be 50px wide', function() {
       this.dom.innerHTML = `<style>
-        gaia-header button:before { content: 'very long pseudo element content' }
+        gaia-header button:before {content: 'very long pseudo element content'}
       </style>
       <gaia-header action="menu">
         <button data-icon></button>
@@ -777,7 +786,7 @@ suite('GaiaHeader', function() {
       assert.equal(button.clientWidth, 50, 'empty data-icon buttons should be 50px');
 
       this.dom.innerHTML = `<style>
-        gaia-header button:before { content: 'very long pseudo element content' }
+        gaia-header button:before {content: 'very long pseudo element content'}
       </style>
       <gaia-header action="menu">
         <button></button>
@@ -819,7 +828,8 @@ suite('GaiaHeader', function() {
 
     test('It doesn\'t center if there is not enough space', function(done) {
       this.dom.innerHTML = `<gaia-header action="menu">
-        <h1>This title is far far far far far far far far far far far far far far too long to center</h1>
+        <h1>This title is far far far far far far far far far far far far 
+        far far too long to center</h1>
         <button></button>
         <button></button>
       </gaia-header>`;
@@ -853,7 +863,7 @@ suite('GaiaHeader', function() {
         sinon.assert.calledOnce(GaiaHeader.prototype.fontFit);
         sinon.assert.calledWithMatch(
           GaiaHeader.prototype.fontFit,
-          sinon.match.any, sinon.match.any, { min: 20 }
+          this.sinon.match.any, this.sinon.match.any, { min: 20 }
         );
         assert.equal(h1.style.fontSize, '20px');
       }).then(done, done);
@@ -878,9 +888,11 @@ suite('GaiaHeader', function() {
       }).then(done, done);
     });
 
-    test('It should apply 10px paddings when overflowing and no buttons before/after', function(done) {
+    test('It should apply 10px paddings when overflowing and no buttons before/after',
+      function(done) {
       this.dom.innerHTML = `<gaia-header>
-        <h1>This title is far far far far far far far far far far far far far far far far far far too long to center</h1>
+        <h1>This title is far far far far far far far far far far far
+        far far far far far far far too long to center</h1>
       </gaia-header>`;
 
       var el = this.dom.firstElementChild;
@@ -891,7 +903,7 @@ suite('GaiaHeader', function() {
         assert.equal(getComputedStyle(h1).paddingRight, '10px');
         sinon.assert.calledWithMatch(
           GaiaHeader.prototype.fontFit,
-          sinon.match.any, windowWidth - 20); // 2 * 10px
+          this.sinon.match.any, windowWidth - 20); // 2 * 10px
       }).then(done, done);
     });
   });

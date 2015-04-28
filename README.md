@@ -1,4 +1,4 @@
-# &lt;gaia-header&gt; [![](https://travis-ci.org/gaia-components/gaia-header.svg)](https://travis-ci.org/gaia-components/gaia-header)
+# &lt;gaia-header&gt; [![](https://travis-ci.org/gaia-components/gaia-header.svg)](https://travis-ci.org/gaia-components/gaia-header) [![devDependency Status](https://david-dm.org/gaia-components/gaia-header/dev-status.svg)](https://david-dm.org/gaia-components/gaia-header#info=devDependencies)
 
 ## Installation
 
@@ -10,17 +10,9 @@ $ bower install gaia-components/gaia-header
 
 - [Example](http://gaia-components.github.io/gaia-header/)
 
-## Tests
+## Usage
 
-1. Ensure Firefox Nightly is installed on your machine.
-2. `$ npm install`
-3. `$ npm test`
-
-If your would like tests to run on file change use:
-
-`$ npm run test-dev`
-
-## Optimizing with `title-start` & `title-end`
+### Optimizing with `title-start` & `title-end`
 
 If your header contains custom buttons you can optimize setup time by providing the title's start and end offsets. This avoids the component having to read dimensions from the DOM, which can be costly.
 
@@ -32,7 +24,7 @@ If your header contains custom buttons you can optimize setup time by providing 
 </gaia-header>
 ```
 
-## `not-flush`
+### `not-flush`
 
 ```html
 <gaia-header action="back" not-flush>
@@ -52,7 +44,7 @@ By default the gaia-header component assumes that it is flush with the `window` 
 
 Prevents font-fit logic from running. Will run when the attribute is removed. You may choose to use this for app specific performance optimizations.
 
-## Localization
+### Localization
 
 If choosing to use the built in action-button you may wish to localize the content within. You can do this by providing a specicial `.l10n-action` child node.
 
@@ -62,3 +54,19 @@ If choosing to use the built in action-button you may wish to localize the conte
   <h1>title</h1>
 </gaia-header>
 ```
+
+## Tests
+
+1. Ensure Firefox Nightly is installed on your machine.
+2. `$ npm install`
+3. `$ npm test`
+
+If your would like tests to run on file change use:
+
+`$ npm run test-dev`
+
+## Lint check
+
+Run lint check with command:
+
+`$ npm run lint`
