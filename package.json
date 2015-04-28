@@ -5,6 +5,7 @@
   "license": "MIT",
   "main": "gaia-header.js",
   "devDependencies": {
+    "babel": "^5.1.13",
     "bower": "^1.3.5",
     "browserify": "^5.11.2",
     "karma": "^0.12.16",
@@ -17,7 +18,9 @@
     "install": "bower install",
     "test": "./node_modules/karma/bin/karma start test/karma.conf.js --single-run",
     "test-dev": "./node_modules/karma/bin/karma start test/karma.conf.js",
-    "build": "mkdir -p dist && browserify gaia-header.js --outfile ./dist/gaia-header.js --standalone GaiaHeader"
+    "bundle": "mkdir -p dist && browserify gaia-header.js --outfile ./dist/gaia-header.js --standalone GaiaHeader",
+    "es5": "mkdir -p dist && babel ./dist/gaia-header.js --out-file ./dist/gaia-header-es5.js",
+    "build": "npm run bundle && npm run es5"
   },
   "repository": {
     "type": "git",
