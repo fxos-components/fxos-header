@@ -35,5 +35,8 @@
     "gaia-component": "./bower_components/gaia-component/gaia-component.js",
     "gaia-icons": "./bower_components/gaia-icons/gaia-icons.js",
     "font-fit": "./bower_components/font-fit/font-fit.js"
+  },
+  "dependencies": {
+    "gaia-component": "git://github.com/gaia-components/gaia-component.git"
   }
 }
