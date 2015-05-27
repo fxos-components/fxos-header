@@ -217,7 +217,7 @@ suite('GaiaHeader', function() {
       h1.textContent = 'long long long long long long long long long long long long long long';
 
       afterNext(el, 'runFontFit').then(() => {
-        assert.equal(h1.style.fontSize, '18px');
+        assert.equal(h1.style.fontSize, '16px');
 
         // Calls from mutations are debounced as well
         sinon.assert.calledOnce(el.runFontFit);
@@ -260,7 +260,7 @@ suite('GaiaHeader', function() {
         return el.runFontFit();
       }).then(() => {
         sinon.assert.calledOnce(el.setTitleStyle);
-        assert.equal(h1.style.fontSize, '18px');
+        assert.equal(h1.style.fontSize, '16px');
       }).then(done, done);
     });
 
