@@ -230,6 +230,36 @@ suite('GaiaHeader', function() {
       }).then(done, done);
     });
 
+    test('It works when we add the title after creating the element', function() {
+      var header = document.createElement('gaia-header');
+      var h1 = document.createElement('h1');
+      h1.textContent = 'something important';
+      header.setAttribute('action', 'back');
+      header.appendChild(h1);
+      this.dom.appendChild(header);
+
+
+      return afterNext(header, 'runFontFit').then(() => {
+        assert.equal(h1.style.marginLeft, '-50px');
+      });
+    });
+
+    test('It works when we add buttons after creating the element', function() {
+      var header = document.createElement('gaia-header');
+      var h1 = document.createElement('h1');
+      h1.textContent = 'something important';
+      var button = document.createElement('button');
+      button.style.width = '50px';
+
+      header.appendChild(h1);
+      header.appendChild(button);
+      this.dom.appendChild(header);
+
+      return afterNext(header, 'runFontFit').then(() => {
+        assert.equal(h1.style.marginLeft, '50px');
+      });
+    });
+
     test('It\'s debounced', function(done) {
       this.dom.innerHTML = `<gaia-header action="back">
         <h1>Title</h1>
