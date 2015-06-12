@@ -169,12 +169,14 @@
         };
       })("font-fit", this));
     }, {}], 2: [function (require, module, exports) {
-      /* globals define */
       ;(function (define) {
-        "use strict";define(function (require, exports, module) {
+        define(function (require, exports, module) {
+          "use strict";
+
           /**
            * Locals
            */
+
           var textContent = Object.getOwnPropertyDescriptor(Node.prototype, "textContent");
           var innerHTML = Object.getOwnPropertyDescriptor(Element.prototype, "innerHTML");
           var removeAttribute = Element.prototype.removeAttribute;
@@ -191,25 +193,13 @@
            */
           exports.register = function (name, props) {
             var baseProto = getBaseProto(props["extends"]);
-            var template = props.template || baseProto.templateString;
-
-            // Components are extensible by default but can be declared
-            // as non extensible as an optimization to avoid
-            // storing the template strings
-            var extensible = props.extensible = props.hasOwnProperty("extensible") ? props.extensible : true;
 
             // Clean up
             delete props["extends"];
 
             // Pull out CSS that needs to be in the light-dom
-            if (template) {
-              // Stores the string to be reprocessed when
-              // a new component extends this one
-              if (extensible && props.template) {
-                props.templateString = props.template;
-              }
-
-              var output = processCss(template, name);
+            if (props.template) {
+              var output = processCss(props.template, name);
 
               props.template = document.createElement("template");
               props.template.innerHTML = output.template;
@@ -226,7 +216,7 @@
 
             // Merge base getter/setter attributes with the user's,
             // then define the property descriptors on the prototype.
-            var descriptors = mixin(props.attrs || {}, base.descriptors);
+            var descriptors = Object.assign(props.attrs || {}, base.descriptors);
 
             // Store the orginal descriptors somewhere
             // a little more private and delete the original
@@ -353,9 +343,7 @@
                   }
                 },
 
-                get: function get() {
-                  return textContent.get();
-                }
+                get: textContent.get
               },
 
               innerHTML: {
@@ -383,9 +371,9 @@
            * Returns a suitable prototype based
            * on the object passed.
            *
-           * @private
            * @param  {HTMLElementPrototype|undefined} proto
            * @return {HTMLElementPrototype}
+           * @private
            */
           function getBaseProto(proto) {
             if (!proto) {
@@ -399,20 +387,18 @@
            * Extends the given proto and mixes
            * in the given properties.
            *
-           * @private
            * @param  {Object} proto
            * @param  {Object} props
            * @return {Object}
            */
           function createProto(proto, props) {
-            return mixin(Object.create(proto), props);
+            return Object.assign(Object.create(proto), props);
           }
 
           /**
            * Detects presence of shadow-dom
            * CSS selectors.
            *
-           * @private
            * @return {Boolean}
            */
           var hasShadowCSS = (function () {
@@ -443,7 +429,6 @@
            * them to work from the <style scoped>
            * injected at the root of the component.
            *
-           * @private
            * @return {String}
            */
           function processCss(template, name) {
@@ -479,13 +464,10 @@
            * <style> in the head of the
            * document.
            *
-           * @private
            * @param  {String} css
            */
           function injectGlobalCss(css) {
-            if (!css) {
-              return;
-            }
+            if (!css) return;
             var style = document.createElement("style");
             style.innerHTML = css.trim();
             headReady().then(function () {
@@ -542,7 +524,6 @@
            *
            *   toCamelCase('foo-bar'); //=> 'fooBar'
            *
-           * @private
            * @param  {Sring} string
            * @return {String}
            */
@@ -583,23 +564,6 @@
             function onChanged(mutations) {
               document.dispatchEvent(new Event("dirchanged"));
             }
-          }
-
-          /**
-           * Copy the values of all properties from
-           * source object `target` to a target object `source`.
-           * It will return the target object.
-           *
-           * @private
-           * @param   {Object} target
-           * @param   {Object} source
-           * @returns {Object}
-           */
-          function mixin(target, source) {
-            for (var key in source) {
-              target[key] = source[key];
-            }
-            return target;
           }
         });
       })(typeof define == "function" && define.amd ? define : (function (n, w) {
