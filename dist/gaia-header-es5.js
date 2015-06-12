@@ -1,19 +1,27 @@
 "use strict";
 
-!(function (e) {
-  if ("object" == typeof exports && "undefined" != typeof module) module.exports = e();else if ("function" == typeof define && define.amd) define([], e);else {
-    var f;"undefined" != typeof window ? f = window : "undefined" != typeof global ? f = global : "undefined" != typeof self && (f = self), f.GaiaHeader = e();
+(function (f) {
+  if (typeof exports === "object" && typeof module !== "undefined") {
+    module.exports = f();
+  } else if (typeof define === "function" && define.amd) {
+    define([], f);
+  } else {
+    var g;if (typeof window !== "undefined") {
+      g = window;
+    } else if (typeof global !== "undefined") {
+      g = global;
+    } else if (typeof self !== "undefined") {
+      g = self;
+    } else {
+      g = this;
+    }g.GaiaHeader = f();
   }
 })(function () {
   var define, module, exports;return (function e(t, n, r) {
     function s(o, u) {
       if (!n[o]) {
         if (!t[o]) {
-          var a = typeof require == "function" && require;if (!u && a) {
-            return a(o, !0);
-          }if (i) {
-            return i(o, !0);
-          }var f = new Error("Cannot find module '" + o + "'");throw (f.code = "MODULE_NOT_FOUND", f);
+          var a = typeof require == "function" && require;if (!u && a) return a(o, !0);if (i) return i(o, !0);var f = new Error("Cannot find module '" + o + "'");throw (f.code = "MODULE_NOT_FOUND", f);
         }var l = n[o] = { exports: {} };t[o][0].call(l.exports, function (e) {
           var n = t[o][1][e];return s(n ? n : e);
         }, l, l.exports, e, t, n, r);
@@ -161,14 +169,12 @@
         };
       })("font-fit", this));
     }, {}], 2: [function (require, module, exports) {
-      /* jshint node:true */
       /* globals define */
       ;(function (define) {
         "use strict";define(function (require, exports, module) {
           /**
            * Locals
            */
-
           var textContent = Object.getOwnPropertyDescriptor(Node.prototype, "textContent");
           var innerHTML = Object.getOwnPropertyDescriptor(Element.prototype, "innerHTML");
           var removeAttribute = Element.prototype.removeAttribute;
@@ -185,13 +191,25 @@
            */
           exports.register = function (name, props) {
             var baseProto = getBaseProto(props["extends"]);
+            var template = props.template || baseProto.templateString;
+
+            // Components are extensible by default but can be declared
+            // as non extensible as an optimization to avoid
+            // storing the template strings
+            var extensible = props.extensible = props.hasOwnProperty("extensible") ? props.extensible : true;
 
             // Clean up
             delete props["extends"];
 
             // Pull out CSS that needs to be in the light-dom
-            if (props.template) {
-              var output = processCss(props.template, name);
+            if (template) {
+              // Stores the string to be reprocessed when
+              // a new component extends this one
+              if (extensible && props.template) {
+                props.templateString = props.template;
+              }
+
+              var output = processCss(template, name);
 
               props.template = document.createElement("template");
               props.template.innerHTML = output.template;
@@ -365,9 +383,9 @@
            * Returns a suitable prototype based
            * on the object passed.
            *
+           * @private
            * @param  {HTMLElementPrototype|undefined} proto
            * @return {HTMLElementPrototype}
-           * @private
            */
           function getBaseProto(proto) {
             if (!proto) {
@@ -381,6 +399,7 @@
            * Extends the given proto and mixes
            * in the given properties.
            *
+           * @private
            * @param  {Object} proto
            * @param  {Object} props
            * @return {Object}
@@ -393,6 +412,7 @@
            * Detects presence of shadow-dom
            * CSS selectors.
            *
+           * @private
            * @return {Boolean}
            */
           var hasShadowCSS = (function () {
@@ -423,6 +443,7 @@
            * them to work from the <style scoped>
            * injected at the root of the component.
            *
+           * @private
            * @return {String}
            */
           function processCss(template, name) {
@@ -458,6 +479,7 @@
            * <style> in the head of the
            * document.
            *
+           * @private
            * @param  {String} css
            */
           function injectGlobalCss(css) {
@@ -520,6 +542,7 @@
            *
            *   toCamelCase('foo-bar'); //=> 'fooBar'
            *
+           * @private
            * @param  {Sring} string
            * @return {String}
            */
@@ -567,6 +590,7 @@
            * source object `target` to a target object `source`.
            * It will return the target object.
            *
+           * @private
            * @param   {Object} target
            * @param   {Object} source
            * @returns {Object}
@@ -631,15 +655,15 @@
         };
       })("gaia-icons", this));
     }, {}], 4: [function (require, module, exports) {
+      /* globals define */
       ;(function (define) {
         "use strict";define(function (require, exports, module) {
 
           /**
            * Dependencies
            */
-
           var component = require("gaia-component");
-          var fontFit = require("font-fit");
+          var _fontFit = require("font-fit");
 
           /**
            * Load 'gaia-icons' font-family
@@ -690,11 +714,11 @@
            * This is the minimum font size that we can take
            * when the header title is not centered in the window.
            */
-          var MINIMUM_FONT_SIZE_UNCENTERED = 18;
+          var MINIMUM_FONT_SIZE_UNCENTERED = 16;
 
           /**
-           * This is the maximum font size that we can use for
-           * the heade title.
+           * This is the maximum font-size
+           * for the header title.
            */
           var MAXIMUM_FONT_SIZE = 23;
 
@@ -722,8 +746,7 @@
               // Elements
               this.els = {
                 actionButton: this.shadowRoot.querySelector(".action-button"),
-                buttons: this.querySelectorAll("button, a"),
-                titles: this.querySelectorAll("h1")
+                titles: this.getElementsByTagName("h1")
               };
 
               // Events
@@ -930,7 +953,10 @@
 
               // Return existing unresolved
               // promise, or make a new one
-              return this.unresolved[key] = this.unresolved[key] || new Promise(function (resolve) {
+              if (this.unresolved[key]) {
+                return this.unresolved[key];
+              }
+              this.unresolved[key] = new Promise(function (resolve) {
                 _this4.pending[key] = _this4.nextTick(function () {
                   var styles = _this4._titleStyles;
                   var els = _this4.els.titles;
@@ -986,17 +1012,7 @@
              * @return {Object} {fontSize, textWidth}
              * @private
              */
-            fontFit: (function (_fontFit) {
-              function fontFit(_x, _x2) {
-                return _fontFit.apply(this, arguments);
-              }
-
-              fontFit.toString = function () {
-                return _fontFit.toString();
-              };
-
-              return fontFit;
-            })(function (text, space) {
+            fontFit: function fontFit(text, space) {
               var opts = arguments[2] === undefined ? {} : arguments[2];
 
               debug("font fit:", text, space, opts);
@@ -1009,8 +1025,8 @@
                 space: space
               };
 
-              return fontFit(fontFitArgs);
-            }),
+              return _fontFit(fontFitArgs);
+            },
 
             /**
              * Start the observer listening

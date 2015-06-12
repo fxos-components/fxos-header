@@ -1,4 +1,4 @@
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.GaiaHeader=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.GaiaHeader = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 ;(function(define){define(function(require,exports,module){
 'use strict';
 
@@ -133,14 +133,13 @@ c(require,exports,module);}:function(c){var m={exports:{}};c(function(n){
 return w[n];},m.exports,m);w[n]=m.exports;};})('font-fit',this));
 
 },{}],2:[function(require,module,exports){
-;(function(define){define(function(require,exports,module){
-'use strict';
-
+/* globals define */
+;(function(define){'use strict';define(function(require,exports,module){
 /**
  * Locals
  */
-
-var textContent = Object.getOwnPropertyDescriptor(Node.prototype, 'textContent');
+var textContent = Object.getOwnPropertyDescriptor(Node.prototype,
+    'textContent');
 var innerHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
 var removeAttribute = Element.prototype.removeAttribute;
 var setAttribute = Element.prototype.setAttribute;
@@ -156,13 +155,26 @@ var noop  = function() {};
  */
 exports.register = function(name, props) {
   var baseProto = getBaseProto(props.extends);
+  var template = props.template || baseProto.templateString;
+
+  // Components are extensible by default but can be declared
+  // as non extensible as an optimization to avoid
+  // storing the template strings
+  var extensible = props.extensible = props.hasOwnProperty('extensible')?
+    props.extensible : true;
 
   // Clean up
   delete props.extends;
 
   // Pull out CSS that needs to be in the light-dom
-  if (props.template) {
-    var output = processCss(props.template, name);
+  if (template) {
+    // Stores the string to be reprocessed when
+    // a new component extends this one
+    if (extensible && props.template) {
+      props.templateString = props.template;
+    }
+
+    var output = processCss(template, name);
 
     props.template = document.createElement('template');
     props.template.innerHTML = output.template;
@@ -179,7 +191,7 @@ exports.register = function(name, props) {
 
   // Merge base getter/setter attributes with the user's,
   // then define the property descriptors on the prototype.
-  var descriptors = Object.assign(props.attrs || {}, base.descriptors);
+  var descriptors = mixin(props.attrs || {}, base.descriptors);
 
   // Store the orginal descriptors somewhere
   // a little more private and delete the original
@@ -294,7 +306,9 @@ var base = {
         if (this.lightStyle) { this.appendChild(this.lightStyle); }
       },
 
-      get: textContent.get
+      get: function() {
+        return textContent.get();
+      }
     },
 
     innerHTML: {
@@ -320,34 +334,35 @@ var defaultPrototype = createProto(HTMLElement.prototype, base.properties);
  * Returns a suitable prototype based
  * on the object passed.
  *
+ * @private
  * @param  {HTMLElementPrototype|undefined} proto
  * @return {HTMLElementPrototype}
- * @private
  */
 function getBaseProto(proto) {
   if (!proto) { return defaultPrototype; }
   proto = proto.prototype || proto;
-  return !proto.GaiaComponent
-    ? createProto(proto, base.properties)
-    : proto;
+  return !proto.GaiaComponent ?
+    createProto(proto, base.properties) : proto;
 }
 
 /**
  * Extends the given proto and mixes
  * in the given properties.
  *
+ * @private
  * @param  {Object} proto
  * @param  {Object} props
  * @return {Object}
  */
 function createProto(proto, props) {
-  return Object.assign(Object.create(proto), props);
+  return mixin(Object.create(proto), props);
 }
 
 /**
  * Detects presence of shadow-dom
  * CSS selectors.
  *
+ * @private
  * @return {Boolean}
  */
 var hasShadowCSS = (function() {
@@ -375,6 +390,7 @@ var regex = {
  * them to work from the <style scoped>
  * injected at the root of the component.
  *
+ * @private
  * @return {String}
  */
 function processCss(template, name) {
@@ -416,14 +432,15 @@ function processCss(template, name) {
  * <style> in the head of the
  * document.
  *
+ * @private
  * @param  {String} css
  */
 function injectGlobalCss(css) {
-  if (!css) return;
+  if (!css) {return;}
   var style = document.createElement('style');
   style.innerHTML = css.trim();
-  headReady().then(() => {
-    document.head.appendChild(style)
+  headReady().then(function() {
+    document.head.appendChild(style);
   });
 }
 
@@ -434,7 +451,7 @@ function injectGlobalCss(css) {
  * @private
  */
 function headReady() {
-  return new Promise(resolve => {
+  return new Promise(function(resolve) {
     if (document.head) { return resolve(); }
     window.addEventListener('load', function fn() {
       window.removeEventListener('load', fn);
@@ -474,6 +491,7 @@ function injectLightCss(el) {
  *
  *   toCamelCase('foo-bar'); //=> 'fooBar'
  *
+ * @private
  * @param  {Sring} string
  * @return {String}
  */
@@ -512,6 +530,23 @@ function addDirObserver() {
   function onChanged(mutations) {
     document.dispatchEvent(new Event('dirchanged'));
   }
+}
+
+/**
+ * Copy the values of all properties from
+ * source object `target` to a target object `source`.
+ * It will return the target object.
+ *
+ * @private
+ * @param   {Object} target
+ * @param   {Object} source
+ * @returns {Object}
+ */
+function mixin(target, source) {
+  for (var key in source) {
+    target[key] = source[key];
+  }
+  return target;
 }
 
 });})(typeof define=='function'&&define.amd?define
@@ -648,8 +683,7 @@ module.exports = component.register('gaia-header', {
     // Elements
     this.els = {
       actionButton: this.shadowRoot.querySelector('.action-button'),
-      buttons: this.querySelectorAll('button, a'),
-      titles: this.querySelectorAll('h1')
+      titles: this.getElementsByTagName('h1')
     };
 
     // Events
