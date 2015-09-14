@@ -3,7 +3,9 @@
 suite('GaiaHeader', function() {
   'use strict';
 
+  var afterNext = window['test-utils'].afterNext;
   var GaiaHeader = window['gaia-header'];
+  var accessibility = window['test-utils'].accessibility;
 
   var windowWidth = 500;
 
@@ -858,7 +860,7 @@ suite('GaiaHeader', function() {
 
     test('It doesn\'t center if there is not enough space', function(done) {
       this.dom.innerHTML = `<gaia-header action="menu">
-        <h1>This title is far far far far far far far far far far far far 
+        <h1>This title is far far far far far far far far far far far far
         far far too long to center</h1>
         <button></button>
         <button></button>
@@ -1073,31 +1075,100 @@ suite('GaiaHeader', function() {
     }).catch(() => done());
   });
 
-  /**
-   * Utils
-   */
+  suite('accessibility', function() {
+    /**
+     * Accessibility test utils module tests the following things, amongst other
+     * checks (all at once).:
+     *  - ARIA attributes specific checks
+     *  - accesskey uniqueness if applicable
+     *  - Presence of alternative descriptions, labels and names
+     *  - Color contrast
+     *  - Markup is semantically correct from a11y standpoint
+     *  - Heading order
+     *  - Frame/document title and language
+     *  - Landmarks if applicable
+     *  - Keyboard focusability and tabindex
+     *
+     * Its checks are called at different stages and within different states of
+     * the component.
+     */
 
-  function afterNext(obj, method) {
-    var wait = 100;
-    var timeout;
+    test('gaia-header passes accessibility checks with and without supported ' +
+      'action buttons', function(done) {
+      this.dom.innerHTML = `<gaia-header></gaia-header>
+        <gaia-header action="unsupported"></gaia-header>
+        <gaia-header action="menu"></gaia-header>
+        <gaia-header action="close"></gaia-header>
+        <gaia-header action="back"></gaia-header>`;
 
-    return new Promise((resolve, reject) => {
-      var real = obj[method];
-
-      // If the function doesn't run
-      // after `wait` period: reject.
-      timeout = setTimeout(() => {
-        obj[method] = real;
-        reject(new Error('timeout exceeded'));
-      }, wait);
-
-      obj[method] = function() {
-        clearTimeout(timeout);
-        obj[method] = real; // restore asap
-        var result = real.apply(obj, arguments);
-        resolve(result);
-        return result;
-      };
+      accessibility.check(this.dom).then(done, done);
     });
-  }
+
+    test('gaia-header passes accessibility checks with its attributes ' +
+      'dynamically changing', function(done) {
+      this.dom.innerHTML = '<gaia-header action="back"><h1>Title</h1></gaia-header>';
+      var el = this.dom.firstElementChild;
+      var h1 = el.querySelector('h1');
+
+      accessibility.check(this.dom)
+        .then(() => {
+          /* change to another supported action */
+          el.setAttribute('action', 'close');
+          return accessibility.check(this.dom);
+        })
+        .then(() => {
+          /* change to an unsupported action */
+          el.setAttribute('action', 'unsupported');
+          return accessibility.check(this.dom);
+        })
+        .then(() => {
+          /* back to something supported via attribute field */
+          el.action = 'menu';
+          return accessibility.check(this.dom);
+        })
+        .then(() => {
+          /* change title to very long text */
+          h1.textContent = 'long long long long long long long long long ' +
+            'long long long long long';
+          return afterNext(el, 'runFontFit');
+        })
+        .then(() => accessibility.check(this.dom))
+        .then(done, done);
+    });
+
+    test('gaia-header passes accessibility checks when it is removed and ' +
+      'then dynamically added back into the DOM', function(done) {
+      this.dom.innerHTML = '<gaia-header action="back"><h1>Title</h1></gaia-header>';
+      var el = this.dom.firstElementChild;
+      el.remove();
+      this.dom.appendChild(el);
+
+      accessibility.check(this.dom).then(done, done);
+    });
+
+    test('gaia-header passes accessibility checks when it has multiple headings',
+      function(done) {
+        this.dom.innerHTML = `<gaia-header action="back">
+          <h1 class="title-1">Title 1</h1>
+          <h1 class="title-2" hidden>Title 2</h1>
+          <button>Foo</button>
+          <button>Bar</button>
+        </gaia-header>`;
+
+        var el = this.dom.firstElementChild;
+        var title1 = el.querySelector('.title-1');
+        var title2 = el.querySelector('.title-2');
+
+        afterNext(el, 'runFontFit')
+          .then(() => accessibility.check(this.dom))
+          .then(() => {
+            this.fontFit.reset();
+            title1.hidden = true;
+            title2.hidden = false;
+            return afterNext(el, 'runFontFit');
+          })
+          .then(() => accessibility.check(this.dom))
+          .then(done, done);
+      });
+  });
 });
