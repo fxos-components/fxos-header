@@ -12,7 +12,10 @@ module.exports = function(config) {
     customLaunchers: {
       firefox_latest: {
         base: 'FirefoxNightly',
-        prefs: {'dom.webcomponents.enabled': true}
+        prefs: {
+          'dom.webcomponents.enabled': true,
+          'dom.w3c_touch_events.enabled': 1
+        }
       }
     },
 
@@ -21,7 +24,10 @@ module.exports = function(config) {
       'bower_components/gaia-icons/gaia-icons.js',
       'bower_components/font-fit/font-fit.js',
       'gaia-header.js',
-      'test/test.js',
+      'node_modules/test-utils/node_modules/axe-core/axe.min.js',
+      'node_modules/test-utils/src/utils.js',
+      'node_modules/test-utils/src/accessibility.js',
+      'test/test-unit.js',
       {
         pattern: 'bower_components/gaia-icons/gaia-icons.css',
         included: false
@@ -33,7 +39,8 @@ module.exports = function(config) {
     ],
 
     proxies: {
-      '/bower_components/': 'http://localhost:9876/base/bower_components/'
+      '/bower_components/': 'http://localhost:9876/base/bower_components/',
+      '/node_modules/': 'http://localhost:9876/base/node_modules/'
     }
   });
 };

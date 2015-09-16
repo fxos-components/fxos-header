@@ -2,3 +2,6 @@ bower_components
 firefox
 node_modules
 .DS_Store
+marionette-mocha-gecko.log
+npm-debug.log
+gecko.log

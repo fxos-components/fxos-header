@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>gaia-header</title>
+  <meta name="description" content="Integration tests for gaia-header" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="../bower_components/base/base.css">
+  <link rel="stylesheet" type="text/css" href="../bower_components/gaia-theme/gaia-theme.css">
+  <link rel="stylesheet" type="text/css" href="../bower_components/gaia-fonts/style.css">
+  <link rel="stylesheet" type="text/css" href="../bower_components/gaia-icons/gaia-icons.css">
+  <script src="../bower_components/gaia-component/gaia-component.js"></script>
+  <script src="../bower_components/font-fit/font-fit.js"></script>
+  <script src="../gaia-header.js"></script>
+  <style>
+
+    gaia-header {
+      margin-bottom: 15px;
+    }
+
+    .indicator {
+      padding: 0 1rem;
+      margin: auto;
+    }
+
+  </style>
+</head>
+<body role="application" class="l-pt-mega">
+
+  <gaia-header id="header-0" action="back">
+    <h1>Keyboard Settings</h1>
+  </gaia-header>
+
+  <gaia-header id="header-1" action="menu">
+    <h1>Action 'menu'</h1>
+  </gaia-header>
+
+  <gaia-header id="header-2" action="close">
+    <h1>Action 'close'</h1>
+  </gaia-header>
+
+  <gaia-header id="header-3" action="close">
+    <h1>No action button</h1>
+    <button data-icon="settings" id="setting" aria-label="Setting"></button>
+  </gaia-header>
+
+  <gaia-header id="header-4" action="close">
+    <h1>Custom a href</h1>
+    <a href="#" id="custom">Custom</a>
+  </gaia-header>
+
+</body>
+</html>
