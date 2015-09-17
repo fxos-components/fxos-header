@@ -70,6 +70,7 @@ const MAXIMUM_FONT_SIZE = 23;
  * @return {Element} constructor
  */
 module.exports = component.register('gaia-header', {
+  rtl: true,
 
   /**
    * Called when the element is first created.
@@ -128,6 +129,7 @@ module.exports = component.register('gaia-header', {
     this.runFontFitSoon();
     this.observerStart();
     window.addEventListener('resize', this.onResize);
+    document.addEventListener('dirchanged', this.onUpdate.bind(this));
   },
 
   /**
@@ -139,6 +141,7 @@ module.exports = component.register('gaia-header', {
   detached: function() {
     debug('detached');
     window.removeEventListener('resize', this.onResize);
+    document.removeEventListener('dirchanged', this.onUpdate.bind(this));
     this.observerStop();
     this.clearPending();
   },
@@ -209,7 +212,7 @@ module.exports = component.register('gaia-header', {
    *
    * @param  {HTMLH1Element} el
    * @param  {Number} space
-   * @return {Object} {fontSize, marginStart, overflowing, id}
+   * @return {Object} {id, fontSize, marginStart, overflowing, padding}
    * @private
    */
   getTitleStyle: function(el, space) {
@@ -298,25 +301,18 @@ module.exports = component.register('gaia-header', {
   },
 
   /**
-   * Fit text and center a title between
-   * the buttons before and after.
+   * Fit text and center a title between the buttons before and after.
    *
-   * Right now, because gaia-header is not
-   * fully rtl-compatible (due to Gaia),
-   * we're using `marginLeft` etc. These
-   * will be changed to `marginStart` etc
-   * when we become fully RTL.
-   *
-   * @param  {HTMLH1Element} title
-   * @param  {Number} space
+   * @param  {HTMLH1Element} el
+   * @param  {Object} style
    * @private
    */
   setTitleStyle: function(el, style) {
     debug('set title style', style);
     this.observerStop();
-    el.style.marginLeft = style.marginStart + 'px';
-    el.style.paddingLeft = style.padding.start + 'px';
-    el.style.paddingRight = style.padding.end + 'px';
+    el.style.marginInlineStart = style.marginStart + 'px';
+    el.style.paddingInlineStart = style.padding.start + 'px';
+    el.style.paddingInlineEnd = style.padding.end + 'px';
     el.style.fontSize = style.fontSize + 'px';
     setStyleId(el, style.id);
     this.observerStart();
@@ -325,7 +321,7 @@ module.exports = component.register('gaia-header', {
   /**
    * Run font-fit on a title with
    * the given amount of content space.
-
+   *
    * @param {String} text
    * @param {Number} space
    * @param {Object} optional {[min]}
@@ -399,6 +395,16 @@ module.exports = component.register('gaia-header', {
       this._resizeThrottlingId = null;
       this.runFontFitSoon();
     });
+  },
+
+  /**
+   * Handle 'dirchanged' events.
+   *
+   * @private
+   */
+  onUpdate: function() {
+    debug('onUpdate');
+    this.shadowRoot.firstChild.dir = dir();
   },
 
   /**
@@ -651,7 +657,7 @@ module.exports = component.register('gaia-header', {
     }
   },
 
-  template: `<div class="inner">
+  template: `<div class="inner" dir="${dir()}">
     <button class="action-button">
       <content select=".l10n-action"></content>
     </button>
@@ -690,7 +696,6 @@ module.exports = component.register('gaia-header', {
   .inner {
     display: flex;
     min-height: 50px;
-    direction: ltr;
     -moz-user-select: none;
 
     background:
@@ -761,8 +766,10 @@ module.exports = component.register('gaia-header', {
   }
 
   [action=close] .action-button:before { content: 'close' }
-  [action=back] .action-button:before { content: 'back' }
   [action=menu] .action-button:before { content: 'menu' }
+
+  [action=back]:-moz-dir(ltr) .action-button:before { content: 'back' }
+  [action=back]:-moz-dir(rtl) .action-button:before { content: 'forward' }
 
   /** Action Button Icon
    ---------------------------------------------------------*/
@@ -831,22 +838,6 @@ module.exports = component.register('gaia-header', {
       var(--title-color,
       var(--text-color,
       inherit))));
-  }
-
-  /**
-   * [dir=rtl]
-   *
-   * When the document is in RTL mode we still
-   * want the <h1> text to be reversed to that
-   * strings like '1 selected' become 'selected 1'.
-   *
-   * When we're happy for gaia-header to be fully
-   * RTL responsive we won't need this rule anymore,
-   * but this depends on all Gaia apps being ready.
-   */
-
-  :host-context([dir=rtl]) ::content h1 {
-    direction: rtl;
   }
 
   /** Buttons
@@ -962,6 +953,15 @@ module.exports = component.register('gaia-header', {
 /**
  * Utils
  */
+
+/**
+ * Get the document direction.
+ *
+ * @return {String} ('ltr'|'rtl')
+ */
+function dir() {
+  return document.dir || 'ltr';
+}
 
 /**
  * Determines whether passed element
