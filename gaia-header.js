@@ -659,7 +659,7 @@ module.exports = component.register('gaia-header', {
 
   template: `<div class="inner" dir="${dir()}">
     <button class="action-button">
-      <content select=".l10n-action"></content>
+      <content select="[l10n-action]"></content>
     </button>
     <content></content>
   </div>
@@ -795,12 +795,12 @@ module.exports = component.register('gaia-header', {
    * Example:
    *
    *   <gaia-header action="back">
-   *     <span class="l10n-action" aria-label="Back">Localized text</span>
+   *     <span l10n-action aria-label="Back">Localized text</span>
    *     <h1>title</h1>
    *   </gaia-header>
    */
 
-  ::content .l10n-action {
+  ::content [l10n-action] {
     position: absolute;
     left: 0;
     top: 0;
@@ -967,10 +967,16 @@ function dir() {
  * Determines whether passed element
  * contributes to the layout in gaia-header.
  *
+ * Children with `[l10n-action]` get distributed
+ * inside the action-button so don't occupy
+ * space before the `<h1>`.
+ *
  * @param  {Element}  el
  * @return {Boolean}
  */
-function contributesToLayout(el) { return el.tagName !== 'STYLE'; }
+function contributesToLayout(el) {
+  return el.localName !== 'style' && !el.hasAttribute('l10n-action');
+}
 
 /**
  * Set a 'style id' property that
