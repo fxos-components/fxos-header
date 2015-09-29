@@ -145,7 +145,7 @@ suite('GaiaHeader', function() {
       afterNext(el, 'runFontFit').then(() => {
         assert.equal(h1.style.fontSize, '',
           'font-size should not have been set');
-        assert.equal(h1.style.marginLeft, '',
+        assert.equal(h1.style.marginInlineStart, '',
           'margin should not have been set');
 
         h1.textContent = 'Localized title';
@@ -153,7 +153,7 @@ suite('GaiaHeader', function() {
       }).then(() => {
         sinon.assert.calledOnce(this.fontFit);
         assert.equal(h1.style.fontSize, '23px', 'font-size has been set');
-        assert.equal(h1.style.marginLeft, '-50px', 'margin has been set');
+        assert.equal(h1.style.marginInlineStart, '-50px', 'margin has been set');
       }).then(done, done);
     });
 
@@ -166,7 +166,7 @@ suite('GaiaHeader', function() {
       afterNext(el, 'runFontFit').then(() => {
         assert.equal(h1.style.fontSize, '',
           'font-size should not have been set');
-        assert.equal(h1.style.marginLeft, '',
+        assert.equal(h1.style.marginInlineStart, '',
           'margin should not have been set');
         sinon.assert.notCalled(this.fontFit);
       }).then(done, done);
@@ -182,7 +182,7 @@ suite('GaiaHeader', function() {
 
       afterNext(el, 'runFontFit').then(() => {
         assert.equal(h1.style.fontSize, '23px');
-        assert.equal(h1.style.marginLeft, '-50px');
+        assert.equal(h1.style.marginInlineStart, '-50px');
 
         h1.textContent = 'Title';
         h1.setAttribute('foo', 'bar');
@@ -242,7 +242,7 @@ suite('GaiaHeader', function() {
 
 
       return afterNext(header, 'runFontFit').then(() => {
-        assert.equal(h1.style.marginLeft, '-50px');
+        assert.equal(h1.style.marginInlineStart, '-50px');
       });
     });
 
@@ -258,7 +258,7 @@ suite('GaiaHeader', function() {
       this.dom.appendChild(header);
 
       return afterNext(header, 'runFontFit').then(() => {
-        assert.equal(h1.style.marginLeft, '50px');
+        assert.equal(h1.style.marginInlineStart, '50px');
       });
     });
 
@@ -453,7 +453,7 @@ suite('GaiaHeader', function() {
         el.action = 'back';
         return afterNext(el, 'runFontFit');
       }).then(() => {
-        assert.equal(h1.style.marginLeft, '0px');
+        assert.equal(h1.style.marginInlineStart, '0px');
       }).then(done, done);
     });
   });
@@ -485,31 +485,31 @@ suite('GaiaHeader', function() {
       });
 
       test('are correctly taken into account', function() {
-        assert.equal(h1.style.marginLeft, '50px');
+        assert.equal(h1.style.marginInlineStart, '50px');
       });
 
       test('changing start attribute is taken into account', function(done) {
         el.setAttribute('title-start', '0');
 
         afterNext(el, 'runFontFit').then(() => {
-          assert.equal(h1.style.marginLeft, '100px');
+          assert.equal(h1.style.marginInlineStart, '100px');
           el.removeAttribute('title-start');
           return afterNext(el, 'runFontFit');
         }).then(() => {
-          assert.equal(h1.style.marginLeft, '100px');
+          assert.equal(h1.style.marginInlineStart, '100px');
         }).then(done, done);
       });
 
       test('changing end attribute is taken into account', function(done) {
-        assert.equal(h1.style.marginLeft, '50px');
+        assert.equal(h1.style.marginInlineStart, '50px');
         el.setAttribute('title-end', '0');
 
         afterNext(el, 'runFontFit').then(() => {
-          assert.equal(h1.style.marginLeft, '-50px');
+          assert.equal(h1.style.marginInlineStart, '-50px');
           el.removeAttribute('title-end');
           return afterNext(el, 'runFontFit');
         }).then(() => {
-          assert.equal(h1.style.marginLeft, '-50px');
+          assert.equal(h1.style.marginInlineStart, '-50px');
         }).then(done, done);
       });
 
@@ -843,7 +843,7 @@ suite('GaiaHeader', function() {
       var h1 = el.querySelector('h1');
 
       afterNext(el, 'runFontFit').then(() => {
-        assert.equal(h1.style.marginLeft, '50px');
+        assert.equal(h1.style.marginInlineStart, '50px');
 
         this.dom.innerHTML = `<gaia-header action="menu">
           <h1>Header title</h1>
@@ -854,7 +854,7 @@ suite('GaiaHeader', function() {
 
         return afterNext(el, 'runFontFit');
       }).then(() => {
-        assert.equal(h1.style.marginLeft, '-50px');
+        assert.equal(h1.style.marginInlineStart, '-50px');
       }).then(done, done);
     });
 
@@ -870,7 +870,7 @@ suite('GaiaHeader', function() {
       var h1 = el.querySelector('h1');
 
       afterNext(el, 'runFontFit').then(() => {
-        assert.equal(h1.style.marginLeft, '0px');
+        assert.equal(h1.style.marginInlineStart, '0px');
       }).then(done, done);
     });
 
@@ -1038,8 +1038,8 @@ suite('GaiaHeader', function() {
     var title2 = el.querySelector('.title-2');
 
     afterNext(el, 'runFontFit').then(() => {
-      assert.equal(title1.style.marginLeft, '50px');
-      assert.equal(title2.style.marginLeft, '50px');
+      assert.equal(title1.style.marginInlineStart, '50px');
+      assert.equal(title2.style.marginInlineStart, '50px');
     }).then(() => {
       this.fontFit.reset();
       title1.hidden = true;
@@ -1047,8 +1047,8 @@ suite('GaiaHeader', function() {
       return afterNext(el, 'runFontFit');
     }).then(() => {
       sinon.assert.notCalled(this.fontFit, 'font-fit not required');
-      assert.equal(title1.style.marginLeft, '50px');
-      assert.equal(title2.style.marginLeft, '50px');
+      assert.equal(title1.style.marginInlineStart, '50px');
+      assert.equal(title2.style.marginInlineStart, '50px');
     }).then(done, done);
   });
 
