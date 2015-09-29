@@ -692,6 +692,7 @@
            * @return {Element} constructor
            */
           module.exports = component.register("gaia-header", {
+            rtl: true,
 
             /**
              * Called when the element is first created.
@@ -753,6 +754,7 @@
               this.runFontFitSoon();
               this.observerStart();
               window.addEventListener("resize", this.onResize);
+              document.addEventListener("dirchanged", this.onUpdate.bind(this));
             },
 
             /**
@@ -764,6 +766,7 @@
             detached: function detached() {
               debug("detached");
               window.removeEventListener("resize", this.onResize);
+              document.removeEventListener("dirchanged", this.onUpdate.bind(this));
               this.observerStop();
               this.clearPending();
             },
@@ -844,7 +847,7 @@
              *
              * @param  {HTMLH1Element} el
              * @param  {Number} space
-             * @return {Object} {fontSize, marginStart, overflowing, id}
+             * @return {Object} {id, fontSize, marginStart, overflowing, padding}
              * @private
              */
             getTitleStyle: function getTitleStyle(el, space) {
@@ -943,25 +946,18 @@
             },
 
             /**
-             * Fit text and center a title between
-             * the buttons before and after.
+             * Fit text and center a title between the buttons before and after.
              *
-             * Right now, because gaia-header is not
-             * fully rtl-compatible (due to Gaia),
-             * we're using `marginLeft` etc. These
-             * will be changed to `marginStart` etc
-             * when we become fully RTL.
-             *
-             * @param  {HTMLH1Element} title
-             * @param  {Number} space
+             * @param  {HTMLH1Element} el
+             * @param  {Object} style
              * @private
              */
             setTitleStyle: function setTitleStyle(el, style) {
               debug("set title style", style);
               this.observerStop();
-              el.style.marginLeft = style.marginStart + "px";
-              el.style.paddingLeft = style.padding.start + "px";
-              el.style.paddingRight = style.padding.end + "px";
+              el.style.marginInlineStart = style.marginStart + "px";
+              el.style.paddingInlineStart = style.padding.start + "px";
+              el.style.paddingInlineEnd = style.padding.end + "px";
               el.style.fontSize = style.fontSize + "px";
               setStyleId(el, style.id);
               this.observerStart();
@@ -970,7 +966,8 @@
             /**
              * Run font-fit on a title with
              * the given amount of content space.
-              * @param {String} text
+             *
+             * @param {String} text
              * @param {Number} space
              * @param {Object} optional {[min]}
              * @return {Object} {fontSize, textWidth}
@@ -1051,6 +1048,16 @@
                 _this5._resizeThrottlingId = null;
                 _this5.runFontFitSoon();
               });
+            },
+
+            /**
+             * Handle 'dirchanged' events.
+             *
+             * @private
+             */
+            onUpdate: function onUpdate() {
+              debug("onUpdate");
+              this.shadowRoot.firstChild.dir = dir();
             },
 
             /**
@@ -1341,7 +1348,7 @@
               }
             },
 
-            template: "<div class=\"inner\">\n    <button class=\"action-button\">\n      <content select=\".l10n-action\"></content>\n    </button>\n    <content></content>\n  </div>\n\n  <style>\n\n  :host {\n    display: block;\n    -moz-user-select: none;\n\n    --gaia-header-button-color:\n      var(--header-button-color,\n      var(--header-color,\n      var(--link-color,\n      inherit)));\n  }\n\n  /**\n   * [hidden]\n   */\n\n  :host[hidden] {\n    display: none;\n  }\n\n  /** Reset\n   ---------------------------------------------------------*/\n\n  ::-moz-focus-inner { border: 0; }\n\n  /** Inner\n   ---------------------------------------------------------*/\n\n  .inner {\n    display: flex;\n    min-height: 50px;\n    direction: ltr;\n    -moz-user-select: none;\n\n    background:\n      var(--header-background,\n      var(--background,\n      #fff));\n  }\n\n  /** Action Button\n   ---------------------------------------------------------*/\n\n  /**\n   * 1. Hidden by default\n   */\n\n  .action-button {\n    position: relative;\n\n    display: none; /* 1 */\n    width: 50px;\n    font-size: 30px;\n    margin: 0;\n    padding: 0;\n    border: 0;\n    outline: 0;\n\n    align-items: center;\n    background: none;\n    cursor: pointer;\n    transition: opacity 200ms 280ms;\n    color:\n      var(--header-action-button-color,\n      var(--header-icon-color,\n      var(--gaia-header-button-color)));\n  }\n\n  /**\n   * [action=back]\n   * [action=menu]\n   * [action=close]\n   *\n   * 1. For icon vertical-alignment\n   */\n\n  [action=back] .action-button,\n  [action=menu] .action-button,\n  [action=close] .action-button {\n    display: flex; /* 1 */\n  }\n\n  /**\n   * :active\n   */\n\n  .action-button:active {\n    transition: none;\n    opacity: 0.2;\n  }\n\n  /** Action Button Icon\n   ---------------------------------------------------------*/\n\n  .action-button:before {\n    font-family: 'gaia-icons';\n    font-style: normal;\n    text-rendering: optimizeLegibility;\n    font-weight: 500;\n  }\n\n  [action=close] .action-button:before { content: 'close' }\n  [action=back] .action-button:before { content: 'back' }\n  [action=menu] .action-button:before { content: 'menu' }\n\n  /** Action Button Icon\n   ---------------------------------------------------------*/\n\n  /**\n   * 1. To enable vertical alignment.\n   */\n\n  .action-button:before {\n    display: block;\n  }\n\n  /** Action Button Text\n   ---------------------------------------------------------*/\n\n  /**\n   * To provide custom localized content for\n   * the action-button, we allow the user\n   * to provide an element with the class\n   * .l10n-action. This node is then\n   * pulled inside the real action-button.\n   *\n   * Example:\n   *\n   *   <gaia-header action=\"back\">\n   *     <span class=\"l10n-action\" aria-label=\"Back\">Localized text</span>\n   *     <h1>title</h1>\n   *   </gaia-header>\n   */\n\n  ::content .l10n-action {\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 100%;\n    font-size: 0;\n  }\n\n  /** Title\n   ---------------------------------------------------------*/\n\n  /**\n   * 1. Vertically center text. We can't use flexbox\n   *    here as it breaks text-overflow ellipsis\n   *    without an inner div.\n   */\n\n  ::content h1 {\n    flex: 1;\n    margin: 0;\n    padding: 0;\n    overflow: hidden;\n\n    white-space: nowrap;\n    text-overflow: ellipsis;\n    text-align: center;\n    line-height: 50px; /* 1 */\n    font-weight: 300;\n    font-style: italic;\n    font-size: 24px;\n\n    color:\n      var(--header-title-color,\n      var(--header-color,\n      var(--title-color,\n      var(--text-color,\n      inherit))));\n  }\n\n  /**\n   * [dir=rtl]\n   *\n   * When the document is in RTL mode we still\n   * want the <h1> text to be reversed to that\n   * strings like '1 selected' become 'selected 1'.\n   *\n   * When we're happy for gaia-header to be fully\n   * RTL responsive we won't need this rule anymore,\n   * but this depends on all Gaia apps being ready.\n   */\n\n  :host-context([dir=rtl]) ::content h1 {\n    direction: rtl;\n  }\n\n  /** Buttons\n   ---------------------------------------------------------*/\n\n  ::content a,\n  ::content button {\n    position: relative;\n    z-index: 1;\n    box-sizing: border-box;\n    display: flex;\n    width: auto;\n    height: auto;\n    min-width: 50px;\n    margin: 0;\n    padding: 0 10px;\n    outline: 0;\n    border: 0;\n\n    font-size: 14px;\n    line-height: 1;\n    align-items: center;\n    justify-content: center;\n    text-decoration: none;\n    text-align: center;\n    background: none;\n    border-radius: 0;\n    font-style: italic;\n    cursor: pointer;\n    transition: opacity 200ms 280ms;\n    color: var(--gaia-header-button-color);\n  }\n\n  /**\n   * :active\n   */\n\n  ::content a:active,\n  ::content button:active {\n    transition: none;\n    opacity: 0.2;\n  }\n\n  /**\n   * [hidden]\n   */\n\n  ::content a[hidden],\n  ::content button[hidden] {\n    display: none;\n  }\n\n  /**\n   * [disabled]\n   */\n\n  ::content a[disabled],\n  ::content button[disabled] {\n    pointer-events: none;\n    color: var(--header-disabled-button-color);\n  }\n\n  /** Icon Buttons\n   ---------------------------------------------------------*/\n\n  /**\n   * Icons are a different color to text\n   */\n\n  ::content .icon,\n  ::content [data-icon] {\n    color:\n      var(--header-icon-color,\n      var(--gaia-header-button-color));\n  }\n\n  /**\n   * If users want their action button\n   * to be in the component's light-dom\n   * they can add an .action class\n   * to make it look like the\n   * shadow action button.\n   */\n\n  ::content .action {\n    color:\n      var(--header-action-button-color,\n      var(--header-icon-color,\n      var(--gaia-header-button-color)));\n  }\n\n  /**\n   * [data-icon]:empty\n   *\n   * Icon buttons with no textContent,\n   * should always be 50px.\n   *\n   * This is to prevent buttons being\n   * larger than they should be before\n   * icon-font has loaded.\n   */\n\n  ::content [data-icon]:empty {\n    width: 50px;\n  }\n\n  </style>",
+            template: "<div class=\"inner\" dir=\"" + dir() + "\">\n    <button class=\"action-button\">\n      <content select=\".l10n-action\"></content>\n    </button>\n    <content></content>\n  </div>\n\n  <style>\n\n  :host {\n    display: block;\n    -moz-user-select: none;\n\n    --gaia-header-button-color:\n      var(--header-button-color,\n      var(--header-color,\n      var(--link-color,\n      inherit)));\n  }\n\n  /**\n   * [hidden]\n   */\n\n  :host[hidden] {\n    display: none;\n  }\n\n  /** Reset\n   ---------------------------------------------------------*/\n\n  ::-moz-focus-inner { border: 0; }\n\n  /** Inner\n   ---------------------------------------------------------*/\n\n  .inner {\n    display: flex;\n    min-height: 50px;\n    -moz-user-select: none;\n\n    background:\n      var(--header-background,\n      var(--background,\n      #fff));\n  }\n\n  /** Action Button\n   ---------------------------------------------------------*/\n\n  /**\n   * 1. Hidden by default\n   */\n\n  .action-button {\n    position: relative;\n\n    display: none; /* 1 */\n    width: 50px;\n    font-size: 30px;\n    margin: 0;\n    padding: 0;\n    border: 0;\n    outline: 0;\n\n    align-items: center;\n    background: none;\n    cursor: pointer;\n    transition: opacity 200ms 280ms;\n    color:\n      var(--header-action-button-color,\n      var(--header-icon-color,\n      var(--gaia-header-button-color)));\n  }\n\n  /**\n   * [action=back]\n   * [action=menu]\n   * [action=close]\n   *\n   * 1. For icon vertical-alignment\n   */\n\n  [action=back] .action-button,\n  [action=menu] .action-button,\n  [action=close] .action-button {\n    display: flex; /* 1 */\n  }\n\n  /**\n   * :active\n   */\n\n  .action-button:active {\n    transition: none;\n    opacity: 0.2;\n  }\n\n  /** Action Button Icon\n   ---------------------------------------------------------*/\n\n  .action-button:before {\n    font-family: 'gaia-icons';\n    font-style: normal;\n    text-rendering: optimizeLegibility;\n    font-weight: 500;\n  }\n\n  [action=close] .action-button:before { content: 'close' }\n  [action=menu] .action-button:before { content: 'menu' }\n\n  [action=back]:-moz-dir(ltr) .action-button:before { content: 'back' }\n  [action=back]:-moz-dir(rtl) .action-button:before { content: 'forward' }\n\n  /** Action Button Icon\n   ---------------------------------------------------------*/\n\n  /**\n   * 1. To enable vertical alignment.\n   */\n\n  .action-button:before {\n    display: block;\n  }\n\n  /** Action Button Text\n   ---------------------------------------------------------*/\n\n  /**\n   * To provide custom localized content for\n   * the action-button, we allow the user\n   * to provide an element with the class\n   * .l10n-action. This node is then\n   * pulled inside the real action-button.\n   *\n   * Example:\n   *\n   *   <gaia-header action=\"back\">\n   *     <span class=\"l10n-action\" aria-label=\"Back\">Localized text</span>\n   *     <h1>title</h1>\n   *   </gaia-header>\n   */\n\n  ::content .l10n-action {\n    position: absolute;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 100%;\n    font-size: 0;\n  }\n\n  /** Title\n   ---------------------------------------------------------*/\n\n  /**\n   * 1. Vertically center text. We can't use flexbox\n   *    here as it breaks text-overflow ellipsis\n   *    without an inner div.\n   */\n\n  ::content h1 {\n    flex: 1;\n    margin: 0;\n    padding: 0;\n    overflow: hidden;\n\n    white-space: nowrap;\n    text-overflow: ellipsis;\n    text-align: center;\n    line-height: 50px; /* 1 */\n    font-weight: 300;\n    font-style: italic;\n    font-size: 24px;\n\n    color:\n      var(--header-title-color,\n      var(--header-color,\n      var(--title-color,\n      var(--text-color,\n      inherit))));\n  }\n\n  /** Buttons\n   ---------------------------------------------------------*/\n\n  ::content a,\n  ::content button {\n    position: relative;\n    z-index: 1;\n    box-sizing: border-box;\n    display: flex;\n    width: auto;\n    height: auto;\n    min-width: 50px;\n    margin: 0;\n    padding: 0 10px;\n    outline: 0;\n    border: 0;\n\n    font-size: 14px;\n    line-height: 1;\n    align-items: center;\n    justify-content: center;\n    text-decoration: none;\n    text-align: center;\n    background: none;\n    border-radius: 0;\n    font-style: italic;\n    cursor: pointer;\n    transition: opacity 200ms 280ms;\n    color: var(--gaia-header-button-color);\n  }\n\n  /**\n   * :active\n   */\n\n  ::content a:active,\n  ::content button:active {\n    transition: none;\n    opacity: 0.2;\n  }\n\n  /**\n   * [hidden]\n   */\n\n  ::content a[hidden],\n  ::content button[hidden] {\n    display: none;\n  }\n\n  /**\n   * [disabled]\n   */\n\n  ::content a[disabled],\n  ::content button[disabled] {\n    pointer-events: none;\n    color: var(--header-disabled-button-color);\n  }\n\n  /** Icon Buttons\n   ---------------------------------------------------------*/\n\n  /**\n   * Icons are a different color to text\n   */\n\n  ::content .icon,\n  ::content [data-icon] {\n    color:\n      var(--header-icon-color,\n      var(--gaia-header-button-color));\n  }\n\n  /**\n   * If users want their action button\n   * to be in the component's light-dom\n   * they can add an .action class\n   * to make it look like the\n   * shadow action button.\n   */\n\n  ::content .action {\n    color:\n      var(--header-action-button-color,\n      var(--header-icon-color,\n      var(--gaia-header-button-color)));\n  }\n\n  /**\n   * [data-icon]:empty\n   *\n   * Icon buttons with no textContent,\n   * should always be 50px.\n   *\n   * This is to prevent buttons being\n   * larger than they should be before\n   * icon-font has loaded.\n   */\n\n  ::content [data-icon]:empty {\n    width: 50px;\n  }\n\n  </style>",
 
             // Test hook
             nextTick: nextTick
@@ -1350,6 +1357,15 @@
           /**
            * Utils
            */
+
+          /**
+           * Get the document direction.
+           *
+           * @return {String} ('ltr'|'rtl')
+           */
+          function dir() {
+            return document.dir || "ltr";
+          }
 
           /**
            * Determines whether passed element
