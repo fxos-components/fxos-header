@@ -240,7 +240,6 @@ suite('GaiaHeader', function() {
       header.appendChild(h1);
       this.dom.appendChild(header);
 
-
       return afterNext(header, 'runFontFit').then(() => {
         assert.equal(h1.style.marginInlineStart, '-50px');
       });
@@ -353,6 +352,17 @@ suite('GaiaHeader', function() {
         return afterNext(header, 'runFontFit');
       }).then(() => {
         sinon.assert.calledOnce(this.fontFit);
+      });
+    });
+
+    test('children with [l10n-action] are not considered when calculating title space', function() {
+      this.dom.innerHTML = '<gaia-header action="back"><span l10n-action>' +
+        'some text</span><h1>Title title</h1></gaia-header>';
+      var header = this.dom.firstElementChild;
+      var h1 = header.querySelector('h1');
+
+      return afterNext(header, 'runFontFit').then(() => {
+        assert.equal(h1.style.marginInlineStart, '-50px');
       });
     });
   });
