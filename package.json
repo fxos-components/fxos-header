@@ -1,6 +1,6 @@
 {
   "name": "gaia-header",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "homepage": "https://github.com/gaia-components/gaia-header",
   "license": "MIT",
   "main": "gaia-header.js",
