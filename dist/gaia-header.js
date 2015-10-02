@@ -707,6 +707,7 @@ const MAXIMUM_FONT_SIZE = 23;
  * @return {Element} constructor
  */
 module.exports = component.register('gaia-header', {
+  extensible: false, // discards some strings
   dirObserver: true, // triggers a workaround for bug 1100912 in gaia-component
 
   /**
