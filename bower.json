@@ -19,7 +19,7 @@
   ],
   "dependencies": {
     "gaia-icons": "gaia-components/gaia-icons#~0.8.0",
-    "gaia-component": "gaia-components/gaia-component#~0.3.0",
+    "gaia-component": "gaia-components/gaia-component#~0.4.0",
     "font-fit": "gaia-components/font-fit#~0.3.0"
   },
   "devDependencies": {

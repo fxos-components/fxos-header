@@ -39,6 +39,14 @@
     <h1>Keyboard Settings</h1>
   </gaia-header>
 
+  <gaia-header action="back" dir="ltr">
+    <h1><bdi>With dir="ltr"</bdi></h1>
+  </gaia-header>
+
+  <gaia-header action="back" dir="rtl">
+    <h1><bdi>With dir="rtl"</bdi></h1>
+  </gaia-header>
+
   <gaia-header action="menu">
     <h1>Action 'menu'</h1>
   </gaia-header>
@@ -134,7 +142,7 @@
 
   append.addEventListener('click', function() {
     var div = document.createElement('div');
-    div.innerHTML = '<gaia-header action="menu"><h1>Gaia Header</h1></gaia-header>';
+    div.innerHTML = '<gaia-header action="back"><h1>Gaia Header</h1></gaia-header>';
     document.body.insertBefore(div.firstElementChild, message);
   });
   </script>

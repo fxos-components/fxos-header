@@ -70,7 +70,7 @@ const MAXIMUM_FONT_SIZE = 23;
  * @return {Element} constructor
  */
 module.exports = component.register('gaia-header', {
-  rtl: true,
+  dirObserver: true, // triggers a workaround for bug 1100912 in gaia-component
 
   /**
    * Called when the element is first created.
@@ -129,7 +129,6 @@ module.exports = component.register('gaia-header', {
     this.runFontFitSoon();
     this.observerStart();
     window.addEventListener('resize', this.onResize);
-    document.addEventListener('dirchanged', this.onUpdate.bind(this));
   },
 
   /**
@@ -141,7 +140,6 @@ module.exports = component.register('gaia-header', {
   detached: function() {
     debug('detached');
     window.removeEventListener('resize', this.onResize);
-    document.removeEventListener('dirchanged', this.onUpdate.bind(this));
     this.observerStop();
     this.clearPending();
   },
@@ -398,16 +396,6 @@ module.exports = component.register('gaia-header', {
   },
 
   /**
-   * Handle 'dirchanged' events.
-   *
-   * @private
-   */
-  onUpdate: function() {
-    debug('onUpdate');
-    this.shadowRoot.firstChild.dir = dir();
-  },
-
-  /**
    * When the components DOM changes we
    * call `.runFontFit()` (sync).
    *
@@ -657,7 +645,7 @@ module.exports = component.register('gaia-header', {
     }
   },
 
-  template: `<div class="inner" dir="${dir()}">
+  template: `<div class="inner">
     <button class="action-button">
       <content select="[l10n-action]"></content>
     </button>
@@ -953,15 +941,6 @@ module.exports = component.register('gaia-header', {
 /**
  * Utils
  */
-
-/**
- * Get the document direction.
- *
- * @return {String} ('ltr'|'rtl')
- */
-function dir() {
-  return document.dir || 'ltr';
-}
 
 /**
  * Determines whether passed element
