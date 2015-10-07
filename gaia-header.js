@@ -97,6 +97,7 @@ module.exports = component.register('gaia-header', {
     this.observer = new MutationObserver(this.onMutation.bind(this));
 
     // Properties
+    this.ignoreDir = this.hasAttribute('ignore-dir');
     this.titleEnd = this.getAttribute('title-end');
     this.titleStart = this.getAttribute('title-start');
     this.noFontFit = this.getAttribute('no-font-fit');
@@ -258,7 +259,7 @@ module.exports = component.register('gaia-header', {
   },
 
   /**
-   * Set's styles on the title elements.
+   * Sets styles on the title elements.
    *
    * If there is already an unresolved Promise
    * we return it instead of scheduling another.
@@ -309,9 +310,15 @@ module.exports = component.register('gaia-header', {
   setTitleStyle: function(el, style) {
     debug('set title style', style);
     this.observerStop();
-    el.style.marginInlineStart = style.marginStart + 'px';
-    el.style.paddingInlineStart = style.padding.start + 'px';
-    el.style.paddingInlineEnd = style.padding.end + 'px';
+    if (this.ignoreDir) {
+      el.style.marginLeft = style.marginStart + 'px';
+      el.style.paddingLeft = style.padding.start + 'px';
+      el.style.paddingRight = style.padding.end + 'px';
+    } else {
+      el.style.marginInlineStart = style.marginStart + 'px';
+      el.style.paddingInlineStart = style.padding.start + 'px';
+      el.style.paddingInlineEnd = style.padding.end + 'px';
+    }
     el.style.fontSize = style.fontSize + 'px';
     setStyleId(el, style.id);
     this.observerStart();
@@ -643,6 +650,23 @@ module.exports = component.register('gaia-header', {
         if (value) { this.setAttr('no-font-fit', ''); }
         else { this.removeAttr('no-font-fit'); }
       }
+    },
+
+    // The [ignore-dir] attribute can be used to force the older behavior of
+    // gaia-header, where the whole header is always displayed in LTR mode.
+    ignoreDir: {
+      get: function() { return this._ignoreDir || false; },
+      set: function(value) {
+        debug('set ignore-dir', value);
+        value = !!(value || value === '');
+
+        if (value === this.ignoreDir) { return; }
+        this._ignoreDir = value;
+        this.dirObserver = !value;
+
+        if (value) { this.setAttr('ignore-dir', ''); }
+        else { this.removeAttr('ignore-dir'); }
+      }
     }
   },
 
@@ -827,6 +851,27 @@ module.exports = component.register('gaia-header', {
       var(--title-color,
       var(--text-color,
       inherit))));
+  }
+
+  /**
+   * [ignore-dir]
+   *
+   * When the <gaia-header> component has an [ignore-dir] attribute, header
+   * direction is forced to LTR but we still want the <h1> text to be reversed
+   * so that strings like '1 selected' become 'selected 1'.
+   *
+   * When we're happy for <gaia-header> to be fully RTL responsive we won't need
+   * these rules anymore, but this depends on all Gaia apps being ready.
+   *
+   * This should be safe to remove when bug 1179459 lands.
+   */
+
+  :host[ignore-dir] {
+    direction: ltr;
+  }
+
+  :host[ignore-dir]:-moz-dir(rtl) h1 {
+    direction: rtl;
   }
 
   /** Buttons
