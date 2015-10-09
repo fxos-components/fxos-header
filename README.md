@@ -44,6 +44,16 @@ By default the gaia-header component assumes that it is flush with the `window` 
 
 Prevents font-fit logic from running. Will run when the attribute is removed. You may choose to use this for app specific performance optimizations.
 
+### `ignore-dir`
+
+```html
+<gaia-header action="back" ignore-dir>
+  <h1>title</h1>
+</gaia-header>
+```
+
+Force the older behavior of gaia-header, where the whole header is always displayed in LTR mode.
+
 ### Localization
 
 If choosing to use the built in action-button you may wish to localize the content within. You can do this by providing a special `l10n-action` child node. This node will be 'distributed' inside the action-button acting as `textContent` for screen-readers.
