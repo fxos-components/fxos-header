@@ -1,11 +1,11 @@
 {
   "name": "gaia-header",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "homepage": "https://github.com/gaia-components/gaia-header",
   "license": "MIT",
   "main": "gaia-header.js",
   "devDependencies": {
-    "babel": "^5.2.12",
+    "babel": "^5.8.0",
     "bower": "^1.4.1",
     "browserify": "^10.1.0",
     "jshint": "^2.7.0",
