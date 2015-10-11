@@ -58,7 +58,7 @@ suite('GaiaHeader', function() {
   });
 
   test('It adds the correct icon for the action type', function() {
-    ['menu', 'close', 'back'].forEach(function(type) {
+    ['menu', 'close'].forEach(function(type) {
       this.dom.innerHTML = '<gaia-header action="' + type + '"></gaia-header>';
       var el = this.dom.firstElementChild;
       var actionButton = el.shadowRoot.querySelector('.action-button');
@@ -70,13 +70,28 @@ suite('GaiaHeader', function() {
     }, this);
   });
 
+  test('It adds the correct icon for the back action', function() {
+    // LTR: back action translates to left arrow.
+    // RTL: back action translates to right arrow.
+    [{dir: 'ltr', icon: 'left'}, {dir: 'rtl', icon: 'right'}].forEach(function(spec) {
+      this.dom.innerHTML = '<gaia-header dir="' + spec.dir + '" action="back"></gaia-header>';
+      var el = this.dom.firstElementChild;
+      var actionButton = el.shadowRoot.querySelector('.action-button');
+      var icon = getComputedStyle(actionButton, ':before').content.replace(/"/g, '');
+      var fontFamily = getComputedStyle(actionButton, ':before').fontFamily.replace(/"/g, '');
+      assert.equal(icon, spec.icon);
+      assert.equal(fontFamily, 'gaia-icons');
+      assert.notEqual(getComputedStyle(actionButton).display, 'none');
+    }, this);
+  });
+
   test('It catches changes to the `action` attribute', function() {
     this.dom.innerHTML = '<gaia-header action="back"><h1></h1></gaia-header>';
     var element = this.dom.firstElementChild;
     var actionButton = element.shadowRoot.querySelector('.action-button');
     var icon = getComputedStyle(actionButton, ':before').content.replace(/"/g, '');
 
-    assert.equal(icon, 'back');
+    assert.equal(icon, 'left');
 
     /* change to another supported action */
     element.setAttribute('action', 'close');
@@ -103,7 +118,7 @@ suite('GaiaHeader', function() {
     var actionButton = el.shadowRoot.querySelector('.action-button');
     var icon = getComputedStyle(actionButton, ':before').content.replace(/"/g, '');
 
-    assert.equal(icon, 'back', 'has correct icon');
+    assert.equal(icon, 'left', 'has correct icon');
 
     el.action = 'menu';
     icon = getComputedStyle(actionButton, ':before').content.replace(/"/g, '');
