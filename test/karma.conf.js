@@ -1,13 +1,17 @@
 'use strict';
 module.exports = function(config) {
   config.set({
-    frameworks: ['mocha', 'sinon-chai'],
+    basePath: '../',
     browsers: ['firefox_latest'],
     client: {
       captureConsole: true,
       mocha: {'ui': 'tdd'}
     },
-    basePath: '../',
+
+    frameworks: [
+      'mocha',
+      'chai-sinon'
+    ],
 
     customLaunchers: {
       firefox_latest: {
