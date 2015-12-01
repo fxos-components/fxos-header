@@ -23,7 +23,7 @@
   },
   "scripts": {
     "install": "bower install",
-    "test-lint": "./node_modules/jshint/bin/jshint gaia-header.js test/*.js",
+    "test-lint": "./node_modules/jshint/bin/jshint gaia-header.js",
     "test-unit": "./node_modules/karma/bin/karma start test/karma.conf.js --single-run",
     "test-integration": "./node_modules/.bin/marionette-mocha --reporter spec --host marionette-firefox-host --runtime $FIREFOX_NIGHTLY_BIN --timeout 6000s test/test-integration.js",
     "test-unit-dev": "./node_modules/karma/bin/karma start test/karma.conf.js",
