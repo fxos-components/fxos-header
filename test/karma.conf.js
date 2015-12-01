@@ -1,4 +1,10 @@
 'use strict';
+
+var fs = require('fs');
+
+console.log(fs.readdirSync('node_modules'));
+console.log(fs.readdirSync('node_modules/test-utils/node_modules'));
+
 module.exports = function(config) {
   config.set({
     basePath: '../',
