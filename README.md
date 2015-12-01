@@ -1,14 +1,14 @@
-# &lt;gaia-header&gt; [![](https://travis-ci.org/gaia-components/gaia-header.svg)](https://travis-ci.org/gaia-components/gaia-header)
+# &lt;gaia-header&gt; [![](https://travis-ci.org/fxos-components/gaia-header.svg)](https://travis-ci.org/fxos-components/gaia-header)
 
 ## Installation
 
 ```bash
-$ bower install gaia-components/gaia-header
+$ bower install fxos-components/gaia-header
 ```
 
 ## Examples
 
-- [Example](http://gaia-components.github.io/gaia-header/)
+- [Example](http://fxos-components.github.io/gaia-header/)
 
 ## Usage
 
