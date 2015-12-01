@@ -1,7 +1,7 @@
 {
   "name": "gaia-header",
   "version": "0.9.5",
-  "homepage": "https://github.com/gaia-components/gaia-header",
+  "homepage": "https://github.com/fxos-components/gaia-header",
   "license": "MIT",
   "main": "gaia-header.js",
   "devDependencies": {
@@ -14,7 +14,7 @@
     "karma-mocha": "^0.1.10",
     "karma-sinon-chai": "^0.3.0",
     "mozilla-download": "^1.1.1",
-    "test-utils": "git://github.com/gaia-components/test-utils.git#v0.0.4",
+    "test-utils": "git://github.com/fxos-components/test-utils.git#v0.0.4",
     "chai": "3.0.0",
     "marionette-firefox-host": "1.0.4",
     "marionette-helper": "0.3.1",
@@ -32,10 +32,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/gaia-components/gaia-header.git"
+    "url": "git://github.com/fxos-components/gaia-header.git"
   },
   "bugs": {
-    "url": "https://github.com/gaia-components/gaia-header/issues"
+    "url": "https://github.com/fxos-components/gaia-header/issues"
   },
   "browser": {
     "gaia-component": "./bower_components/gaia-component/gaia-component.js",
@@ -43,6 +43,6 @@
     "font-fit": "./bower_components/font-fit/font-fit.js"
   },
   "dependencies": {
-    "gaia-component": "git://github.com/gaia-components/gaia-component.git"
+    "gaia-component": "git://github.com/fxos-components/gaia-component.git"
   }
 }

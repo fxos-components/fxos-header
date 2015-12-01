@@ -1,7 +1,6 @@
 {
   "name": "gaia-header",
-  "version": "0.9.5",
-  "homepage": "https://github.com/gaia-components/gaia-header",
+  "homepage": "https://github.com/fxos-components/gaia-header",
   "authors": [
     "Wilson Page <wilsonpage@me.com>"
   ],
@@ -18,13 +17,13 @@
     "README.md"
   ],
   "dependencies": {
-    "gaia-icons": "gaia-components/gaia-icons#~0.10.3",
-    "gaia-component": "gaia-components/gaia-component#~0.4.0",
-    "font-fit": "gaia-components/font-fit#~0.3.0"
+    "gaia-icons": "fxos-components/gaia-icons#~0.10.3",
+    "gaia-component": "fxos-components/gaia-component#~0.4.0",
+    "font-fit": "fxos-components/font-fit#~0.3.0"
   },
   "devDependencies": {
-    "gaia-theme": "gaia-components/gaia-theme",
-    "gaia-fonts": "gaia-components/gaia-fonts",
-    "base": "gaia-components/base"
+    "gaia-theme": "fxos-components/gaia-theme",
+    "gaia-fonts": "fxos-components/gaia-fonts",
+    "base": "fxos-components/base"
   }
 }
