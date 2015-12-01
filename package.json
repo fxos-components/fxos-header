@@ -1,6 +1,6 @@
 {
   "name": "gaia-header",
-  "version": "0.9.5",
+  "version": "0.10.0",
   "homepage": "https://github.com/fxos-components/gaia-header",
   "license": "MIT",
   "main": "gaia-header.js",
