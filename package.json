@@ -5,7 +5,6 @@
   "license": "MIT",
   "main": "gaia-header.js",
   "devDependencies": {
-    "babel": "^6.1.18",
     "bower": "^1.4.1",
     "browserify": "^12.0.1",
     "chai": "3.4.1",
@@ -29,8 +28,7 @@
     "test-integration": "./node_modules/.bin/marionette-mocha --reporter spec --host marionette-firefox-host --runtime $FIREFOX_NIGHTLY_BIN --timeout 6000s test/test-integration.js",
     "test-unit-dev": "./node_modules/karma/bin/karma start test/karma.conf.js",
     "bundle": "mkdir -p dist && browserify gaia-header.js --outfile ./dist/gaia-header.js --standalone GaiaHeader",
-    "es5": "mkdir -p dist && babel ./dist/gaia-header.js --out-file ./dist/gaia-header-es5.js",
-    "build": "npm run bundle && npm run es5"
+    "build": "npm run bundle"
   },
   "repository": {
     "type": "git",
