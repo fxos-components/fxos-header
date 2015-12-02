@@ -21,4 +21,4 @@ env:
   matrix:
     - CI_ACTION="npm run test-lint"
     - CI_ACTION="npm run test-unit"
-    # - CI_ACTION="npm run test-integration"
+    - CI_ACTION="npm run test-integration"

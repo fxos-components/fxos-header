@@ -68,8 +68,9 @@ If choosing to use the built in action-button you may wish to localize the conte
 ## Tests
 
 1. Ensure Firefox Nightly is installed on your machine.
-2. `$ npm install`
-3. `$ npm run test-unit`
+2. To run unit tests you need npm >= 3 installed.
+3. `$ npm install`
+4. `$ npm run test-unit`
 
 If your would like tests to run on file change use:
 
