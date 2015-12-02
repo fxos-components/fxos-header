@@ -1,11 +1,11 @@
 /* jshint maxlen:100 */
 /*global sinon, assert, suite, setup, teardown, test, UIEvent */
-suite('GaiaHeader', function() {
+suite('FXOSHeader', function() {
   'use strict';
 
-  var afterNext = window['test-utils'].afterNext;
-  var GaiaHeader = window['gaia-header'];
   var accessibility = window['test-utils'].accessibility;
+  var afterNext = window['test-utils'].afterNext;
+  var FXOSHeader = window.FXOSHeader;
 
   var windowWidth = 500;
 
@@ -13,13 +13,13 @@ suite('GaiaHeader', function() {
     this.sinon = sinon.sandbox.create();
 
     // Spy/stub FontFit
-    this.sinon.spy(GaiaHeader.prototype, 'fontFit');
-    this.fontFit = GaiaHeader.prototype.fontFit; // alias
+    this.sinon.spy(FXOSHeader.prototype, 'fontFit');
+    this.fontFit = FXOSHeader.prototype.fontFit; // alias
 
     this.sinon.spy(HTMLElement.prototype, 'addEventListener');
-    this.sinon.spy(GaiaHeader.prototype, 'setTitleStyle');
-    this.sinon.spy(GaiaHeader.prototype, 'runFontFit');
-    this.runFontFit = GaiaHeader.prototype.runFontFit;
+    this.sinon.spy(FXOSHeader.prototype, 'setTitleStyle');
+    this.sinon.spy(FXOSHeader.prototype, 'runFontFit');
+    this.runFontFit = FXOSHeader.prototype.runFontFit;
 
     // DOM container to put test cases
     this.dom = document.createElement('div');
@@ -43,7 +43,7 @@ suite('GaiaHeader', function() {
   });
 
   test('It hides the action button if no action type defined', function() {
-    this.dom.innerHTML = '<gaia-header></gaia-header>';
+    this.dom.innerHTML = '<fxos-header></fxos-header>';
     var el = this.dom.firstElementChild;
     var actionButton = el.shadowRoot.querySelector('.action-button');
     assert.equal(getComputedStyle(actionButton).display, 'none');
@@ -51,7 +51,7 @@ suite('GaiaHeader', function() {
 
   test('It doesn\'t show an action button for unsupported action types',
     function() {
-    this.dom.innerHTML = '<gaia-header action="unsupported"></gaia-header>';
+    this.dom.innerHTML = '<fxos-header action="unsupported"></fxos-header>';
     var el = this.dom.firstElementChild;
     var actionButton = el.shadowRoot.querySelector('.action-button');
     assert.equal(getComputedStyle(actionButton).display, 'none');
@@ -59,13 +59,13 @@ suite('GaiaHeader', function() {
 
   test('It adds the correct icon for the action type', function() {
     ['menu', 'close'].forEach(function(type) {
-      this.dom.innerHTML = '<gaia-header action="' + type + '"></gaia-header>';
+      this.dom.innerHTML = '<fxos-header action="' + type + '"></fxos-header>';
       var el = this.dom.firstElementChild;
       var actionButton = el.shadowRoot.querySelector('.action-button');
       var icon = getComputedStyle(actionButton, ':before').content.replace(/"/g, '');
       var fontFamily = getComputedStyle(actionButton, ':before').fontFamily.replace(/"/g, '');
       assert.equal(icon, type);
-      assert.equal(fontFamily, 'gaia-icons');
+      assert.equal(fontFamily, 'fxos-icons');
       assert.notEqual(getComputedStyle(actionButton).display, 'none');
     }, this);
   });
@@ -74,19 +74,19 @@ suite('GaiaHeader', function() {
     // LTR: back action translates to left arrow.
     // RTL: back action translates to right arrow.
     [{dir: 'ltr', icon: 'left'}, {dir: 'rtl', icon: 'right'}].forEach(function(spec) {
-      this.dom.innerHTML = '<gaia-header dir="' + spec.dir + '" action="back"></gaia-header>';
+      this.dom.innerHTML = '<fxos-header dir="' + spec.dir + '" action="back"></fxos-header>';
       var el = this.dom.firstElementChild;
       var actionButton = el.shadowRoot.querySelector('.action-button');
       var icon = getComputedStyle(actionButton, ':before').content.replace(/"/g, '');
       var fontFamily = getComputedStyle(actionButton, ':before').fontFamily.replace(/"/g, '');
       assert.equal(icon, spec.icon);
-      assert.equal(fontFamily, 'gaia-icons');
+      assert.equal(fontFamily, 'fxos-icons');
       assert.notEqual(getComputedStyle(actionButton).display, 'none');
     }, this);
   });
 
   test('It catches changes to the `action` attribute', function() {
-    this.dom.innerHTML = '<gaia-header action="back"><h1></h1></gaia-header>';
+    this.dom.innerHTML = '<fxos-header action="back"><h1></h1></fxos-header>';
     var element = this.dom.firstElementChild;
     var actionButton = element.shadowRoot.querySelector('.action-button');
     var icon = getComputedStyle(actionButton, ':before').content.replace(/"/g, '');
@@ -113,7 +113,7 @@ suite('GaiaHeader', function() {
   });
 
   test('It allows setting via `.action`', function() {
-    this.dom.innerHTML = '<gaia-header action="back"><h1></h1></gaia-header>';
+    this.dom.innerHTML = '<fxos-header action="back"><h1></h1></fxos-header>';
     var el = this.dom.firstElementChild;
     var actionButton = el.shadowRoot.querySelector('.action-button');
     var icon = getComputedStyle(actionButton, ':before').content.replace(/"/g, '');
@@ -126,7 +126,7 @@ suite('GaiaHeader', function() {
   });
 
   test('It allows getting via `.action`', function() {
-    this.dom.innerHTML = '<gaia-header action="back"><h1></h1></gaia-header>';
+    this.dom.innerHTML = '<fxos-header action="back"><h1></h1></fxos-header>';
     var el = this.dom.firstElementChild;
     assert.equal(el.action, 'back');
   });
@@ -134,7 +134,7 @@ suite('GaiaHeader', function() {
   suite('font-fit', function() {
     test('It sets up font-fit when attached', function(done) {
       var div = document.createElement('div');
-      div.innerHTML = '<gaia-header action="back"><h1>Title</h1></gaia-header>';
+      div.innerHTML = '<fxos-header action="back"><h1>Title</h1></fxos-header>';
       var el = div.firstElementChild;
 
       afterNext(el, 'runFontFit').catch(() => {
@@ -147,12 +147,12 @@ suite('GaiaHeader', function() {
     });
 
     test('It doesn\'t throw when there is no header', function() {
-      GaiaHeader();
+      FXOSHeader();
     });
 
     test('It shouldn\'t run if there is no title `textContent` (ie. before l10n)',
       function(done) {
-      this.dom.innerHTML = '<gaia-header action="back"><h1></h1></gaia-header>';
+      this.dom.innerHTML = '<fxos-header action="back"><h1></h1></fxos-header>';
 
       var el = this.dom.firstElementChild;
       var h1 = el.querySelector('h1');
@@ -173,7 +173,7 @@ suite('GaiaHeader', function() {
     });
 
     test('It doesn\'t run if there are only spaces in title', function(done) {
-      this.dom.innerHTML = '<gaia-header action="back"><h1>   </h1></gaia-header>';
+      this.dom.innerHTML = '<fxos-header action="back"><h1>   </h1></fxos-header>';
 
       var el = this.dom.firstElementChild;
       var h1 = el.querySelector('h1');
@@ -190,7 +190,7 @@ suite('GaiaHeader', function() {
     test('It doesn\'t run font-fit when title-space or textContent haven\'t changed',
       function(done) {
       this.dom.innerHTML =
-        '<gaia-header action="back"><h1>Title</h1></gaia-header>';
+        '<fxos-header action="back"><h1>Title</h1></fxos-header>';
 
       var el = this.dom.firstElementChild;
       var h1 = el.querySelector('h1');
@@ -212,9 +212,9 @@ suite('GaiaHeader', function() {
     test('It should not run when attached if the `no-font-fit` attribute is present',
       function(done) {
       this.dom.innerHTML = `
-        <gaia-header action="back" no-font-fit>
+        <fxos-header action="back" no-font-fit>
         <h1>Header title</h1>
-      </gaia-header>`;
+      </fxos-header>`;
 
       var el = this.dom.firstElementChild;
 
@@ -225,8 +225,8 @@ suite('GaiaHeader', function() {
 
     test('It works when we change `textContent` right after font-fit has been called',
       function(done) {
-      this.dom.innerHTML = `<gaia-header action="back">
-        <h1>short</h1></gaia-header>`;
+      this.dom.innerHTML = `<fxos-header action="back">
+        <h1>short</h1></fxos-header>`;
 
       var el = this.dom.firstElementChild;
       var h1 = el.querySelector('h1');
@@ -248,7 +248,7 @@ suite('GaiaHeader', function() {
     });
 
     test('It works when we add the title after creating the element', function() {
-      var header = document.createElement('gaia-header');
+      var header = document.createElement('fxos-header');
       var h1 = document.createElement('h1');
       h1.textContent = 'something important';
       header.setAttribute('action', 'back');
@@ -261,7 +261,7 @@ suite('GaiaHeader', function() {
     });
 
     test('It works when we add buttons after creating the element', function() {
-      var header = document.createElement('gaia-header');
+      var header = document.createElement('fxos-header');
       var h1 = document.createElement('h1');
       h1.textContent = 'something important';
       var button = document.createElement('button');
@@ -277,9 +277,9 @@ suite('GaiaHeader', function() {
     });
 
     test('It\'s debounced', function(done) {
-      this.dom.innerHTML = `<gaia-header action="back">
+      this.dom.innerHTML = `<fxos-header action="back">
         <h1>Title</h1>
-      </gaia-header>`;
+      </fxos-header>`;
 
       var el = this.dom.firstElementChild;
 
@@ -293,9 +293,9 @@ suite('GaiaHeader', function() {
     });
 
     test('It always runs when mutation occurs', function(done) {
-      this.dom.innerHTML = `<gaia-header action="back">
+      this.dom.innerHTML = `<fxos-header action="back">
         <h1>Title</h1>
-      </gaia-header>`;
+      </fxos-header>`;
 
       var el = this.dom.firstElementChild;
       var h1 = el.querySelector('h1');
@@ -311,7 +311,7 @@ suite('GaiaHeader', function() {
     });
 
     test('fontFit is run again when the window is resized', function() {
-      this.dom.innerHTML = '<gaia-header action="back"><h1>Title</h1></gaia-header>';
+      this.dom.innerHTML = '<fxos-header action="back"><h1>Title</h1></fxos-header>';
       var header = this.dom.firstElementChild;
 
       return afterNext(header, 'runFontFit').then(() => {
@@ -352,7 +352,7 @@ suite('GaiaHeader', function() {
     });
 
     test('fontFit is run when window is resized and we use not-flush', function() {
-      this.dom.innerHTML = '<gaia-header not-flush action="back"><h1>Title</h1></gaia-header>';
+      this.dom.innerHTML = '<fxos-header not-flush action="back"><h1>Title</h1></fxos-header>';
       var header = this.dom.firstElementChild;
 
       return afterNext(header, 'runFontFit').then(() => {
@@ -371,8 +371,8 @@ suite('GaiaHeader', function() {
     });
 
     test('children with [l10n-action] are not considered when calculating title space', function() {
-      this.dom.innerHTML = '<gaia-header action="back"><span l10n-action>' +
-        'some text</span><h1>Title title</h1></gaia-header>';
+      this.dom.innerHTML = '<fxos-header action="back"><span l10n-action>' +
+        'some text</span><h1>Title title</h1></fxos-header>';
       var header = this.dom.firstElementChild;
       var h1 = header.querySelector('h1');
 
@@ -384,7 +384,7 @@ suite('GaiaHeader', function() {
 
   suite('Mutation observer', function() {
     test('It runs font-fit and centering when the title changes', function(done) {
-      this.dom.innerHTML = '<gaia-header action="back"><h1>foo</h1></gaia-header>';
+      this.dom.innerHTML = '<fxos-header action="back"><h1>foo</h1></fxos-header>';
 
       var el = this.dom.firstElementChild;
       var h1 = el.querySelector('h1');
@@ -399,7 +399,7 @@ suite('GaiaHeader', function() {
     });
 
     test('It runs font-fit when `action` changes', function(done) {
-      this.dom.innerHTML = '<gaia-header action="back"><h1>foo</h1></gaia-header>';
+      this.dom.innerHTML = '<fxos-header action="back"><h1>foo</h1></fxos-header>';
       var el = this.dom.firstElementChild;
 
       afterNext(el, 'runFontFit').then(() => {
@@ -417,10 +417,10 @@ suite('GaiaHeader', function() {
     });
 
     test('It runs font-fit when a button is hidden', function(done) {
-      this.dom.innerHTML = `<gaia-header action="back">
+      this.dom.innerHTML = `<fxos-header action="back">
         <h1>foo</h1>
         <button></button>
-      </gaia-header>`;
+      </fxos-header>`;
 
       var el = this.dom.firstElementChild;
       var button = el.querySelector('button');
@@ -439,10 +439,10 @@ suite('GaiaHeader', function() {
     });
 
     test('It runs when a button\'s classList changes', function(done) {
-      this.dom.innerHTML = `<gaia-header action="back">
+      this.dom.innerHTML = `<fxos-header action="back">
         <h1>foo</h1>
         <button></button>
-      </gaia-header>`;
+      </fxos-header>`;
 
       var el = this.dom.firstElementChild;
       var button = el.querySelector('button');
@@ -460,11 +460,11 @@ suite('GaiaHeader', function() {
     });
 
     test('It copes with several subsequent async mutations', function(done) {
-      this.dom.innerHTML = `<gaia-header>
+      this.dom.innerHTML = `<fxos-header>
         <h1>foo</h1>
         <button></button>
         <button></button>
-      </gaia-header>`;
+      </fxos-header>`;
 
       var el = this.dom.firstElementChild;
       var buttons = el.querySelectorAll('button');
@@ -493,9 +493,9 @@ suite('GaiaHeader', function() {
       var end = 'titleEnd' in attrs ? 'title-end="' +  attrs.titleEnd + '"': '';
 
       container.innerHTML = `
-        <gaia-header action="back" ${start} ${end}>
+        <fxos-header action="back" ${start} ${end}>
           <h1>Title</h1>
-        </gaia-header>
+        </fxos-header>
       `;
 
       el = container.firstElementChild;
@@ -600,7 +600,7 @@ suite('GaiaHeader', function() {
   });
 
   test('Should add a click event listener to the action button', function(done) {
-    this.dom.innerHTML = '<gaia-header action="menu"></gaia-header>';
+    this.dom.innerHTML = '<fxos-header action="menu"></fxos-header>';
     var el = this.dom.firstElementChild;
     var actionButton = el.shadowRoot.querySelector('.action-button');
 
@@ -611,7 +611,7 @@ suite('GaiaHeader', function() {
   test('triggerAction() should cause a `click` on action button', function() {
     this.sinon.useFakeTimers();
 
-    this.dom.innerHTML = '<gaia-header action="menu"></gaia-header>';
+    this.dom.innerHTML = '<fxos-header action="menu"></fxos-header>';
     var el = this.dom.firstElementChild;
     var callback = this.sinon.spy();
 
@@ -622,7 +622,7 @@ suite('GaiaHeader', function() {
   });
 
   test('runFontFit does not b0rk the markup', function(done) {
-    this.dom.innerHTML = '<gaia-header action="back"><h1><p>markup</p></gaia-header>';
+    this.dom.innerHTML = '<fxos-header action="back"><h1><p>markup</p></fxos-header>';
     var el = this.dom.firstElementChild;
 
     afterNext(el, 'runFontFit').then(() => {
@@ -631,7 +631,7 @@ suite('GaiaHeader', function() {
   });
 
   test('It still works fine after detaching and reattaching', function(done) {
-    this.dom.innerHTML = '<gaia-header action="menu"><h1>title</h1></gaia-header>';
+    this.dom.innerHTML = '<fxos-header action="menu"><h1>title</h1></fxos-header>';
     var el = this.dom.firstElementChild;
     var h1 = el.querySelector('h1');
 
@@ -670,7 +670,7 @@ suite('GaiaHeader', function() {
 
   suite('no-font-fit', function() {
     test('It prevents font fit running when attached', function(done) {
-      this.dom.innerHTML = '<gaia-header no-font-fit><h1>title</h1></gaia-header>';
+      this.dom.innerHTML = '<fxos-header no-font-fit><h1>title</h1></fxos-header>';
       var el = this.dom.firstElementChild;
 
       el.runFontFit.restore();
@@ -682,7 +682,7 @@ suite('GaiaHeader', function() {
     });
 
     test('It runs font-fit when the attribute is removed', function(done) {
-      this.dom.innerHTML = '<gaia-header no-font-fit><h1>title</h1></gaia-header>';
+      this.dom.innerHTML = '<fxos-header no-font-fit><h1>title</h1></fxos-header>';
       var el = this.dom.firstElementChild;
 
       afterNext(el, 'runFontFit').then(() => {
@@ -697,7 +697,7 @@ suite('GaiaHeader', function() {
 
     test('It only runs fontFit when the value changes from truthey to falsey',
       function(done) {
-      this.dom.innerHTML = '<gaia-header no-font-fit><h1>title</h1></gaia-header>';
+      this.dom.innerHTML = '<fxos-header no-font-fit><h1>title</h1></fxos-header>';
       var el = this.dom.firstElementChild;
 
       afterNext(el, 'runFontFit').then(() => {
@@ -726,11 +726,11 @@ suite('GaiaHeader', function() {
 
       // Create and inject element
       this.dom.innerHTML = `
-        <gaia-header action="menu">
+        <fxos-header action="menu">
           <h1>my title</h1>
           <div class="indicator">indicator</div>
           <button id="my-button">my button</button>
-        </gaia-header>`;
+        </fxos-header>`;
 
       this.element = this.dom.firstElementChild;
 
@@ -800,13 +800,13 @@ suite('GaiaHeader', function() {
     });
   });
 
-  suite('GaiaHeader#onActionButtonClick()', function(done) {
+  suite('FXOSHeader#onActionButtonClick()', function(done) {
     setup(function() {
       this.sinon.useFakeTimers();
     });
 
     test('Should emit an \'action\' event', function() {
-      this.dom.innerHTML = '<gaia-header action="menu"></gaia-header>';
+      this.dom.innerHTML = '<fxos-header action="menu"></fxos-header>';
       var element = this.dom.firstElementChild;
       var callback = this.sinon.spy();
 
@@ -818,7 +818,7 @@ suite('GaiaHeader', function() {
     });
 
     test('Should pass the action type as `event.detail.type`', function() {
-      this.dom.innerHTML = '<gaia-header action="menu"></gaia-header>';
+      this.dom.innerHTML = '<fxos-header action="menu"></fxos-header>';
       var element = this.dom.firstElementChild;
       var callback = this.sinon.spy();
 
@@ -831,25 +831,25 @@ suite('GaiaHeader', function() {
 
     test('Empty icon buttons should be 50px wide', function() {
       this.dom.innerHTML = `<style>
-        gaia-header button:before {content: 'very long pseudo element content'}
+        fxos-header button:before {content: 'very long pseudo element content'}
       </style>
-      <gaia-header action="menu">
+      <fxos-header action="menu">
         <button data-icon></button>
-      </gaia-header>`;
+      </fxos-header>`;
 
-      var el = this.dom.querySelector('gaia-header');
+      var el = this.dom.querySelector('fxos-header');
       var button = el.querySelector('button');
 
       assert.equal(button.clientWidth, 50, 'empty data-icon buttons should be 50px');
 
       this.dom.innerHTML = `<style>
-        gaia-header button:before {content: 'very long pseudo element content'}
+        fxos-header button:before {content: 'very long pseudo element content'}
       </style>
-      <gaia-header action="menu">
+      <fxos-header action="menu">
         <button></button>
-      </gaia-header>`;
+      </fxos-header>`;
 
-      el = this.dom.querySelector('gaia-header');
+      el = this.dom.querySelector('fxos-header');
       button = el.querySelector('button');
 
       assert.ok(button.clientWidth > 50, 'non icon buttons can be natural width');
@@ -858,11 +858,11 @@ suite('GaiaHeader', function() {
 
   suite('Title centering:', function() {
     test('It centers the header between the surrounding buttons', function(done) {
-      this.dom.innerHTML = `<gaia-header action="menu">
+      this.dom.innerHTML = `<fxos-header action="menu">
         <h1>Header title</h1>
         <button></button>
         <button></button>
-      </gaia-header>`;
+      </fxos-header>`;
 
       var el = this.dom.firstElementChild;
       var h1 = el.querySelector('h1');
@@ -870,9 +870,9 @@ suite('GaiaHeader', function() {
       afterNext(el, 'runFontFit').then(() => {
         assert.equal(h1.style.marginInlineStart, '50px');
 
-        this.dom.innerHTML = `<gaia-header action="menu">
+        this.dom.innerHTML = `<fxos-header action="menu">
           <h1>Header title</h1>
-        </gaia-header>`;
+        </fxos-header>`;
 
         el = this.dom.firstElementChild;
         h1 = el.querySelector('h1');
@@ -884,12 +884,12 @@ suite('GaiaHeader', function() {
     });
 
     test('It doesn\'t center if there is not enough space', function(done) {
-      this.dom.innerHTML = `<gaia-header action="menu">
+      this.dom.innerHTML = `<fxos-header action="menu">
         <h1>This title is far far far far far far far far far far far far
         far far too long to center</h1>
         <button></button>
         <button></button>
-      </gaia-header>`;
+      </fxos-header>`;
 
       var el = this.dom.firstElementChild;
       var h1 = el.querySelector('h1');
@@ -900,26 +900,26 @@ suite('GaiaHeader', function() {
     });
 
     test('It centers with a not too decreased font size', function(done) {
-      this.dom.innerHTML = `<gaia-header action="menu">
+      this.dom.innerHTML = `<fxos-header action="menu">
         <h1></h1>
         <button></button>
         <button></button>
-      </gaia-header>`;
+      </fxos-header>`;
 
       var el = this.dom.firstElementChild;
       var h1 = el.querySelector('h1');
 
-      GaiaHeader.prototype.fontFit.restore();
-      this.sinon.stub(GaiaHeader.prototype, 'fontFit');
-      GaiaHeader.prototype.fontFit.returns({textWidth: 200, fontSize: 20});
+      FXOSHeader.prototype.fontFit.restore();
+      this.sinon.stub(FXOSHeader.prototype, 'fontFit');
+      FXOSHeader.prototype.fontFit.returns({textWidth: 200, fontSize: 20});
       afterNext(el, 'runFontFit').then(() => {
         h1.textContent = 'some title';
 
         return afterNext(el, 'runFontFit');
       }).then(() => {
-        sinon.assert.calledOnce(GaiaHeader.prototype.fontFit);
+        sinon.assert.calledOnce(FXOSHeader.prototype.fontFit);
         sinon.assert.calledWithMatch(
-          GaiaHeader.prototype.fontFit,
+          FXOSHeader.prototype.fontFit,
           this.sinon.match.any, this.sinon.match.any, { min: 20 }
         );
         assert.equal(h1.style.fontSize, '20px');
@@ -927,10 +927,10 @@ suite('GaiaHeader', function() {
     });
 
     test('It doesn\'t have start/end padding if title is centerable', function(done) {
-      this.dom.innerHTML = `<gaia-header action="menu">
+      this.dom.innerHTML = `<fxos-header action="menu">
         <h1>Title can be center</h1>
         <button></button>
-      </gaia-header>`;
+      </fxos-header>`;
 
       var el = this.dom.firstElementChild;
       var h1 = el.querySelector('h1');
@@ -947,10 +947,10 @@ suite('GaiaHeader', function() {
 
     test('It should apply 10px paddings when overflowing and no buttons before/after',
       function(done) {
-      this.dom.innerHTML = `<gaia-header>
+      this.dom.innerHTML = `<fxos-header>
         <h1>This title is far far far far far far far far far far far
         far far far far far far far too long to center</h1>
-      </gaia-header>`;
+      </fxos-header>`;
 
       var el = this.dom.firstElementChild;
       var h1 = el.querySelector('h1');
@@ -959,7 +959,7 @@ suite('GaiaHeader', function() {
         assert.equal(getComputedStyle(h1).paddingLeft, '10px');
         assert.equal(getComputedStyle(h1).paddingRight, '10px');
         sinon.assert.calledWithMatch(
-          GaiaHeader.prototype.fontFit,
+          FXOSHeader.prototype.fontFit,
           this.sinon.match.any, windowWidth - 20); // 2 * 10px
       }).then(done, done);
     });
@@ -987,10 +987,10 @@ suite('GaiaHeader', function() {
     });
 
     test('It doesn\'t call `.clientWidth` if title-start is used', function() {
-      this.dom.innerHTML = `<gaia-header title-start="50">
+      this.dom.innerHTML = `<fxos-header title-start="50">
         <button></button>
         <h1>Title</h1>
-      </gaia-header>`;
+      </fxos-header>`;
 
       var el = this.dom.firstElementChild;
       var titleStart = el.titleStart;
@@ -1000,10 +1000,10 @@ suite('GaiaHeader', function() {
     });
 
     test('It doesn\'t call `.clientWidth` if title-end is used', function() {
-      this.dom.innerHTML = `<gaia-header title-end="50">
+      this.dom.innerHTML = `<fxos-header title-end="50">
         <h1>Title</h1>
         <button></button>
-      </gaia-header>`;
+      </fxos-header>`;
 
       var el = this.dom.firstElementChild;
       var titleEnd = el.titleEnd;
@@ -1013,21 +1013,21 @@ suite('GaiaHeader', function() {
     });
 
     test('It doesn\'t  call `.clientWidth` if their are no user buttons', function() {
-      this.dom.innerHTML = `<gaia-header action="back">
+      this.dom.innerHTML = `<fxos-header action="back">
         <h1>Title</h1>
-      </gaia-header>`;
+      </fxos-header>`;
 
-      this.dom.innerHTML = `<gaia-header>
+      this.dom.innerHTML = `<fxos-header>
         <h1>Title</h1>
-      </gaia-header>`;
+      </fxos-header>`;
 
       sinon.assert.notCalled(this.clientWidth_spy.get, 'didn\'t query DOM');
     });
 
     test('It uses `window.innerWidth` by default', function(done) {
-      this.dom.innerHTML = `<gaia-header action="back">
+      this.dom.innerHTML = `<fxos-header action="back">
         <h1>Title</h1>
-      </gaia-header>`;
+      </fxos-header>`;
 
       var el = this.dom.firstElementChild;
 
@@ -1037,10 +1037,10 @@ suite('GaiaHeader', function() {
       }).then(done, done);
     });
 
-    test('It uses `gaiaHeader.clientWidth` when the `not-flush` attribute is used', function(done) {
-      this.dom.innerHTML = `<gaia-header action="back" not-flush>
+    test('It uses `FXOSHeader.clientWidth` when the `not-flush` attribute is used', function(done) {
+      this.dom.innerHTML = `<fxos-header action="back" not-flush>
         <h1>Title</h1>
-      </gaia-header>`;
+      </fxos-header>`;
 
       var el = this.dom.firstElementChild;
 
@@ -1051,12 +1051,12 @@ suite('GaiaHeader', function() {
   });
 
   test('It works with multiple headers', function(done) {
-    this.dom.innerHTML = `<gaia-header action="back">
+    this.dom.innerHTML = `<fxos-header action="back">
       <h1 class="title-1">Title 1</h1>
       <h1 class="title-2" hidden>Title 2</h1>
       <button></button>
       <button></button>
-    </gaia-header>`;
+    </fxos-header>`;
 
     var el = this.dom.firstElementChild;
     var title1 = el.querySelector('.title-1');
@@ -1078,7 +1078,7 @@ suite('GaiaHeader', function() {
   });
 
   test('it clears pending async tasks when the element is detached', function(done) {
-    this.dom.innerHTML = '<gaia-header action="menu"><h1>Title</h1></gaia-header>';
+    this.dom.innerHTML = '<fxos-header action="menu"><h1>Title</h1></fxos-header>';
     var el = this.dom.firstElementChild;
 
     el.remove();
@@ -1089,7 +1089,7 @@ suite('GaiaHeader', function() {
   });
 
   test('it clears pending async `setTitleStyles`', function(done) {
-    this.dom.innerHTML = '<gaia-header action="menu"><h1>Title</h1></gaia-header>';
+    this.dom.innerHTML = '<fxos-header action="menu"><h1>Title</h1></fxos-header>';
     var el = this.dom.firstElementChild;
 
     el.runFontFit();
@@ -1118,20 +1118,20 @@ suite('GaiaHeader', function() {
      * the component.
      */
 
-    test('gaia-header passes accessibility checks with and without supported ' +
+    test('fxos-header passes accessibility checks with and without supported ' +
       'action buttons', function(done) {
-      this.dom.innerHTML = `<gaia-header></gaia-header>
-        <gaia-header action="unsupported"></gaia-header>
-        <gaia-header action="menu"></gaia-header>
-        <gaia-header action="close"></gaia-header>
-        <gaia-header action="back"></gaia-header>`;
+      this.dom.innerHTML = `<fxos-header></fxos-header>
+        <fxos-header action="unsupported"></fxos-header>
+        <fxos-header action="menu"></fxos-header>
+        <fxos-header action="close"></fxos-header>
+        <fxos-header action="back"></fxos-header>`;
 
       accessibility.check(this.dom).then(done, done);
     });
 
-    test('gaia-header passes accessibility checks with its attributes ' +
+    test('fxos-header passes accessibility checks with its attributes ' +
       'dynamically changing', function(done) {
-      this.dom.innerHTML = '<gaia-header action="back"><h1>Title</h1></gaia-header>';
+      this.dom.innerHTML = '<fxos-header action="back"><h1>Title</h1></fxos-header>';
       var el = this.dom.firstElementChild;
       var h1 = el.querySelector('h1');
 
@@ -1161,9 +1161,9 @@ suite('GaiaHeader', function() {
         .then(done, done);
     });
 
-    test('gaia-header passes accessibility checks when it is removed and ' +
+    test('fxos-header passes accessibility checks when it is removed and ' +
       'then dynamically added back into the DOM', function(done) {
-      this.dom.innerHTML = '<gaia-header action="back"><h1>Title</h1></gaia-header>';
+      this.dom.innerHTML = '<fxos-header action="back"><h1>Title</h1></fxos-header>';
       var el = this.dom.firstElementChild;
       el.remove();
       this.dom.appendChild(el);
@@ -1171,14 +1171,14 @@ suite('GaiaHeader', function() {
       accessibility.check(this.dom).then(done, done);
     });
 
-    test('gaia-header passes accessibility checks when it has multiple headings',
+    test('fxos-header passes accessibility checks when it has multiple headings',
       function(done) {
-        this.dom.innerHTML = `<gaia-header action="back">
+        this.dom.innerHTML = `<fxos-header action="back">
           <h1 class="title-1">Title 1</h1>
           <h1 class="title-2" hidden>Title 2</h1>
           <button>Foo</button>
           <button>Bar</button>
-        </gaia-header>`;
+        </fxos-header>`;
 
         var el = this.dom.firstElementChild;
         var title1 = el.querySelector('.title-1');

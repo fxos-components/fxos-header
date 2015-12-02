@@ -1,10 +1,10 @@
 {
-  "name": "gaia-header",
-  "homepage": "https://github.com/fxos-components/gaia-header",
+  "name": "fxos-header",
+  "homepage": "https://github.com/fxos-components/fxos-header",
   "authors": [
     "Wilson Page <wilsonpage@me.com>"
   ],
-  "main": "gaia-header.js",
+  "main": "fxos-header.js",
   "license": "MIT",
   "ignore": [
     "**/.*",
@@ -14,16 +14,12 @@
     "test",
     "index.html",
     "package.json",
+    "webpack.config.js",
     "README.md"
   ],
   "dependencies": {
-    "gaia-icons": "fxos-components/gaia-icons#~0.10.3",
-    "gaia-component": "fxos-components/gaia-component#~0.4.0",
+    "fxos-icons": "fxos-components/fxos-icons#~2.0.0",
+    "fxos-component": "fxos-components/fxos-component#~1.0.0",
     "font-fit": "fxos-components/font-fit#~0.3.0"
-  },
-  "devDependencies": {
-    "gaia-theme": "fxos-components/gaia-theme",
-    "gaia-fonts": "fxos-components/gaia-fonts",
-    "base": "fxos-components/base"
   }
 }

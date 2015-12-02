@@ -5,7 +5,7 @@
 var assert = require('chai').assert;
 marionette.plugin('helper', require('marionette-helper'));
 
-marionette('gaia-header', function() {
+marionette('fxos-header', function() {
   var client = marionette.client({
     profile: {
       prefs: {
@@ -49,7 +49,7 @@ marionette('gaia-header', function() {
     });
   });
 
-  test('gaia-header is present and visible to the assistive technology',
+  test('fxos-header is present and visible to the assistive technology',
     function() {
       headers.forEach(function(header) {
         // Element was found
@@ -59,11 +59,11 @@ marionette('gaia-header', function() {
       });
     });
 
-  test('gaia-header action buttons are accessible (no error thrown when ' +
+  test('fxos-header action buttons are accessible (no error thrown when ' +
     'clicking and tapping)', function() {
     ['click', 'tap'].forEach(function(action) {
       headers.forEach(function(header) {
-        // Action button is part of the gaia-header's shadow tree
+        // Action button is part of the fxos-header's shadow tree
         client.switchToShadowRoot(header.element);
         // The following checks for action button element will be performed on
         // tap/click:
@@ -78,11 +78,11 @@ marionette('gaia-header', function() {
         try {
           actionButton[action]();
         } catch (err) {
-          // If gaia-header action button does not satisfy any of the above
+          // If fxos-header action button does not satisfy any of the above
           // listed conditions, marionette will raise an
           // ElementNotAccessibleError exception when
           // raisesAccessibilityExceptions is set to true.
-          assert(false, 'gaia-header action button should be clickable and ' +
+          assert(false, 'fxos-header action button should be clickable and ' +
             'tappable including via the assistive technology: ' +
             header.selector);
         }
@@ -92,7 +92,7 @@ marionette('gaia-header', function() {
     });
   });
 
-  test('gaia-header additional and custom buttons and links are accessible ' +
+  test('fxos-header additional and custom buttons and links are accessible ' +
     '(no error thrown when clicking and tapping)', function() {
     ['click', 'tap'].forEach(function(action) {
       // Test additional and custom (non-action header buttons) buttons and
@@ -111,11 +111,11 @@ marionette('gaia-header', function() {
           //   technology
           control[action]();
         } catch (err) {
-          // If gaia-header additonal button or anchor does not satisfy any of
+          // If fxos-header additonal button or anchor does not satisfy any of
           // the above listed conditions, marionette will raise an
           // ElementNotAccessibleError exception when
           // raisesAccessibilityExceptions is set to true.
-          assert(false, 'gaia-header additional button or anchor should be ' +
+          assert(false, 'fxos-header additional button or anchor should be ' +
             'clickable and tappable including via the assistive ' +
             'technology: ' + selector);
         }
