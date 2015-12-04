@@ -1,16 +1,15 @@
-/* globals define */
-;(function(define){'use strict';define(function(require,exports,module){
+'use strict';
 
 /**
  * Dependencies
  */
-var component = require('gaia-component');
+var component = require('fxos-component');
 var fontFit = require('font-fit');
 
 /**
- * Load 'gaia-icons' font-family
+ * Load 'fxos-icons' font-family
  */
-require('gaia-icons');
+require('fxos-icons');
 
 /**
  * Simple logger (toggle 0)
@@ -25,9 +24,9 @@ var debug = 0 ? console.log.bind(console) : function() {};
  * @type {Object}
  */
 const KNOWN_ACTIONS = {
+  close: 'close',
   menu: 'menu',
-  back: 'back',
-  close: 'close'
+  back: 'back'
 };
 
 /**
@@ -69,7 +68,7 @@ const MAXIMUM_FONT_SIZE = 23;
  *
  * @return {Element} constructor
  */
-module.exports = component.register('gaia-header', {
+module.exports = component.register('fxos-header', {
   extensible: false, // discards some strings
   dirObserver: true, // triggers a workaround for bug 1100912 in gaia-component
 
@@ -653,7 +652,7 @@ module.exports = component.register('gaia-header', {
     },
 
     // The [ignore-dir] attribute can be used to force the older behavior of
-    // gaia-header, where the whole header is always displayed in LTR mode.
+    // fxos-header, where the whole header is always displayed in LTR mode.
     ignoreDir: {
       get: function() { return this._ignoreDir || false; },
       set: function(value) {
@@ -676,308 +675,228 @@ module.exports = component.register('gaia-header', {
     </button>
     <content></content>
   </div>
-
   <style>
+    ::-moz-focus-inner { border: 0 }
 
-  :host {
-    display: block;
-    -moz-user-select: none;
+    :host {
+      display: block;
+      -moz-user-select: none;
 
-    --gaia-header-button-color:
-      var(--header-button-color,
-      var(--header-color,
-      var(--link-color,
-      inherit)));
-  }
+      color:
+        var(--fxos-header-color,
+        var(--fxos-color));
+    }
 
-  /**
-   * [hidden]
-   */
+    :host[hidden] { display: none }
 
-  :host[hidden] {
-    display: none;
-  }
+    .inner {
+      display: flex;
+      min-height: 50px;
+      -moz-user-select: none;
 
-  /** Reset
-   ---------------------------------------------------------*/
+      background:
+        var(--fxos-header-background,
+        var(--fxos-background));
+    }
 
-  ::-moz-focus-inner { border: 0; }
+    /**
+     * 1. Hidden by default
+     */
 
-  /** Inner
-   ---------------------------------------------------------*/
+    .action-button {
+      position: relative;
 
-  .inner {
-    display: flex;
-    min-height: 50px;
-    -moz-user-select: none;
+      display: none; /* 1 */
+      width: 50px;
+      font-size: 30px;
+      padding: 0;
+      border: 0;
+      outline: 0;
 
-    background:
-      var(--header-background,
-      var(--background,
-      #fff));
-  }
+      align-items: center;
+      background: none;
+      cursor: pointer;
+      transition: opacity 200ms 280ms;
+      color: var(--fxos-header-action-button-color);
+    }
 
-  /** Action Button
-   ---------------------------------------------------------*/
+    /**
+     * 1. For icon vertical-alignment
+     */
 
-  /**
-   * 1. Hidden by default
-   */
+    [action=back] .action-button,
+    [action=menu] .action-button,
+    [action=close] .action-button {
+      display: flex; /* 1 */
+    }
 
-  .action-button {
-    position: relative;
+    .action-button:active {
+      transition: none;
+      opacity: 0.2;
+    }
 
-    display: none; /* 1 */
-    width: 50px;
-    font-size: 30px;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    outline: 0;
+    .action-button:before {
+      font-family: 'fxos-icons';
+      font-style: normal;
+      text-rendering: optimizeLegibility;
+      font-weight: 500;
+    }
 
-    align-items: center;
-    background: none;
-    cursor: pointer;
-    transition: opacity 200ms 280ms;
-    color:
-      var(--header-action-button-color,
-      var(--header-icon-color,
-      var(--gaia-header-button-color)));
-  }
+    [action=back]:-moz-dir(ltr) .action-button:before { content: 'left' }
+    [action=back]:-moz-dir(rtl) .action-button:before { content: 'right' }
+    [action=close] .action-button:before { content: 'close' }
+    [action=menu] .action-button:before { content: 'menu' }
 
-  /**
-   * [action=back]
-   * [action=menu]
-   * [action=close]
-   *
-   * 1. For icon vertical-alignment
-   */
+    /**
+     * 1. To enable vertical alignment.
+     */
 
-  [action=back] .action-button,
-  [action=menu] .action-button,
-  [action=close] .action-button {
-    display: flex; /* 1 */
-  }
+    .action-button:before { display: block; }
 
-  /**
-   * :active
-   */
+    /**
+     * To provide custom localized content for
+     * the action-button, we allow the user
+     * to provide an element with the class
+     * .l10n-action. This node is then
+     * pulled inside the real action-button.
+     *
+     * Example:
+     *
+     *   <fxos-header action="back">
+     *     <span l10n-action aria-label="Back">Localized text</span>
+     *     <h1>title</h1>
+     *   </fxos-header>
+     */
 
-  .action-button:active {
-    transition: none;
-    opacity: 0.2;
-  }
+    ::content [l10n-action] {
+      position: absolute;
+      left: 0;
+      top: 0;
 
-  /** Action Button Icon
-   ---------------------------------------------------------*/
+      width: 100%;
+      height: 100%;
+      font-size: 0;
+    }
 
-  .action-button:before {
-    font-family: 'gaia-icons';
-    font-style: normal;
-    text-rendering: optimizeLegibility;
-    font-weight: 500;
-  }
+    /**
+     * 1. Vertically center text. We can't use flexbox
+     *    here as it breaks text-overflow ellipsis
+     *    without an inner div.
+     */
 
-  [action=close] .action-button:before { content: 'close' }
-  [action=menu] .action-button:before { content: 'menu' }
+    ::content h1 {
+      flex: 1;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
 
-  [action=back]:-moz-dir(ltr) .action-button:before { content: 'left' }
-  [action=back]:-moz-dir(rtl) .action-button:before { content: 'right' }
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      text-align: center;
+      line-height: 50px; /* 1 */
+      font-weight: 300;
+      font-style: italic;
+      font-size: 24px;
+    }
 
-  /** Action Button Icon
-   ---------------------------------------------------------*/
+    /**
+     * [ignore-dir]
+     *
+     * When the <fxos-header> component has
+     * an [ignore-dir] attribute, header
+     * direction is forced to LTR but we
+     * still want the <h1> text to be reversed
+     * so that strings like '1 selected'
+     * become 'selected 1'.
+     *
+     * When we're happy for <fxos-header> to
+     * be fully RTL responsive we won't need
+     * these rules anymore, but this depends
+     * on all Gaia apps being ready.
+     *
+     * This should be safe to remove
+     * when bug 1179459 lands.
+     */
 
-  /**
-   * 1. To enable vertical alignment.
-   */
+    :host[ignore-dir] { direction: ltr; }
+    :host[ignore-dir]:-moz-dir(rtl) h1 { direction: rtl; }
 
-  .action-button:before {
-    display: block;
-  }
+    ::content a,
+    ::content button {
+      position: relative;
+      z-index: 1;
+      box-sizing: border-box;
+      display: flex;
+      width: auto;
+      height: auto;
+      min-width: 50px;
+      margin: 0;
+      padding: 0 10px;
+      outline: 0;
+      border: 0;
 
-  /** Action Button Text
-   ---------------------------------------------------------*/
+      font-size: 14px;
+      line-height: 1;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      text-align: center;
+      background: none;
+      border-radius: 0;
+      font-style: italic;
+      cursor: pointer;
+      transition: opacity 200ms 280ms;
+      color: var(--fxos-header-button-color);
+    }
 
-  /**
-   * To provide custom localized content for
-   * the action-button, we allow the user
-   * to provide an element with the class
-   * .l10n-action. This node is then
-   * pulled inside the real action-button.
-   *
-   * Example:
-   *
-   *   <gaia-header action="back">
-   *     <span l10n-action aria-label="Back">Localized text</span>
-   *     <h1>title</h1>
-   *   </gaia-header>
-   */
+    ::content a:active,
+    ::content button:active {
+      transition: none;
+      opacity: 0.2;
+    }
 
-  ::content [l10n-action] {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    font-size: 0;
-  }
+    ::content a[hidden],
+    ::content button[hidden] {
+      display: none;
+    }
 
-  /** Title
-   ---------------------------------------------------------*/
+    ::content a[disabled],
+    ::content button[disabled] {
+      pointer-events: none;
+      color: var(--fxos-header-disabled-color);
+    }
 
-  /**
-   * 1. Vertically center text. We can't use flexbox
-   *    here as it breaks text-overflow ellipsis
-   *    without an inner div.
-   */
+    /**
+     * Icons are a different color to text
+     */
 
-  ::content h1 {
-    flex: 1;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+    ::content .icon,
+    ::content [data-icon] {
+      color: var(--fxos-header-icon-color);
+    }
 
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    text-align: center;
-    line-height: 50px; /* 1 */
-    font-weight: 300;
-    font-style: italic;
-    font-size: 24px;
+    /**
+     * If users want their action button
+     * to be in the component's light-dom
+     * they can add an .action class
+     * to make it look like the
+     * shadow action button.
+     */
 
-    color:
-      var(--header-title-color,
-      var(--header-color,
-      var(--title-color,
-      var(--text-color,
-      inherit))));
-  }
+    ::content .action {
+      color: var(--fxos-header-action-button-color);
+    }
 
-  /**
-   * [ignore-dir]
-   *
-   * When the <gaia-header> component has an [ignore-dir] attribute, header
-   * direction is forced to LTR but we still want the <h1> text to be reversed
-   * so that strings like '1 selected' become 'selected 1'.
-   *
-   * When we're happy for <gaia-header> to be fully RTL responsive we won't need
-   * these rules anymore, but this depends on all Gaia apps being ready.
-   *
-   * This should be safe to remove when bug 1179459 lands.
-   */
+    /**
+     * Icon buttons with no textContent,
+     * should always be 50px.
+     *
+     * This is to prevent buttons being
+     * larger than they should be before
+     * icon-font has loaded.
+     */
 
-  :host[ignore-dir] {
-    direction: ltr;
-  }
-
-  :host[ignore-dir]:-moz-dir(rtl) h1 {
-    direction: rtl;
-  }
-
-  /** Buttons
-   ---------------------------------------------------------*/
-
-  ::content a,
-  ::content button {
-    position: relative;
-    z-index: 1;
-    box-sizing: border-box;
-    display: flex;
-    width: auto;
-    height: auto;
-    min-width: 50px;
-    margin: 0;
-    padding: 0 10px;
-    outline: 0;
-    border: 0;
-
-    font-size: 14px;
-    line-height: 1;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    text-align: center;
-    background: none;
-    border-radius: 0;
-    font-style: italic;
-    cursor: pointer;
-    transition: opacity 200ms 280ms;
-    color: var(--gaia-header-button-color);
-  }
-
-  /**
-   * :active
-   */
-
-  ::content a:active,
-  ::content button:active {
-    transition: none;
-    opacity: 0.2;
-  }
-
-  /**
-   * [hidden]
-   */
-
-  ::content a[hidden],
-  ::content button[hidden] {
-    display: none;
-  }
-
-  /**
-   * [disabled]
-   */
-
-  ::content a[disabled],
-  ::content button[disabled] {
-    pointer-events: none;
-    color: var(--header-disabled-button-color);
-  }
-
-  /** Icon Buttons
-   ---------------------------------------------------------*/
-
-  /**
-   * Icons are a different color to text
-   */
-
-  ::content .icon,
-  ::content [data-icon] {
-    color:
-      var(--header-icon-color,
-      var(--gaia-header-button-color));
-  }
-
-  /**
-   * If users want their action button
-   * to be in the component's light-dom
-   * they can add an .action class
-   * to make it look like the
-   * shadow action button.
-   */
-
-  ::content .action {
-    color:
-      var(--header-action-button-color,
-      var(--header-icon-color,
-      var(--gaia-header-button-color)));
-  }
-
-  /**
-   * [data-icon]:empty
-   *
-   * Icon buttons with no textContent,
-   * should always be 50px.
-   *
-   * This is to prevent buttons being
-   * larger than they should be before
-   * icon-font has loaded.
-   */
-
-  ::content [data-icon]:empty {
-    width: 50px;
-  }
-
+    ::content [data-icon]:empty { width: 50px; }
   </style>`,
 
   // Test hook
@@ -990,7 +909,7 @@ module.exports = component.register('gaia-header', {
 
 /**
  * Determines whether passed element
- * contributes to the layout in gaia-header.
+ * contributes to the layout in fxos-header.
  *
  * Children with `[l10n-action]` get distributed
  * inside the action-button so don't occupy
@@ -1037,10 +956,5 @@ function getStyleId(el) { return el._styleId; }
 function nextTick(fn) {
   var cleared;
   Promise.resolve().then(() => { if (!cleared) { fn(); } });
-  return { clear: function() { cleared = true; }};
+  return { clear() { cleared = true; }};
 }
-
-});})(typeof define=='function'&&define.amd?define
-:(function(n,w){'use strict';return typeof module=='object'?function(c){
-c(require,exports,module);}:function(c){var m={exports:{}};c(function(n){
-return w[n];},m.exports,m);w[n]=m.exports;};})('gaia-header',this));

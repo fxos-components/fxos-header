@@ -24,26 +24,23 @@ module.exports = function(config) {
     },
 
     files: [
-      'bower_components/gaia-component/gaia-component.js',
-      'bower_components/gaia-icons/gaia-icons.js',
-      'bower_components/font-fit/font-fit.js',
-      'gaia-header.js',
+      'node_modules/fxos-component/fxos-component.js',
       'node_modules/axe-core/axe.min.js',
       'node_modules/test-utils/src/utils.js',
       'node_modules/test-utils/src/accessibility.js',
+      'fxos-header.js',
       'test/test-unit.js',
       {
-        pattern: 'bower_components/gaia-icons/gaia-icons.css',
+        pattern: 'node_modules/fxos-icons/fxos-icons.css',
         included: false
       },
       {
-        pattern: 'bower_components/gaia-icons/fonts/gaia-icons.ttf',
+        pattern: 'node_modules/fxos-icons/fonts/fxos-icons.ttf',
         included: false
       }
     ],
 
     proxies: {
-      '/bower_components/': 'http://localhost:9876/base/bower_components/',
       '/node_modules/': 'http://localhost:9876/base/node_modules/'
     }
   });

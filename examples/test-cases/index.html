@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>fxos-header/test-cases</title>
+  <meta name="description" content="Demo app for Custom Element based headers">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+  <link rel="stylesheet" href="node_modules/fxos-theme/fxos-theme.css">
+  <link rel="stylesheet" href="node_modules/fxos-font/fxos-font.css">
+  <script src="node_modules/fxos-theme/lib/fxos-theme-selector.js"></script>
+  <script src="node_modules/fxos-component/fxos-component.js"></script>
+  <script src="fxos-header.js"></script>
+  <style>
+    body {
+      background: var(--fxos-background);
+      font-family: 'FiraSans';
+    }
+
+    fxos-header {
+      margin-bottom: 15px;
+    }
+
+    #message {
+      font-size: 2rem;
+      margin: 1.5rem 3rem;
+    }
+
+    .indicator {
+      padding: 0 1rem;
+      margin: auto;
+    }
+  </style>
+</head>
+<body class="l-pt-mega">
+  <fxos-theme-selector></fxos-theme-selector>
+
+  <fxos-header action="back">
+    <h1>Keyboard Settings <bdi>(1)</bdi></h1>
+  </fxos-header>
+
+  <fxos-header action="back" dir="ltr">
+    <h1><bdi>With [dir="ltr"]</bdi> <bdi>(1)</bdi></h1>
+  </fxos-header>
+
+  <fxos-header action="back" dir="rtl">
+    <h1><bdi>With [dir="rtl"]</bdi> <bdi>(1)</bdi></h1>
+  </fxos-header>
+
+  <fxos-header action="back" ignore-dir>
+    <h1><bdi>With [ignore-dir]</bdi> <bdi>(1)</bdi></h1>
+  </fxos-header>
+
+  <fxos-header action="menu">
+    <h1><bdi>Action “menu”</bdi></h1>
+  </fxos-header>
+
+  <fxos-header action="close">
+    <h1><bdi>Action “close”</bdi></h1>
+  </fxos-header>
+
+  <fxos-header action="close">
+    <h1>No action button</h1>
+    <button data-icon="settings" aria-hidden="true"></button>
+  </fxos-header>
+
+  <fxos-header action="close">
+    <h1>Custom a href</h1>
+    <a href="#">Custom</a>
+  </fxos-header>
+
+  <fxos-header action="back">
+    <h1>really long title really long title really long title really long title really long title really long title really long title really long title really long title really long title really long title</h1>
+  </fxos-header>
+
+  <fxos-header>
+    <h1>really long title really long title really long title really long title really long title really long title really long title really long title really long title really long title really long title</h1>
+    <div class='indicator' data-icon='star-full' aria-hidden="true"></div>
+    <a data-icon="email" aria-hidden="true"></a>
+    <button data-icon="settings" aria-hidden="true"></button>
+  </fxos-header>
+
+  <fxos-header>
+    <h1>Messages</h1>
+    <a data-icon="compose" aria-hidden="true"></a>
+    <button data-icon="more" aria-hidden="true"></button>
+  </fxos-header>
+
+  <fxos-header action="close">
+    <span l10n-action data-l10n-id="foo" title="Foo">Foo</span>
+    <h1>Localized action button</h1>
+    <a href="#">Custom</a>
+  </fxos-header>
+
+  <fxos-header id="header">
+    <button>Custom Back Button</button>
+    <h1 id="title">Customised</h1>
+    <button id="done8" data-icon="more" aria-hidden="true"></button>
+    <button id="edit8" data-icon="share" aria-hidden="true" disabled></button>
+    <button>Done</button>
+  </fxos-header>
+
+  <fxos-header action="menu" id="header" not-flush>
+    <h1 id="title">not-flush to window edge</h1>
+    <button id="done8" data-icon="more" aria-hidden="true"></button>
+    <button>Done</button>
+  </fxos-header>
+
+  <div style="padding-left:200px">
+    <fxos-header action="menu" id="header" not-flush>
+      <h1 id="title">not-flush to window edge</h1>
+      <button id="done8" data-icon="more" aria-hidden="true"></button>
+      <button>Done</button>
+    </fxos-header>
+  </div>
+
+  <fxos-header>
+    <h1>Select a network</h1>
+    <button>Refresh</button>
+  </fxos-header>
+
+  <fxos-header>
+    <h1><span>Ḿḗḗşşȧȧɠḗḗş</span></h1>
+    <button data-icon="add" aria-hidden="true"></button>
+    <button data-icon="compose" aria-hidden="true"></button>
+  </fxos-header>
+
+  <fxos-header>
+    <h1>1 Selected</h1>
+    <button>Refresh</button>
+  </fxos-header>
+
+
+  <div id="message"></div>
+
+  <button id="append">Append a header</button>
+
+  <script>
+  var els = document.querySelectorAll('fxos-header');
+  [].forEach.call(els, function(el, i) {
+    el.addEventListener('action', function(e) {
+      var num = i + 1;
+      message.textContent = 'header (' + num + ') action (' + e.detail.type + ')';
+    });
+  });
+
+  append.addEventListener('click', function() {
+    var div = document.createElement('div');
+    div.innerHTML = '<fxos-header action="back"><h1>Gaia Header</h1></fxos-header>';
+    document.body.insertBefore(div.firstElementChild, message);
+  });
+  </script>
+</body>
+</html>
