@@ -8,7 +8,7 @@
     "font-fit": "^0.3.7",
     "fxos-component": "^1.0.1",
     "fxos-icons": "^2.1.0",
-    "fxos-theme": "^2.0.0"
+    "fxos-theme": "^2.0.2"
   },
   "devDependencies": {
     "browserify": "^12.0.1",
