@@ -18,8 +18,9 @@
     "README.md"
   ],
   "dependencies": {
-    "fxos-icons": "fxos-components/fxos-icons#~2.0.0",
-    "fxos-component": "fxos-components/fxos-component#~1.0.0",
-    "font-fit": "fxos-components/font-fit#~0.3.0"
+    "fxos-icons": "fxos-components/fxos-icons#~2.1.0",
+    "fxos-component": "fxos-components/fxos-component#~1.0.1",
+    "font-fit": "fxos-components/font-fit#~0.3.7",
+    "fxos-theme": "fxos-components/fxos-theme#~2.0.2"
   }
 }
