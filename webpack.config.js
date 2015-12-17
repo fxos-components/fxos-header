@@ -7,6 +7,11 @@ module.exports = {
   },
 
   externals: {
-    "fxos-component": "fxosComponent"
+    'fxos-component': {
+      root: 'fxosComponent',
+      commonjs: 'fxos-component',
+      commonjs2: 'fxos-component',
+      amd: 'fxos-component'
+    }
   }
-}
+};

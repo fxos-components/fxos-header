@@ -1,10 +1,10 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("fxosComponent"));
+		module.exports = factory(require("fxos-component"));
 	else if(typeof define === 'function' && define.amd)
-		define(["fxosComponent"], factory);
+		define(["fxos-component"], factory);
 	else if(typeof exports === 'object')
-		exports["FXOSHeader"] = factory(require("fxosComponent"));
+		exports["FXOSHeader"] = factory(require("fxos-component"));
 	else
 		root["FXOSHeader"] = factory(root["fxosComponent"]);
 })(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
@@ -365,6 +365,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  setTitleStyle: function(el, style) {
 	    debug('set title style', style);
 	    this.observerStop();
+
 	    if (this.ignoreDir) {
 	      el.style.marginLeft = style.marginStart + 'px';
 	      el.style.paddingLeft = style.padding.start + 'px';
@@ -373,7 +374,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      el.style.marginInlineStart = style.marginStart + 'px';
 	      el.style.paddingInlineStart = style.padding.start + 'px';
 	      el.style.paddingInlineEnd = style.padding.end + 'px';
+	      el.style.webkitMarginStart = style.marginStart + 'px';
+	      el.style.webkitPaddingStart = style.padding.start + 'px';
+	      el.style.webkitPaddingEnd = style.padding.end + 'px';
 	    }
+
 	    el.style.fontSize = style.fontSize + 'px';
 	    setStyleId(el, style.id);
 	    this.observerStart();
@@ -446,13 +451,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  onResize: function(e) {
 	    debug('onResize', this._resizeThrottlingId);
 
-	    if (this._resizeThrottlingId !== null) {
+	    if (this._resizeThrottlingId) {
 	      return;
 	    }
 
 	    /* Resize events can arrive at a very high rate, so we're trying to
 	     * reasonably throttle these events. */
-	    this._resizeThrottlingId = window.requestAnimationFrame(() => {
+	    this._resizeThrottlingId = setTimeout(() => {
 	      this._resizeThrottlingId = null;
 	      this.runFontFitSoon();
 	    });
@@ -737,6 +742,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    :host {
 	      display: block;
 	      -moz-user-select: none;
+	           user-select: none;
 
 	      color:
 	        var(--fxos-header-color,
@@ -748,8 +754,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    .inner {
 	      display: flex;
 	      min-height: 50px;
-	      -moz-user-select: none;
-
 	      background:
 	        var(--fxos-header-background,
 	        var(--fxos-background));
@@ -769,11 +773,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      border: 0;
 	      outline: 0;
 
+	      justify-content: center;
 	      align-items: center;
 	      background: none;
 	      cursor: pointer;
 	      transition: opacity 200ms 280ms;
-	      color: var(--fxos-header-action-button-color);
+	      color: var(--fxos-header-action-button-color, inherit);
 	    }
 
 	    /**
@@ -795,11 +800,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      font-family: 'fxos-icons';
 	      font-style: normal;
 	      text-rendering: optimizeLegibility;
+	      direction: ltr;
 	      font-weight: 500;
 	    }
 
-	    [action=back]:-moz-dir(ltr) .action-button:before { content: 'left' }
-	    [action=back]:-moz-dir(rtl) .action-button:before { content: 'right' }
+	    [action=back] .action-button:before { content: 'left' }
+	    [action=back][dir=rtl] .action-button:before { content: 'right' }
 	    [action=close] .action-button:before { content: 'close' }
 	    [action=menu] .action-button:before { content: 'menu' }
 
@@ -874,8 +880,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * when bug 1179459 lands.
 	     */
 
-	    :host[ignore-dir] { direction: ltr; }
-	    :host[ignore-dir]:-moz-dir(rtl) h1 { direction: rtl; }
+	    :host([ignore-dir]) { direction: ltr; }
+	    :host([ignore-dir]) h1:-moz-dir(rtl)  { direction: rtl; }
 
 	    ::content a,
 	    ::content button {
@@ -1064,7 +1070,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * @type {Number}
 	 */
-	var BUFFER = 3;
+	var BUFFER = 0.03;
 
 	/**
 	 * Get the font-size that closest fits
@@ -1083,7 +1089,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	module.exports = function(config) {
 	  debug('font fit', config);
-	  var space = config.space - BUFFER;
+	  var space = config.space - (config.space * BUFFER);
 	  var min = config.min || MIN;
 	  var max = config.max || MAX;
 	  var text = trim(config.text);

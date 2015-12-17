@@ -317,12 +317,12 @@ suite('FXOSHeader', function() {
       return afterNext(header, 'runFontFit').then(() => {
         this.fontFit.reset();
         // make requestAnimationFrame async
-        this.sinon.stub(window, 'requestAnimationFrame').returns(1);
+        this.sinon.stub(window, 'setTimeout').returns(1);
 
         windowWidth = 600;
         var resizeEvent = new UIEvent('resize');
         window.dispatchEvent(resizeEvent);
-        window.requestAnimationFrame.yield();
+        window.setTimeout.yield();
 
         return afterNext(header, 'runFontFit');
       }).then(() => {
@@ -331,20 +331,20 @@ suite('FXOSHeader', function() {
 
         var resizeEvent = new UIEvent('resize');
         window.dispatchEvent(resizeEvent);
-        window.requestAnimationFrame.yield();
+        window.setTimeout.yield();
         return afterNext(header, 'runFontFit');
       }).then(() => {
         sinon.assert.notCalled(this.fontFit,
           'fontFit is not called if the width does not change');
 
-        window.requestAnimationFrame.reset();
+        window.setTimeout.reset();
         header.runFontFit.reset();
 
         this.dom.innerHTML = '';
         windowWidth = 700;
         var resizeEvent = new UIEvent('resize');
         window.dispatchEvent(resizeEvent);
-        sinon.assert.notCalled(window.requestAnimationFrame,
+        sinon.assert.notCalled(window.setTimeout,
           'nothing is run when header is detached');
         sinon.assert.notCalled(header.runFontFit,
           'fontFit is not called when header is detached');
@@ -357,13 +357,13 @@ suite('FXOSHeader', function() {
 
       return afterNext(header, 'runFontFit').then(() => {
         this.runFontFit.reset();
-        this.sinon.stub(window, 'requestAnimationFrame').returns(1);
+        this.sinon.stub(window, 'setTimeout').returns(1);
 
         windowWidth = 600;
         var resizeEvent = new UIEvent('resize');
         window.dispatchEvent(resizeEvent);
 
-        window.requestAnimationFrame.yield();
+        window.setTimeout.yield();
         return afterNext(header, 'runFontFit');
       }).then(() => {
         sinon.assert.calledOnce(this.fontFit);

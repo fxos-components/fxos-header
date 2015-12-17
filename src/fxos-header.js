@@ -309,6 +309,7 @@ module.exports = component.register('fxos-header', {
   setTitleStyle: function(el, style) {
     debug('set title style', style);
     this.observerStop();
+
     if (this.ignoreDir) {
       el.style.marginLeft = style.marginStart + 'px';
       el.style.paddingLeft = style.padding.start + 'px';
@@ -317,7 +318,11 @@ module.exports = component.register('fxos-header', {
       el.style.marginInlineStart = style.marginStart + 'px';
       el.style.paddingInlineStart = style.padding.start + 'px';
       el.style.paddingInlineEnd = style.padding.end + 'px';
+      el.style.webkitMarginStart = style.marginStart + 'px';
+      el.style.webkitPaddingStart = style.padding.start + 'px';
+      el.style.webkitPaddingEnd = style.padding.end + 'px';
     }
+
     el.style.fontSize = style.fontSize + 'px';
     setStyleId(el, style.id);
     this.observerStart();
@@ -390,13 +395,13 @@ module.exports = component.register('fxos-header', {
   onResize: function(e) {
     debug('onResize', this._resizeThrottlingId);
 
-    if (this._resizeThrottlingId !== null) {
+    if (this._resizeThrottlingId) {
       return;
     }
 
     /* Resize events can arrive at a very high rate, so we're trying to
      * reasonably throttle these events. */
-    this._resizeThrottlingId = window.requestAnimationFrame(() => {
+    this._resizeThrottlingId = setTimeout(() => {
       this._resizeThrottlingId = null;
       this.runFontFitSoon();
     });
@@ -681,6 +686,7 @@ module.exports = component.register('fxos-header', {
     :host {
       display: block;
       -moz-user-select: none;
+           user-select: none;
 
       color:
         var(--fxos-header-color,
@@ -692,8 +698,6 @@ module.exports = component.register('fxos-header', {
     .inner {
       display: flex;
       min-height: 50px;
-      -moz-user-select: none;
-
       background:
         var(--fxos-header-background,
         var(--fxos-background));
@@ -713,11 +717,12 @@ module.exports = component.register('fxos-header', {
       border: 0;
       outline: 0;
 
+      justify-content: center;
       align-items: center;
       background: none;
       cursor: pointer;
       transition: opacity 200ms 280ms;
-      color: var(--fxos-header-action-button-color);
+      color: var(--fxos-header-action-button-color, inherit);
     }
 
     /**
@@ -739,11 +744,12 @@ module.exports = component.register('fxos-header', {
       font-family: 'fxos-icons';
       font-style: normal;
       text-rendering: optimizeLegibility;
+      direction: ltr;
       font-weight: 500;
     }
 
-    [action=back]:-moz-dir(ltr) .action-button:before { content: 'left' }
-    [action=back]:-moz-dir(rtl) .action-button:before { content: 'right' }
+    [action=back] .action-button:before { content: 'left' }
+    [action=back][dir=rtl] .action-button:before { content: 'right' }
     [action=close] .action-button:before { content: 'close' }
     [action=menu] .action-button:before { content: 'menu' }
 
@@ -818,8 +824,8 @@ module.exports = component.register('fxos-header', {
      * when bug 1179459 lands.
      */
 
-    :host[ignore-dir] { direction: ltr; }
-    :host[ignore-dir]:-moz-dir(rtl) h1 { direction: rtl; }
+    :host([ignore-dir]) { direction: ltr; }
+    :host([ignore-dir]) h1:-moz-dir(rtl)  { direction: rtl; }
 
     ::content a,
     ::content button {
